@@ -1,0 +1,1 @@
+{"version":3,"file":"SectionAdvanced.d.ts","sourceRoot":"","sources":["../../src/sections/SectionAdvanced.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,iCAAiC,CAAC;AAGxE,wBAAgB,eAAe,CAAC,EAC9B,QAAQ,EACR,QAAQ,GACT,EAAE;IACD,QAAQ,EAAE,gBAAgB,CAAC;IAC3B,QAAQ,EAAE,CAAC,OAAO,EAAE,OAAO,CAAC,gBAAgB,CAAC,KAAK,IAAI,CAAC;CACxD,2CAiCA"}
