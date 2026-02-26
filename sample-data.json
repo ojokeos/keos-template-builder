@@ -1,0 +1,21 @@
+{
+  "profiles": [
+    { "id": "alex", "label": "Alex (retail)", "data": { "first_name": "Alex", "order_id": "ORD-001", "city": "Berlin", "last_name": "Müller" } },
+    { "id": "sam", "label": "Sam (support)", "data": { "first_name": "Sam", "order_id": "ORD-782", "city": "London", "last_name": "Jones" } },
+    { "id": "jordan", "label": "Jordan (promo)", "data": { "first_name": "Jordan", "order_id": "ORD-1024", "city": "Paris", "last_name": "Lee" } }
+  ],
+  "message": {
+    "token": "DEVICE_REGISTRATION_TOKEN",
+    "notification": {
+      "title": "🚨 System Alert: Critical Synchronization Anomaly Detected in the Secondary Data Processing Cluster [Node-74X-Beta]",
+      "body": "A significant latency mismatch has been identified during the hourly backup sequence initiated at 04:00 AM. This discrepancy exceeds the established 500ms safety threshold by approximately 1,200ms. Our automated recovery protocols are currently attempting to re-establish a handshake with the primary cloud storage gateway. \n\nNo immediate action is required from your end, but please maintain a stable network connection as the system attempts to re-index the local cache to prevent permanent data fragmentation. A full diagnostic report will be available in the 'Maintenance' tab of your dashboard once the synchronization reaches 100% completion. Estimated time remaining: 14 minutes and 22 seconds.",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdp0cl1sG7UYvgPRZezA3YVFWIF4WORPF3JH1fgbL1jllCdH8Y"
+    },
+    "data": {
+      "priority": "high",
+      "cluster_id": "Node-74X",
+      "error_code": "SYNC_TIMEOUT_EXCEEDED_1200",
+      "timestamp": "2026-02-24T04:21:00Z"
+    }
+  }
+}

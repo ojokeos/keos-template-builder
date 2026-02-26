@@ -1,0 +1,6 @@
+packages:
+  - "packages/core"
+  - "packages/vue"
+  - "packages/react"
+  - "apps/demo-vue"
+  - "apps/demo-react"

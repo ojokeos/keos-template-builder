@@ -1,0 +1,1 @@
+{"version":3,"file":"apns.d.ts","sourceRoot":"","sources":["../../src/providerMapping/apns.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAC;AAC5C,OAAO,KAAK,EAAE,qBAAqB,EAAE,MAAM,YAAY,CAAC;AAExD;;;GAGG;AACH,wBAAgB,MAAM,CAAC,QAAQ,EAAE,QAAQ,GAAG,qBAAqB,CA0ChE"}

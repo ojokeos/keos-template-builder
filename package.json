@@ -1,0 +1,19 @@
+{
+  "name": "keos-notification-builder-root",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "npm run build:core && npm run build -w @keos/notification-builder-ui-tokens && npm run build:vue && npm run build:react",
+    "build:core": "npm run build -w @keos/notification-builder-core",
+    "build:vue": "npm run build -w @keos/notification-builder-vue",
+    "build:react": "npm run build -w @keos/notification-builder-react",
+    "dev:vue": "npm run dev -w demo-vue",
+    "dev:react": "npm run dev -w demo-react"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
