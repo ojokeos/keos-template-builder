@@ -42,6 +42,26 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showHistory: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showSaveVersion: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
         change: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         "update:modelValue": (campaign: import('@keos/notification-builder-core').Campaign) => void;
@@ -71,6 +91,26 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showHistory: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showSaveVersion: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>> & Readonly<{
         onChange?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         "onUpdate:modelValue"?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
@@ -85,6 +125,11 @@ declare const _default: {
         versions: import('./BuilderVersionHistoryModal.vue').VersionEntry[];
         variableOptions: string[];
         disabledSections: string[];
+        showSave: boolean;
+        showClose: boolean;
+        showDuplicate: boolean;
+        showHistory: boolean;
+        showSaveVersion: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosWhatsAppBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
         variableOptions: {
@@ -101,6 +146,18 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
         change: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         "update:modelValue": (campaign: import('@keos/notification-builder-core').Campaign) => void;
@@ -125,6 +182,18 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>> & Readonly<{
         onChange?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         "onUpdate:modelValue"?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
@@ -137,6 +206,9 @@ declare const _default: {
     }>, {
         variableOptions: string[];
         disabledSections: string[];
+        showSave: boolean;
+        showClose: boolean;
+        showDuplicate: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosSmsBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
         variableOptions: {
@@ -153,6 +225,18 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
         costPerSegment: {
             type: import('vue').PropType<number>;
             default: number;
@@ -181,6 +265,18 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
         costPerSegment: {
             type: import('vue').PropType<number>;
             default: number;
@@ -197,6 +293,9 @@ declare const _default: {
     }>, {
         variableOptions: string[];
         disabledSections: string[];
+        showSave: boolean;
+        showClose: boolean;
+        showDuplicate: boolean;
         costPerSegment: number;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosEmailBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
@@ -214,6 +313,18 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
         change: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         "update:modelValue": (campaign: import('@keos/notification-builder-core').Campaign) => void;
@@ -238,6 +349,18 @@ declare const _default: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
         };
+        showSave: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showClose: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
+        showDuplicate: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>> & Readonly<{
         onChange?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         "onUpdate:modelValue"?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
@@ -250,6 +373,9 @@ declare const _default: {
     }>, {
         variableOptions: string[];
         disabledSections: string[];
+        showSave: boolean;
+        showClose: boolean;
+        showDuplicate: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 };
 export default _default;

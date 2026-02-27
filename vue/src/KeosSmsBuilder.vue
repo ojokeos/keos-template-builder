@@ -18,8 +18,19 @@ const props = withDefaults(
     variableOptions?: string[];
     /** Cost per SMS segment for cost estimator (e.g. 0.05) */
     costPerSegment?: number;
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showDuplicate?: boolean;
   }>(),
-  { disabledSections: () => [], variableOptions: () => [], costPerSegment: 0 }
+  {
+    disabledSections: () => [],
+    variableOptions: () => [],
+    costPerSegment: 0,
+    showSave: true,
+    showClose: true,
+    showDuplicate: true,
+  }
 );
 
 const emit = defineEmits<{
@@ -337,14 +348,29 @@ function onSave() {
     </div>
 
     <footer class="kb-sms-actions">
-      <button type="button" class="kb-sms-action kb-sms-action--secondary" @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))">
+      <button
+        v-if="showDuplicate"
+        type="button"
+        class="kb-sms-action kb-sms-action--secondary"
+        @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))"
+      >
         Duplicate
       </button>
-      <button type="button" class="kb-sms-action kb-sms-action--secondary" @click="onSave">
-        Save draft
+      <button
+        v-if="showSave"
+        type="button"
+        class="kb-sms-action kb-sms-action--secondary"
+        @click="onSave"
+      >
+        Save
       </button>
-      <button type="button" class="kb-sms-action kb-sms-action--primary" @click="emit('edit')">
-        Continue editing
+      <button
+        v-if="showClose"
+        type="button"
+        class="kb-sms-action kb-sms-action--primary"
+        @click="emit('edit')"
+      >
+        Close
       </button>
     </footer>
 

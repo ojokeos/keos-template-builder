@@ -8,10 +8,21 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     variableOptions?: string[];
     /** Version history entries (from parent) for "Version history" modal */
     versions?: VersionEntry[];
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showHistory?: boolean;
+    showSaveVersion?: boolean;
+    showDuplicate?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
     versions: () => never[];
+    showSave: boolean;
+    showClose: boolean;
+    showHistory: boolean;
+    showSaveVersion: boolean;
+    showDuplicate: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
     "update:modelValue": (campaign: Campaign) => void;
@@ -29,10 +40,21 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     variableOptions?: string[];
     /** Version history entries (from parent) for "Version history" modal */
     versions?: VersionEntry[];
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showHistory?: boolean;
+    showSaveVersion?: boolean;
+    showDuplicate?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
     versions: () => never[];
+    showSave: boolean;
+    showClose: boolean;
+    showHistory: boolean;
+    showSaveVersion: boolean;
+    showDuplicate: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
     "onUpdate:modelValue"?: ((campaign: Campaign) => any) | undefined;
@@ -47,6 +69,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     versions: VersionEntry[];
     variableOptions: string[];
     disabledSections: string[];
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
+    showHistory: boolean;
+    showSaveVersion: boolean;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

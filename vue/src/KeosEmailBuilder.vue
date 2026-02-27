@@ -328,8 +328,18 @@ const props = withDefaults(
     hooks?: BuilderExtensionHooks;
     disabledSections?: string[];
     variableOptions?: string[];
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showDuplicate?: boolean;
   }>(),
-  { disabledSections: () => [], variableOptions: () => [] }
+  {
+    disabledSections: () => [],
+    variableOptions: () => [],
+    showSave: true,
+    showClose: true,
+    showDuplicate: true,
+  }
 );
 
 const emit = defineEmits<{
@@ -666,14 +676,29 @@ function onSave() {
     </div>
 
     <footer class="kb-email-actions">
-      <button type="button" class="kb-email-action kb-email-action--secondary" @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))">
+      <button
+        v-if="showDuplicate"
+        type="button"
+        class="kb-email-action kb-email-action--secondary"
+        @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))"
+      >
         Duplicate
       </button>
-      <button type="button" class="kb-email-action kb-email-action--secondary" @click="onSave">
-        Save draft
+      <button
+        v-if="showSave"
+        type="button"
+        class="kb-email-action kb-email-action--secondary"
+        @click="onSave"
+      >
+        Save
       </button>
-      <button type="button" class="kb-email-action kb-email-action--primary" @click="emit('edit')">
-        Continue editing
+      <button
+        v-if="showClose"
+        type="button"
+        class="kb-email-action kb-email-action--primary"
+        @click="emit('edit')"
+      >
+        Close
       </button>
     </footer>
 

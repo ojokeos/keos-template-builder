@@ -5,9 +5,16 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     hooks?: BuilderExtensionHooks;
     disabledSections?: string[];
     variableOptions?: string[];
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showDuplicate?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
     "update:modelValue": (campaign: Campaign) => void;
@@ -22,9 +29,16 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     hooks?: BuilderExtensionHooks;
     disabledSections?: string[];
     variableOptions?: string[];
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showDuplicate?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
     "onUpdate:modelValue"?: ((campaign: Campaign) => any) | undefined;
@@ -37,6 +51,9 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
 }>, {
     variableOptions: string[];
     disabledSections: string[];
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

@@ -7,10 +7,17 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     variableOptions?: string[];
     /** Cost per SMS segment for cost estimator (e.g. 0.05) */
     costPerSegment?: number;
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showDuplicate?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
     costPerSegment: number;
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
     "update:modelValue": (campaign: Campaign) => void;
@@ -27,10 +34,17 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     variableOptions?: string[];
     /** Cost per SMS segment for cost estimator (e.g. 0.05) */
     costPerSegment?: number;
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showDuplicate?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
     costPerSegment: number;
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
     "onUpdate:modelValue"?: ((campaign: Campaign) => any) | undefined;
@@ -43,6 +57,9 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
 }>, {
     variableOptions: string[];
     disabledSections: string[];
+    showSave: boolean;
+    showClose: boolean;
+    showDuplicate: boolean;
     costPerSegment: number;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
