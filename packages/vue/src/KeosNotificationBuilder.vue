@@ -25,8 +25,23 @@ const props = withDefaults(
     variableOptions?: string[];
     /** Version history entries (from parent) for "Version history" modal */
     versions?: VersionEntry[];
+    /** Footer button visibility controls */
+    showSave?: boolean;
+    showClose?: boolean;
+    showHistory?: boolean;
+    showSaveVersion?: boolean;
+    showDuplicate?: boolean;
   }>(),
-  { disabledSections: () => [], variableOptions: () => [], versions: () => [] }
+  {
+    disabledSections: () => [],
+    variableOptions: () => [],
+    versions: () => [],
+    showSave: true,
+    showClose: true,
+    showHistory: true,
+    showSaveVersion: true,
+    showDuplicate: true,
+  }
 );
 
 const emit = defineEmits<{
@@ -360,20 +375,45 @@ function onSave() {
     </div>
 
     <footer class="kb-push-actions">
-      <button type="button" class="kb-push-action kb-push-action--secondary" @click="versionHistoryOpen = true">
+      <button
+        v-if="showHistory"
+        type="button"
+        class="kb-push-action kb-push-action--secondary"
+        @click="versionHistoryOpen = true"
+      >
         Version history
       </button>
-      <button type="button" class="kb-push-action kb-push-action--secondary" @click="emit('save-version', JSON.parse(JSON.stringify(campaign)))">
+      <button
+        v-if="showSaveVersion"
+        type="button"
+        class="kb-push-action kb-push-action--secondary"
+        @click="emit('save-version', JSON.parse(JSON.stringify(campaign)))"
+      >
         Save as version
       </button>
-      <button type="button" class="kb-push-action kb-push-action--secondary" @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))">
+      <button
+        v-if="showDuplicate"
+        type="button"
+        class="kb-push-action kb-push-action--secondary"
+        @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))"
+      >
         Duplicate
       </button>
-      <button type="button" class="kb-push-action kb-push-action--secondary" @click="onSave">
-        Save draft
+      <button
+        v-if="showSave"
+        type="button"
+        class="kb-push-action kb-push-action--secondary"
+        @click="onSave"
+      >
+        Save
       </button>
-      <button type="button" class="kb-push-action kb-push-action--primary" @click="emit('edit')">
-        Continue editing
+      <button
+        v-if="showClose"
+        type="button"
+        class="kb-push-action kb-push-action--primary"
+        @click="emit('edit')"
+      >
+        Close
       </button>
     </footer>
 
