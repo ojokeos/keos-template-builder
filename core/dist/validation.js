@@ -7,6 +7,9 @@ export function validateCampaign(campaign) {
     if (!campaign.schema_version) {
         errors.push(issue('Missing schema_version'));
     }
+    if (!campaign.name?.trim()) {
+        errors.push(issue('Template name is required'));
+    }
     if (!campaign.message.title_template?.trim()) {
         errors.push(issue('Title is required'));
     }
@@ -19,7 +22,8 @@ export function validateCampaign(campaign) {
     if (campaign.audience.platforms.length === 0) {
         errors.push(issue('At least one platform (iOS, Android, Web) must be selected'));
     }
-    if (campaign.tracking && !campaign.tracking.campaign_name?.trim()) {
+    // Tracking campaign_name should mirror the template name; do not force a separate value
+    if (campaign.tracking && !campaign.tracking.campaign_name?.trim() && !campaign.name?.trim()) {
         errors.push(issue('Campaign name is required for tracking'));
     }
     if (campaign.delivery.ttl_seconds <= 0) {
