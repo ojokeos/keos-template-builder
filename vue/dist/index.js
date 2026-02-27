@@ -1,4 +1,4 @@
-import { ref as J, computed as I, watch as ye, defineComponent as le, openBlock as s, createElementBlock as n, normalizeStyle as te, unref as c, createElementVNode as e, Fragment as H, renderList as q, toDisplayString as h, createTextVNode as Q, createCommentVNode as w, normalizeClass as de, withDirectives as Ie, vModelSelect as Oe, vModelText as Ge, vModelCheckbox as _t, createStaticVNode as Ne, withKeys as wt, onMounted as De, onUnmounted as ze, createVNode as re, createBlock as $t, renderSlot as Be } from "vue";
+import { ref as J, computed as I, watch as ye, defineComponent as le, openBlock as s, createElementBlock as n, normalizeStyle as te, unref as c, createElementVNode as e, Fragment as H, renderList as q, toDisplayString as h, createTextVNode as Q, createCommentVNode as w, normalizeClass as de, withDirectives as Ie, vModelSelect as Oe, vModelText as Ge, vModelCheckbox as _t, createStaticVNode as Ne, withKeys as wt, onMounted as De, onUnmounted as ze, createVNode as re, createBlock as $t, renderSlot as Le } from "vue";
 const j = {
   4: 4,
   8: 8,
@@ -106,13 +106,13 @@ function At(a, r) {
     severity: "info"
   }), i;
 }
-function Te(a, r = "error") {
+function Be(a, r = "error") {
   return { message: a, severity: r };
 }
 function mt(a) {
-  var i, d, o, m;
+  var i, d, o, m, v, p;
   const r = [];
-  return a.schema_version || r.push(Te("Missing schema_version")), (i = a.message.title_template) != null && i.trim() || r.push(Te("Title is required")), (d = a.message.body_template) != null && d.trim() || r.push(Te("Message body is required")), a.audience.type === "topic" && !((o = a.audience.topic_name) != null && o.trim()) && r.push(Te("Topic name is required when targeting by topic")), a.audience.platforms.length === 0 && r.push(Te("At least one platform (iOS, Android, Web) must be selected")), a.tracking && !((m = a.tracking.campaign_name) != null && m.trim()) && r.push(Te("Campaign name is required for tracking")), a.delivery.ttl_seconds <= 0 && r.push(Te("TTL must be greater than 0")), {
+  return a.schema_version || r.push(Be("Missing schema_version")), (i = a.name) != null && i.trim() || r.push(Be("Template name is required")), (d = a.message.title_template) != null && d.trim() || r.push(Be("Title is required")), (o = a.message.body_template) != null && o.trim() || r.push(Be("Message body is required")), a.audience.type === "topic" && !((m = a.audience.topic_name) != null && m.trim()) && r.push(Be("Topic name is required when targeting by topic")), a.audience.platforms.length === 0 && r.push(Be("At least one platform (iOS, Android, Web) must be selected")), a.tracking && !((v = a.tracking.campaign_name) != null && v.trim()) && !((p = a.name) != null && p.trim()) && r.push(Be("Campaign name is required for tracking")), a.delivery.ttl_seconds <= 0 && r.push(Be("TTL must be greater than 0")), {
     valid: r.length === 0,
     errors: r
   };
@@ -123,7 +123,7 @@ function Bt(a, r) {
     valid: i.valid,
     errors: [
       ...i.errors,
-      ...d.map((o) => Te(o.message, o.severity))
+      ...d.map((o) => Be(o.message, o.severity))
     ]
   };
 }
@@ -3515,7 +3515,7 @@ const Si = { class: "em-section" }, Ii = { class: "em-strip" }, Ui = { class: "e
   },
   emits: ["update", "reset"],
   setup(a, { emit: r }) {
-    var Le;
+    var Te;
     function i() {
       return `blk_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     }
@@ -3661,7 +3661,7 @@ const example = {{ order_id }};`,
       }
     }
     const m = a, v = r, p = ["first_name", "last_name", "order_id", "city", "email"], y = J(
-      (Le = m.variableOptions) != null && Le.length ? [...m.variableOptions] : p
+      (Te = m.variableOptions) != null && Te.length ? [...m.variableOptions] : p
     ), L = J(y.value[0] ?? "first_name"), Y = J("");
     ye(
       () => m.variableOptions,
@@ -4905,9 +4905,9 @@ const example = {{ order_id }};`,
             break;
           }
           case "button": {
-            const _ = k(x.text || "Button"), g = (x.url || "#").trim(), C = Math.min(24, Math.max(0, Number(x.borderRadius) ?? 8)), Z = !!x.fullWidth, se = !!x.ghost, Le = se ? "transparent" : "#0f172a", b = se ? "#0f172a" : "#fff", l = se ? "2px solid #0f172a" : "none", t = Z ? "block" : "inline-block", V = Z ? "100%" : "auto";
+            const _ = k(x.text || "Button"), g = (x.url || "#").trim(), C = Math.min(24, Math.max(0, Number(x.borderRadius) ?? 8)), Z = !!x.fullWidth, se = !!x.ghost, Te = se ? "transparent" : "#0f172a", b = se ? "#0f172a" : "#fff", l = se ? "2px solid #0f172a" : "none", t = Z ? "block" : "inline-block", V = Z ? "100%" : "auto";
             P.push(
-              `<p style="margin:0 0 12px;"><a href="${k(g)}" style="display:${t};width:${V};text-align:center;padding:12px 24px;background:${Le};color:${b};border:${l};text-decoration:none;font-size:14px;font-weight:600;border-radius:${C}px;">${_}</a></p>`
+              `<p style="margin:0 0 12px;"><a href="${k(g)}" style="display:${t};width:${V};text-align:center;padding:12px 24px;background:${Te};color:${b};border:${l};text-decoration:none;font-size:14px;font-weight:600;border-radius:${C}px;">${_}</a></p>`
             );
             break;
           }
@@ -4985,8 +4985,8 @@ const example = {{ order_id }};`,
             break;
           }
           case "row": {
-            const _ = Math.min(4, Math.max(1, Number(x.columnCount) || 2)), g = Array.isArray(x.cells) ? x.cells.slice(0, _) : [], C = 100 / _, Z = Array.from({ length: _ }, (se, Le) => {
-              const b = g[Le] ?? "", l = k(b).replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
+            const _ = Math.min(4, Math.max(1, Number(x.columnCount) || 2)), g = Array.isArray(x.cells) ? x.cells.slice(0, _) : [], C = 100 / _, Z = Array.from({ length: _ }, (se, Te) => {
+              const b = g[Te] ?? "", l = k(b).replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
               return `<td width="${C}%" style="padding:0 8px;font-size:14px;line-height:1.5;color:#334155;vertical-align:top;">${l || "—"}</td>`;
             }).join("");
             P.push(
@@ -5031,9 +5031,9 @@ const example = {{ order_id }};`,
             break;
           }
           case "product_card": {
-            const _ = (x.imageUrl || "").trim(), g = k(x.title || "Product"), C = k(x.price || ""), Z = k(x.buttonText || "Buy now"), se = (x.buttonUrl || "#").trim(), Le = _ ? `<img src="${k(_)}" alt="${k(x.alt || g)}" style="width:100%;height:auto;display:block;border:0;border-radius:8px;" />` : '<div style="background:#f1f5f9;color:#64748b;padding:60px 16px;text-align:center;font-size:13px;">Product image</div>';
+            const _ = (x.imageUrl || "").trim(), g = k(x.title || "Product"), C = k(x.price || ""), Z = k(x.buttonText || "Buy now"), se = (x.buttonUrl || "#").trim(), Te = _ ? `<img src="${k(_)}" alt="${k(x.alt || g)}" style="width:100%;height:auto;display:block;border:0;border-radius:8px;" />` : '<div style="background:#f1f5f9;color:#64748b;padding:60px 16px;text-align:center;font-size:13px;">Product image</div>';
             P.push(
-              `<div style="margin:0 0 12px;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;"><div style="margin:0 0 12px;">${Le}</div><div style="padding:0 12px 12px;"><p style="margin:0 0 4px;font-size:16px;font-weight:600;color:#0f172a;">${g}</p>` + (C ? `<p style="margin:0 0 12px;font-size:14px;color:#334155;">${C}</p>` : "") + `<a href="${k(se)}" style="display:inline-block;padding:10px 20px;background:#0f172a;color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">${Z}</a></div></div>`
+              `<div style="margin:0 0 12px;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;"><div style="margin:0 0 12px;">${Te}</div><div style="padding:0 12px 12px;"><p style="margin:0 0 4px;font-size:16px;font-weight:600;color:#0f172a;">${g}</p>` + (C ? `<p style="margin:0 0 12px;font-size:14px;color:#334155;">${C}</p>` : "") + `<a href="${k(se)}" style="display:inline-block;padding:10px 20px;background:#0f172a;color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">${Z}</a></div></div>`
             );
             break;
           }
@@ -5471,7 +5471,7 @@ const example = {{ order_id }};`,
         ])
       ], 4),
       e("div", Gu, [
-        Be(o.$slots, "default", {}, void 0, !0)
+        Le(o.$slots, "default", {}, void 0, !0)
       ])
     ]));
   }
@@ -5573,11 +5573,11 @@ const example = {{ order_id }};`,
           class: "kb-form-shell__label",
           style: te({ display: "block", fontSize: "0.6875rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#94a3b8", marginBottom: c(j)[12] })
         }, h(a.label), 5),
-        Be(r.$slots, "head", {}, void 0, !0)
+        Le(r.$slots, "head", {}, void 0, !0)
       ], 4)) : (s(), n("div", lc, [
-        Be(r.$slots, "head", {}, void 0, !0)
+        Le(r.$slots, "head", {}, void 0, !0)
       ])),
-      Be(r.$slots, "default", {}, void 0, !0)
+      Le(r.$slots, "default", {}, void 0, !0)
     ], 12, nc));
   }
 }), ic = /* @__PURE__ */ ie(oc, [["__scopeId", "data-v-6504df41"]]), rc = /* @__PURE__ */ le({
@@ -5603,7 +5603,7 @@ const example = {{ order_id }};`,
         boxShadow: "0 -4px 24px -4px rgba(15, 23, 42, 0.06)"
       })
     }, [
-      Be(r.$slots, "default")
+      Le(r.$slots, "default")
     ], 4));
   }
 }), dc = /* @__PURE__ */ le({
@@ -5616,10 +5616,10 @@ const example = {{ order_id }};`,
         marginRight: c(j)[24]
       })
     }, [
-      Be(r.$slots, "header"),
-      Be(r.$slots, "errors"),
-      Be(r.$slots, "warnings"),
-      Be(r.$slots, "default")
+      Le(r.$slots, "header"),
+      Le(r.$slots, "errors"),
+      Le(r.$slots, "warnings"),
+      Le(r.$slots, "default")
     ], 4));
   }
 });
