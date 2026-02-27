@@ -1,4 +1,4 @@
-import Ze, { useState as M, useCallback as L, useMemo as te, useEffect as It } from "react";
+import Ze, { useState as B, useCallback as L, useMemo as te, useEffect as It } from "react";
 var Te = { exports: {} }, Q = {};
 /**
  * @license React
@@ -14,14 +14,14 @@ function Mt() {
   if (qe) return Q;
   qe = 1;
   var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.fragment"), s = Object.prototype.hasOwnProperty, u = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, c = { key: !0, ref: !0, __self: !0, __source: !0 };
-  function x(S, _, P) {
-    var E, k = {}, D = null, B = null;
-    P !== void 0 && (D = "" + P), _.key !== void 0 && (D = "" + _.key), _.ref !== void 0 && (B = _.ref);
-    for (E in _) s.call(_, E) && !c.hasOwnProperty(E) && (k[E] = _[E]);
-    if (S && S.defaultProps) for (E in _ = S.defaultProps, _) k[E] === void 0 && (k[E] = _[E]);
-    return { $$typeof: n, type: S, key: D, ref: B, props: k, _owner: u.current };
+  function h(_, R, P) {
+    var E, k = {}, D = null, z = null;
+    P !== void 0 && (D = "" + P), R.key !== void 0 && (D = "" + R.key), R.ref !== void 0 && (z = R.ref);
+    for (E in R) s.call(R, E) && !c.hasOwnProperty(E) && (k[E] = R[E]);
+    if (_ && _.defaultProps) for (E in R = _.defaultProps, R) k[E] === void 0 && (k[E] = R[E]);
+    return { $$typeof: n, type: _, key: D, ref: z, props: k, _owner: u.current };
   }
-  return Q.Fragment = l, Q.jsx = x, Q.jsxs = x, Q;
+  return Q.Fragment = l, Q.jsx = h, Q.jsxs = h, Q;
 }
 var ee = {};
 /**
@@ -36,7 +36,7 @@ var ee = {};
 var He;
 function Bt() {
   return He || (He = 1, process.env.NODE_ENV !== "production" && function() {
-    var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), x = Symbol.for("react.provider"), S = Symbol.for("react.context"), _ = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), E = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), B = Symbol.for("react.offscreen"), Y = Symbol.iterator, J = "@@iterator";
+    var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), h = Symbol.for("react.provider"), _ = Symbol.for("react.context"), R = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), E = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), z = Symbol.for("react.offscreen"), Y = Symbol.iterator, J = "@@iterator";
     function K(e) {
       if (e === null || typeof e != "object")
         return null;
@@ -53,8 +53,8 @@ function Bt() {
     }
     function j(e, a, o) {
       {
-        var f = d.ReactDebugCurrentFrame, y = f.getStackAddendum();
-        y !== "" && (a += "%s", o = o.concat([y]));
+        var f = d.ReactDebugCurrentFrame, x = f.getStackAddendum();
+        x !== "" && (a += "%s", o = o.concat([x]));
         var v = o.map(function(g) {
           return String(g);
         });
@@ -64,7 +64,7 @@ function Bt() {
     var re = !1, ne = !1, N = !1, pe = !1, me = !1, ie;
     ie = Symbol.for("react.module.reference");
     function ge(e) {
-      return !!(typeof e == "string" || typeof e == "function" || e === s || e === c || me || e === u || e === P || e === E || pe || e === B || re || ne || N || typeof e == "object" && e !== null && (e.$$typeof === D || e.$$typeof === k || e.$$typeof === x || e.$$typeof === S || e.$$typeof === _ || // This needs to include all possible module reference object
+      return !!(typeof e == "string" || typeof e == "function" || e === s || e === c || me || e === u || e === P || e === E || pe || e === z || re || ne || N || typeof e == "object" && e !== null && (e.$$typeof === D || e.$$typeof === k || e.$$typeof === h || e.$$typeof === _ || e.$$typeof === R || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
@@ -74,8 +74,8 @@ function Bt() {
       var f = e.displayName;
       if (f)
         return f;
-      var y = a.displayName || a.name || "";
-      return y !== "" ? o + "(" + y + ")" : o;
+      var x = a.displayName || a.name || "";
+      return x !== "" ? o + "(" + x + ")" : o;
     }
     function ae(e) {
       return e.displayName || "Context";
@@ -103,19 +103,19 @@ function Bt() {
       }
       if (typeof e == "object")
         switch (e.$$typeof) {
-          case S:
+          case _:
             var a = e;
             return ae(a) + ".Consumer";
-          case x:
+          case h:
             var o = e;
             return ae(o._context) + ".Provider";
-          case _:
+          case R:
             return he(e, e.render, "ForwardRef");
           case k:
             var f = e.displayName || null;
             return f !== null ? f : A(e.type) || "Memo";
           case D: {
-            var y = e, v = y._payload, g = y._init;
+            var x = e, v = x._payload, g = x._init;
             try {
               return A(g(v));
             } catch {
@@ -193,8 +193,8 @@ function Bt() {
         if (xe === void 0)
           try {
             throw Error();
-          } catch (y) {
-            var f = y.stack.trim().match(/\n( *(at )?)/);
+          } catch (x) {
+            var f = x.stack.trim().match(/\n( *(at )?)/);
             xe = f && f[1] || "";
           }
         return `
@@ -216,7 +216,7 @@ function Bt() {
       }
       var f;
       ve = !0;
-      var y = Error.prepareStackTrace;
+      var x = Error.prepareStackTrace;
       Error.prepareStackTrace = void 0;
       var v;
       v = ye.current, ye.current = null, dt();
@@ -256,23 +256,23 @@ function Bt() {
         if (O && f && typeof O.stack == "string") {
           for (var m = O.stack.split(`
 `), C = f.stack.split(`
-`), R = m.length - 1, T = C.length - 1; R >= 1 && T >= 0 && m[R] !== C[T]; )
+`), S = m.length - 1, T = C.length - 1; S >= 1 && T >= 0 && m[S] !== C[T]; )
             T--;
-          for (; R >= 1 && T >= 0; R--, T--)
-            if (m[R] !== C[T]) {
-              if (R !== 1 || T !== 1)
+          for (; S >= 1 && T >= 0; S--, T--)
+            if (m[S] !== C[T]) {
+              if (S !== 1 || T !== 1)
                 do
-                  if (R--, T--, T < 0 || m[R] !== C[T]) {
+                  if (S--, T--, T < 0 || m[S] !== C[T]) {
                     var W = `
-` + m[R].replace(" at new ", " at ");
+` + m[S].replace(" at new ", " at ");
                     return e.displayName && W.includes("<anonymous>") && (W = W.replace("<anonymous>", e.displayName)), typeof e == "function" && oe.set(e, W), W;
                   }
-                while (R >= 1 && T >= 0);
+                while (S >= 1 && T >= 0);
               break;
             }
         }
       } finally {
-        ve = !1, ye.current = v, ut(), Error.prepareStackTrace = y;
+        ve = !1, ye.current = v, ut(), Error.prepareStackTrace = x;
       }
       var H = e ? e.displayName || e.name : "", V = H ? le(H) : "";
       return typeof e == "function" && oe.set(e, V), V;
@@ -299,14 +299,14 @@ function Bt() {
       }
       if (typeof e == "object")
         switch (e.$$typeof) {
-          case _:
+          case R:
             return pt(e.render);
           case k:
             return ce(e.type, a, o);
           case D: {
-            var f = e, y = f._payload, v = f._init;
+            var f = e, x = f._payload, v = f._init;
             try {
-              return ce(v(y), a, o);
+              return ce(v(x), a, o);
             } catch {
             }
           }
@@ -321,7 +321,7 @@ function Bt() {
       } else
         We.setExtraStackFrame(null);
     }
-    function gt(e, a, o, f, y) {
+    function gt(e, a, o, f, x) {
       {
         var v = Function.call.bind(Z);
         for (var g in e)
@@ -333,10 +333,10 @@ function Bt() {
                 throw C.name = "Invariant Violation", C;
               }
               m = e[g](a, g, f, o, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
-            } catch (R) {
-              m = R;
+            } catch (S) {
+              m = S;
             }
-            m && !(m instanceof Error) && (de(y), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", f || "React class", o, g, typeof m), de(null)), m instanceof Error && !(m.message in De) && (De[m.message] = !0, de(y), p("Failed %s type: %s", o, m.message), de(null));
+            m && !(m instanceof Error) && (de(x), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", f || "React class", o, g, typeof m), de(null)), m instanceof Error && !(m.message in De) && (De[m.message] = !0, de(x), p("Failed %s type: %s", o, m.message), de(null));
           }
       }
     }
@@ -411,7 +411,7 @@ function Bt() {
         });
       }
     }
-    var Tt = function(e, a, o, f, y, v, g) {
+    var Tt = function(e, a, o, f, x, v, g) {
       var m = {
         // This tag allows us to uniquely identify this as a React Element
         $$typeof: n,
@@ -437,25 +437,25 @@ function Bt() {
         configurable: !1,
         enumerable: !1,
         writable: !1,
-        value: y
+        value: x
       }), Object.freeze && (Object.freeze(m.props), Object.freeze(m)), m;
     };
-    function Et(e, a, o, f, y) {
+    function Et(e, a, o, f, x) {
       {
         var v, g = {}, m = null, C = null;
-        o !== void 0 && (Le(o), m = "" + o), jt(a) && (Le(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, y));
+        o !== void 0 && (Le(o), m = "" + o), jt(a) && (Le(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, x));
         for (v in a)
           Z.call(a, v) && !vt.hasOwnProperty(v) && (g[v] = a[v]);
         if (e && e.defaultProps) {
-          var R = e.defaultProps;
-          for (v in R)
-            g[v] === void 0 && (g[v] = R[v]);
+          var S = e.defaultProps;
+          for (v in S)
+            g[v] === void 0 && (g[v] = S[v]);
         }
         if (m || C) {
           var T = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
           m && Rt(g, T), C && St(g, T);
         }
-        return Tt(e, m, C, y, f, $e.current, g);
+        return Tt(e, m, C, x, f, $e.current, g);
       }
     }
     var je = d.ReactCurrentOwner, Be = d.ReactDebugCurrentFrame;
@@ -524,9 +524,9 @@ Check the top-level render call using <` + o + ">.");
         else if (Re(e))
           e._store && (e._store.validated = !0);
         else if (e) {
-          var y = K(e);
-          if (typeof y == "function" && y !== e.entries)
-            for (var v = y.call(e), g; !(g = v.next()).done; )
+          var x = K(e);
+          if (typeof x == "function" && x !== e.entries)
+            for (var v = x.call(e), g; !(g = v.next()).done; )
               Re(g.value) && Ne(g.value, a);
         }
       }
@@ -539,7 +539,7 @@ Check the top-level render call using <` + o + ">.");
         var o;
         if (typeof a == "function")
           o = a.propTypes;
-        else if (typeof a == "object" && (a.$$typeof === _ || // Note: Memo only checks outer props here.
+        else if (typeof a == "object" && (a.$$typeof === R || // Note: Memo only checks outer props here.
         // Inner props are checked in the reconciler.
         a.$$typeof === k))
           o = a.propTypes;
@@ -550,8 +550,8 @@ Check the top-level render call using <` + o + ">.");
           gt(o, e.props, "prop", f, e);
         } else if (a.PropTypes !== void 0 && !_e) {
           _e = !0;
-          var y = A(a);
-          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", y || "Unknown");
+          var x = A(a);
+          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", x || "Unknown");
         }
         typeof a.getDefaultProps == "function" && !a.getDefaultProps.isReactClassApproved && p("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
       }
@@ -569,7 +569,7 @@ Check the top-level render call using <` + o + ">.");
       }
     }
     var Ve = {};
-    function Ye(e, a, o, f, y, v) {
+    function Ye(e, a, o, f, x, v) {
       {
         var g = ge(e);
         if (!g) {
@@ -577,10 +577,10 @@ Check the top-level render call using <` + o + ">.");
           (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (m += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
           var C = kt();
           C ? m += C : m += ze();
-          var R;
-          e === null ? R = "null" : be(e) ? R = "array" : e !== void 0 && e.$$typeof === n ? (R = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : R = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", R, m);
+          var S;
+          e === null ? S = "null" : be(e) ? S = "array" : e !== void 0 && e.$$typeof === n ? (S = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : S = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", S, m);
         }
-        var T = Et(e, a, o, y, v);
+        var T = Et(e, a, o, x, v);
         if (T == null)
           return T;
         if (g) {
@@ -722,7 +722,7 @@ function qt(r, n) {
 }
 const Ht = 1e5;
 function Gt(r, n) {
-  var u, c, x;
+  var u, c, h;
   const l = [], s = n ?? r.audience.estimated_reach;
   return s !== void 0 && s >= Ht && l.push({
     message: `Estimated reach is very high (${s.toLocaleString()} users). Consider rate limits.`,
@@ -730,18 +730,18 @@ function Gt(r, n) {
   }), r.tracking && !((u = r.tracking.campaign_name) != null && u.trim()) && !((c = r.name) != null && c.trim()) && l.push({
     message: "No campaign name set for reporting.",
     severity: "warning"
-  }), (x = r.message.deep_link) != null && x.trim() || l.push({
+  }), (h = r.message.deep_link) != null && h.trim() || l.push({
     message: "Consider adding a deep link for better engagement.",
     severity: "info"
   }), l;
 }
-function z(r, n = "error") {
+function I(r, n = "error") {
   return { message: r, severity: n };
 }
 function ot(r) {
-  var l, s, u, c;
+  var l, s, u, c, h, _;
   const n = [];
-  return r.schema_version || n.push(z("Missing schema_version")), (l = r.message.title_template) != null && l.trim() || n.push(z("Title is required")), (s = r.message.body_template) != null && s.trim() || n.push(z("Message body is required")), r.audience.type === "topic" && !((u = r.audience.topic_name) != null && u.trim()) && n.push(z("Topic name is required when targeting by topic")), r.audience.platforms.length === 0 && n.push(z("At least one platform (iOS, Android, Web) must be selected")), r.tracking && !((c = r.tracking.campaign_name) != null && c.trim()) && n.push(z("Campaign name is required for tracking")), r.delivery.ttl_seconds <= 0 && n.push(z("TTL must be greater than 0")), {
+  return r.schema_version || n.push(I("Missing schema_version")), (l = r.name) != null && l.trim() || n.push(I("Template name is required")), (s = r.message.title_template) != null && s.trim() || n.push(I("Title is required")), (u = r.message.body_template) != null && u.trim() || n.push(I("Message body is required")), r.audience.type === "topic" && !((c = r.audience.topic_name) != null && c.trim()) && n.push(I("Topic name is required when targeting by topic")), r.audience.platforms.length === 0 && n.push(I("At least one platform (iOS, Android, Web) must be selected")), r.tracking && !((h = r.tracking.campaign_name) != null && h.trim()) && !((_ = r.name) != null && _.trim()) && n.push(I("Campaign name is required for tracking")), r.delivery.ttl_seconds <= 0 && n.push(I("TTL must be greater than 0")), {
     valid: n.length === 0,
     errors: n
   };
@@ -752,7 +752,7 @@ function Jt(r, n) {
     valid: l.valid,
     errors: [
       ...l.errors,
-      ...s.map((u) => z(u.message, u.severity))
+      ...s.map((u) => I(u.message, u.severity))
     ]
   };
 }
@@ -828,11 +828,11 @@ const b = {
   12: 12,
   16: 16,
   24: 24
-}, I = {
+}, M = {
   input: 6,
   card: 12,
   button: 6
-}, h = {
+}, y = {
   primary: "#0f172a",
   danger: "#dc2626",
   dangerBg: "#fef2f2",
@@ -854,21 +854,21 @@ const b = {
   stickyBar: "0 -1px 4px rgba(0,0,0,0.08)"
 };
 function ir(r = {}) {
-  const [n, l] = M(
+  const [n, l] = B(
     () => Ut(r.initial ?? Nt())
-  ), s = r.hooks ?? {}, [u, c] = M(!1), x = L(
+  ), s = r.hooks ?? {}, [u, c] = B(!1), h = L(
     (d) => {
       var p;
       l((j) => ({ ...j, ...d })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), S = L(
+  ), _ = L(
     (d) => {
       var p;
       l((j) => ({ ...j, audience: { ...j.audience, ...d } })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), _ = L(
+  ), R = L(
     (d) => {
       var p;
       l((j) => ({ ...j, message: { ...j.message, ...d } })), c(!0), (p = r.onDirty) == null || p.call(r);
@@ -900,7 +900,7 @@ function ir(r = {}) {
       };
     },
     [n]
-  ), B = te(
+  ), z = te(
     () => ({
       title: n.message.title_template,
       body: n.message.body_template,
@@ -933,13 +933,13 @@ function ir(r = {}) {
     dirty: u,
     validation: k,
     getValidationWithWarnings: D,
-    update: x,
-    updateAudience: S,
-    updateMessage: _,
+    update: h,
+    updateAudience: _,
+    updateMessage: R,
     updateDelivery: P,
     updateTracking: E,
     getPreview: Y,
-    previewInput: B,
+    previewInput: z,
     characterLimits: J,
     runCustomValidators: K,
     hooks: s
@@ -956,8 +956,8 @@ function G({
     {
       style: {
         padding: `${b[24]}px`,
-        borderRadius: `${I.card}px`,
-        background: h.neutral.bgCard
+        borderRadius: `${M.card}px`,
+        background: y.neutral.bgCard
       },
       children: [
         /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", alignItems: "flex-start", gap: b[8] }, children: [
@@ -978,7 +978,7 @@ function G({
           ),
           /* @__PURE__ */ t.jsxs("div", { children: [
             /* @__PURE__ */ t.jsx("h3", { style: { fontSize: Xe.sectionTitle.fontSize, fontWeight: Xe.sectionTitle.fontWeight, margin: "0 0 4px 0" }, children: n }),
-            l && /* @__PURE__ */ t.jsx("p", { style: { fontSize: 14, color: h.neutral.textMuted, margin: 0, lineHeight: 1.3 }, children: l })
+            l && /* @__PURE__ */ t.jsx("p", { style: { fontSize: 14, color: y.neutral.textMuted, margin: 0, lineHeight: 1.3 }, children: l })
           ] })
         ] }),
         /* @__PURE__ */ t.jsx("div", { style: { marginTop: b[16] }, children: s })
@@ -998,7 +998,7 @@ function ar({
     {
       style: {
         padding: `${b[16]}px 0`,
-        borderBottom: `1px solid ${h.neutral.border}`,
+        borderBottom: `1px solid ${y.neutral.border}`,
         marginBottom: `${b[16]}px`
       },
       children: [
@@ -1026,16 +1026,16 @@ function ar({
             {
               style: {
                 padding: `${b[4]}px ${b[8]}px`,
-                borderRadius: `${I.input}px`,
-                background: h.neutral.bg,
+                borderRadius: `${M.input}px`,
+                background: y.neutral.bg,
                 fontSize: "0.8125rem",
-                color: h.neutral.textMuted
+                color: y.neutral.textMuted
               },
               children: n
             }
           )
         ] }),
-        (l || s) && /* @__PURE__ */ t.jsx("div", { style: { fontSize: "0.8125rem", color: h.neutral.textMuted, marginTop: `${b[4]}px` }, children: s ? "Saving…" : "Unsaved changes" })
+        (l || s) && /* @__PURE__ */ t.jsx("div", { style: { fontSize: "0.8125rem", color: y.neutral.textMuted, marginTop: `${b[4]}px` }, children: s ? "Saving…" : "Unsaved changes" })
       ]
     }
   );
@@ -1046,36 +1046,36 @@ function sr({ summary: r }) {
     {
       style: {
         padding: `${b[16]}px`,
-        borderRadius: `${I.card}px`,
-        background: h.neutral.bgCard,
-        border: `1px solid ${h.neutral.border}`,
+        borderRadius: `${M.card}px`,
+        background: y.neutral.bgCard,
+        border: `1px solid ${y.neutral.border}`,
         marginTop: `${b[16]}px`
       },
       children: [
         /* @__PURE__ */ t.jsx("h4", { style: { fontSize: "0.875rem", fontWeight: 600, margin: `0 0 ${b[8]}px 0` }, children: "Delivery summary" }),
-        /* @__PURE__ */ t.jsxs("dl", { style: { margin: 0, fontSize: "0.8125rem", color: h.neutral.textMeta }, children: [
+        /* @__PURE__ */ t.jsxs("dl", { style: { margin: 0, fontSize: "0.8125rem", color: y.neutral.textMeta }, children: [
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Send time" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Send time" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.sendTime })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Audience" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Audience" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.audienceType })
           ] }),
           r.estimatedReach !== void 0 && /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Estimated reach" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Estimated reach" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.estimatedReach.toLocaleString() })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Platforms" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Platforms" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.platforms.join(", ") })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Priority" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Priority" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.priority })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "TTL" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "TTL" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.ttlLabel })
           ] })
         ] })
@@ -1191,7 +1191,7 @@ user_456`,
 `)) ?? "",
           onChange: (c) => s({
             user_list: c.target.value.split(`
-`).map((x) => x.trim()).filter(Boolean)
+`).map((h) => h.trim()).filter(Boolean)
           })
         }
       )
@@ -1205,7 +1205,7 @@ user_456`,
             type: "checkbox",
             checked: r.platforms.includes(c),
             onChange: () => s({
-              platforms: r.platforms.includes(c) ? r.platforms.filter((x) => x !== c) : [...r.platforms, c]
+              platforms: r.platforms.includes(c) ? r.platforms.filter((h) => h !== c) : [...r.platforms, c]
             })
           }
         ),
@@ -1256,7 +1256,7 @@ function or({
           style: i.input,
           placeholder: "Notification title",
           value: r.title_template,
-          onChange: (x) => c({ title_template: x.target.value })
+          onChange: (h) => c({ title_template: h.target.value })
         }
       )
     ] }),
@@ -1276,7 +1276,7 @@ function or({
           rows: 3,
           placeholder: "Notification body",
           value: r.body_template,
-          onChange: (x) => c({ body_template: x.target.value })
+          onChange: (h) => c({ body_template: h.target.value })
         }
       )
     ] }),
@@ -1289,7 +1289,7 @@ function or({
           style: i.input,
           placeholder: "https://...",
           value: r.image_url ?? "",
-          onChange: (x) => c({ image_url: x.target.value || void 0 })
+          onChange: (h) => c({ image_url: h.target.value || void 0 })
         }
       )
     ] }),
@@ -1302,7 +1302,7 @@ function or({
           style: i.input,
           placeholder: "https:// or app://...",
           value: r.deep_link ?? "",
-          onChange: (x) => c({ deep_link: x.target.value || void 0 })
+          onChange: (h) => c({ deep_link: h.target.value || void 0 })
         }
       )
     ] })
@@ -1313,7 +1313,7 @@ function dr({
   variableOptions: r,
   onInsertVariable: n
 }) {
-  const l = r ?? cr, [s, u] = M(l[0] ?? "first_name");
+  const l = r ?? cr, [s, u] = B(l[0] ?? "first_name");
   return /* @__PURE__ */ t.jsxs("section", { style: i.section, children: [
     /* @__PURE__ */ t.jsx("h3", { style: i.sectionTitle, children: "Personalization (optional)" }),
     /* @__PURE__ */ t.jsx("p", { style: i.sectionDesc, children: "Use variables like {{ first_name }}" }),
@@ -1468,7 +1468,7 @@ function pr({
   delivery: r,
   onUpdate: n
 }) {
-  const [l, s] = M(!1);
+  const [l, s] = B(!1);
   return /* @__PURE__ */ t.jsxs("div", { style: i.accordion, children: [
     /* @__PURE__ */ t.jsx("div", { style: i.accordionSummary, onClick: () => s(!l), role: "button", tabIndex: 0, onKeyDown: (u) => u.key === "Enter" && s(!l), children: "Advanced push behavior" }),
     l && /* @__PURE__ */ t.jsxs("div", { style: i.accordionBody, children: [
@@ -1566,28 +1566,28 @@ function gr({
   selectedPlatform: n,
   onPlatformChange: l
 }) {
-  const [s, u] = M(!1), c = te(
+  const [s, u] = B(!1), c = te(
     () => r(n, {
       expanded: n === "android" ? s : void 0
     }),
     [r, n, s]
-  ), x = ["android", "ios", "web"];
+  ), h = ["android", "ios", "web"];
   return /* @__PURE__ */ t.jsxs("div", { style: i.preview, children: [
-    /* @__PURE__ */ t.jsx("div", { style: i.previewTabs, children: x.map((S) => /* @__PURE__ */ t.jsx(
+    /* @__PURE__ */ t.jsx("div", { style: i.previewTabs, children: h.map((_) => /* @__PURE__ */ t.jsx(
       "button",
       {
         type: "button",
         style: {
           ...i.previewTab,
-          ...n === S ? i.previewTabActive : {}
+          ...n === _ ? i.previewTabActive : {}
         },
-        onClick: () => l(S),
-        children: S
+        onClick: () => l(_),
+        children: _
       },
-      S
+      _
     )) }),
     n === "android" && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: "0.5rem" }, children: /* @__PURE__ */ t.jsxs("label", { style: i.checkbox, children: [
-      /* @__PURE__ */ t.jsx("input", { type: "checkbox", checked: s, onChange: (S) => u(S.target.checked) }),
+      /* @__PURE__ */ t.jsx("input", { type: "checkbox", checked: s, onChange: (_) => u(_.target.checked) }),
       /* @__PURE__ */ t.jsx("span", { children: "Expanded" })
     ] }) }),
     /* @__PURE__ */ t.jsx("div", { style: i.previewDevice, children: /* @__PURE__ */ t.jsxs("div", { style: { fontSize: "0.875rem" }, children: [
@@ -1604,11 +1604,11 @@ function yr({
   variableOptions: s,
   onChange: u,
   onSave: c,
-  onSendTest: x,
-  onSchedule: S,
-  onSend: _
+  onSendTest: h,
+  onSchedule: _,
+  onSend: R
 }) {
-  const [P, E] = M("android"), [k, D] = M(), [B, Y] = M(!0), [J, K] = M(!0), d = ir({
+  const [P, E] = B("android"), [k, D] = B(), [z, Y] = B(!0), [J, K] = B(!0), d = ir({
     initial: r,
     hooks: n,
     onDirty: () => u == null ? void 0 : u(d.campaign)
@@ -1638,12 +1638,12 @@ function yr({
     [d]
   ), A = () => {
     N && (c == null || c(d.campaign));
-  }, $ = () => x == null ? void 0 : x(d.campaign), U = () => {
-    N && (S == null || S(d.campaign));
-  }, se = () => {
+  }, $ = () => h == null ? void 0 : h(d.campaign), U = () => {
     N && (_ == null || _(d.campaign));
+  }, se = () => {
+    N && (R == null || R(d.campaign));
   };
-  return /* @__PURE__ */ t.jsxs("div", { style: { fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 14, color: h.neutral.text, maxWidth: "100%" }, children: [
+  return /* @__PURE__ */ t.jsxs("div", { style: { fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 14, color: y.neutral.text, maxWidth: "100%" }, children: [
     /* @__PURE__ */ t.jsx(
       ar,
       {
@@ -1657,26 +1657,26 @@ function yr({
       "div",
       {
         style: {
-          background: h.dangerBg,
-          border: `1px solid ${h.dangerBorder}`,
-          borderRadius: I.input,
+          background: y.dangerBg,
+          border: `1px solid ${y.dangerBorder}`,
+          borderRadius: M.input,
           padding: `${b[12]}px ${b[16]}px`,
           marginBottom: b[16]
         },
-        children: /* @__PURE__ */ t.jsx("ul", { style: { margin: 0, paddingLeft: "1.25rem", color: h.danger }, children: re.map((w) => /* @__PURE__ */ t.jsx("li", { children: w.message }, w.message)) })
+        children: /* @__PURE__ */ t.jsx("ul", { style: { margin: 0, paddingLeft: "1.25rem", color: y.danger }, children: re.map((w) => /* @__PURE__ */ t.jsx("li", { children: w.message }, w.message)) })
       }
     ),
     ne.length > 0 && /* @__PURE__ */ t.jsxs(
       "div",
       {
         style: {
-          background: h.neutral.bg,
-          border: `1px solid ${h.neutral.border}`,
-          borderRadius: I.input,
+          background: y.neutral.bg,
+          border: `1px solid ${y.neutral.border}`,
+          borderRadius: M.input,
           padding: `${b[12]}px ${b[16]}px`,
           marginBottom: b[16],
           fontSize: "0.875rem",
-          color: h.neutral.textMuted
+          color: y.neutral.textMuted
         },
         children: [
           /* @__PURE__ */ t.jsx("strong", { style: { display: "block", marginBottom: b[4] }, children: "Warnings" }),
@@ -1761,7 +1761,7 @@ function yr({
           flexWrap: "wrap",
           gap: b[8],
           padding: `${b[16]}px 0`,
-          borderTop: `1px solid ${h.neutral.border}`,
+          borderTop: `1px solid ${y.neutral.border}`,
           background: "#fff",
           boxShadow: nr.stickyBar,
           position: "sticky",
@@ -1773,7 +1773,7 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: I.button, cursor: "pointer", border: `1px solid ${h.neutral.border}`, background: "#fff", color: h.neutral.text },
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.neutral.border}`, background: "#fff", color: y.neutral.text },
               onClick: A,
               children: "Save template"
             }
@@ -1782,7 +1782,7 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: I.button, cursor: "pointer", border: `1px solid ${h.neutral.border}`, background: "#fff", color: h.neutral.text },
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.neutral.border}`, background: "#fff", color: y.neutral.text },
               onClick: $,
               children: "Send test"
             }
@@ -1791,7 +1791,7 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: I.button, cursor: "pointer", border: `1px solid ${h.neutral.border}`, background: "#fff", color: h.neutral.text },
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.neutral.border}`, background: "#fff", color: y.neutral.text },
               disabled: !J || !N,
               onClick: U,
               children: "Schedule"
@@ -1801,8 +1801,8 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: I.button, cursor: "pointer", border: `1px solid ${h.primary}`, background: h.primary, color: "#fff" },
-              disabled: !B || !N,
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.primary}`, background: y.primary, color: "#fff" },
+              disabled: !z || !N,
               onClick: se,
               children: "Send"
             }
