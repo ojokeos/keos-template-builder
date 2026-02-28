@@ -1,34 +1,20 @@
-import { computeSendWarnings } from './deliverySummary.js';
-function issue(message, severity = 'error') {
+import { computeSendWarnings } from "./deliverySummary.js";
+function issue(message, severity = "error") {
     return { message, severity };
 }
 export function validateCampaign(campaign) {
+    console.log("Validating campaign", campaign);
     const errors = [];
     if (!campaign.schema_version) {
-        errors.push(issue('Missing schema_version'));
+        errors.push(issue("Missing schema_version"));
     }
     if (!campaign.name?.trim()) {
-        errors.push(issue('Template name is required'));
+        errors.push(issue("Template name is required"));
     }
-    if (!campaign.message.title_template?.trim()) {
-        errors.push(issue('Title is required'));
+    if (!campaign.message.body?.trim()) {
+        errors.push(issue("Message body is required"));
     }
-    if (!campaign.message.body_template?.trim()) {
-        errors.push(issue('Message body is required'));
-    }
-    if (campaign.audience.type === 'topic' && !campaign.audience.topic_name?.trim()) {
-        errors.push(issue('Topic name is required when targeting by topic'));
-    }
-    if (campaign.audience.platforms.length === 0) {
-        errors.push(issue('At least one platform (iOS, Android, Web) must be selected'));
-    }
-    // Tracking campaign_name should mirror the template name; do not force a separate value
-    if (campaign.tracking && !campaign.tracking.campaign_name?.trim() && !campaign.name?.trim()) {
-        errors.push(issue('Campaign name is required for tracking'));
-    }
-    if (campaign.delivery.ttl_seconds <= 0) {
-        errors.push(issue('TTL must be greater than 0'));
-    }
+    // All other rules (audience, platforms, tracking, TTL, etc.) are left to hooks.customValidators
     return {
         valid: errors.length === 0,
         errors,
@@ -48,11 +34,11 @@ export function validateCampaignWithWarnings(campaign, estimatedReach) {
 }
 export function validateAudience(audience) {
     const errors = [];
-    if (audience.type === 'topic' && !audience.topic_name?.trim()) {
-        errors.push(issue('Topic name is required'));
+    if (audience.type === "topic" && !audience.topic_name?.trim()) {
+        errors.push(issue("Topic name is required"));
     }
     if (audience.platforms.length === 0) {
-        errors.push(issue('Select at least one platform'));
+        errors.push(issue("Select at least one platform"));
     }
     return {
         valid: errors.length === 0,
@@ -61,10 +47,10 @@ export function validateAudience(audience) {
 }
 /** Helper: only issues that block send/schedule (severity === 'error'). */
 export function getBlockingErrors(result) {
-    return result.errors.filter((e) => e.severity === 'error');
+    return result.errors.filter((e) => e.severity === "error");
 }
 /** Helper: non-blocking issues (warning, info). */
 export function getWarnings(result) {
-    return result.errors.filter((e) => e.severity !== 'error');
+    return result.errors.filter((e) => e.severity !== "error");
 }
 //# sourceMappingURL=validation.js.map

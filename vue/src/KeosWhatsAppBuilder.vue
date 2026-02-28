@@ -118,7 +118,7 @@ const previewProfile = computed(() => {
 });
 
 const waBodyDisplay = computed(() => {
-  const body = (campaign.value.message as any).whatsapp_body ?? campaign.value.message.body_template ?? '';
+  const body = (campaign.value.message as any).whatsapp_body ?? campaign.value.message.body ?? '';
   if (!previewProfile.value) return body;
   return renderTemplatePreview(body, previewProfile.value.data);
 });

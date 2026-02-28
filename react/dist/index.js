@@ -1,5 +1,5 @@
-import Ze, { useState as B, useCallback as L, useMemo as te, useEffect as It } from "react";
-var Te = { exports: {} }, Q = {};
+import Ze, { useState as M, useCallback as $, useMemo as ee, useEffect as Lt } from "react";
+var Ee = { exports: {} }, Z = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -11,19 +11,19 @@ var Te = { exports: {} }, Q = {};
  */
 var qe;
 function Mt() {
-  if (qe) return Q;
+  if (qe) return Z;
   qe = 1;
   var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.fragment"), s = Object.prototype.hasOwnProperty, u = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, c = { key: !0, ref: !0, __self: !0, __source: !0 };
-  function h(_, R, P) {
-    var E, k = {}, D = null, z = null;
-    P !== void 0 && (D = "" + P), R.key !== void 0 && (D = "" + R.key), R.ref !== void 0 && (z = R.ref);
-    for (E in R) s.call(R, E) && !c.hasOwnProperty(E) && (k[E] = R[E]);
-    if (_ && _.defaultProps) for (E in R = _.defaultProps, R) k[E] === void 0 && (k[E] = R[E]);
-    return { $$typeof: n, type: _, key: D, ref: z, props: k, _owner: u.current };
+  function x(S, _, P) {
+    var T, k = {}, D = null, B = null;
+    P !== void 0 && (D = "" + P), _.key !== void 0 && (D = "" + _.key), _.ref !== void 0 && (B = _.ref);
+    for (T in _) s.call(_, T) && !c.hasOwnProperty(T) && (k[T] = _[T]);
+    if (S && S.defaultProps) for (T in _ = S.defaultProps, _) k[T] === void 0 && (k[T] = _[T]);
+    return { $$typeof: n, type: S, key: D, ref: B, props: k, _owner: u.current };
   }
-  return Q.Fragment = l, Q.jsx = h, Q.jsxs = h, Q;
+  return Z.Fragment = l, Z.jsx = x, Z.jsxs = x, Z;
 }
-var ee = {};
+var Q = {};
 /**
  * @license React
  * react-jsx-runtime.development.js
@@ -36,11 +36,11 @@ var ee = {};
 var He;
 function Bt() {
   return He || (He = 1, process.env.NODE_ENV !== "production" && function() {
-    var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), h = Symbol.for("react.provider"), _ = Symbol.for("react.context"), R = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), E = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), z = Symbol.for("react.offscreen"), Y = Symbol.iterator, J = "@@iterator";
-    function K(e) {
+    var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), x = Symbol.for("react.provider"), S = Symbol.for("react.context"), _ = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), T = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), B = Symbol.for("react.offscreen"), U = Symbol.iterator, G = "@@iterator";
+    function J(e) {
       if (e === null || typeof e != "object")
         return null;
-      var a = Y && e[Y] || e[J];
+      var a = U && e[U] || e[G];
       return typeof a == "function" ? a : null;
     }
     var d = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
@@ -53,31 +53,31 @@ function Bt() {
     }
     function j(e, a, o) {
       {
-        var f = d.ReactDebugCurrentFrame, x = f.getStackAddendum();
-        x !== "" && (a += "%s", o = o.concat([x]));
+        var f = d.ReactDebugCurrentFrame, y = f.getStackAddendum();
+        y !== "" && (a += "%s", o = o.concat([y]));
         var v = o.map(function(g) {
           return String(g);
         });
         v.unshift("Warning: " + a), Function.prototype.apply.call(console[e], console, v);
       }
     }
-    var re = !1, ne = !1, N = !1, pe = !1, me = !1, ie;
-    ie = Symbol.for("react.module.reference");
+    var te = !1, re = !1, F = !1, pe = !1, me = !1, ne;
+    ne = Symbol.for("react.module.reference");
     function ge(e) {
-      return !!(typeof e == "string" || typeof e == "function" || e === s || e === c || me || e === u || e === P || e === E || pe || e === z || re || ne || N || typeof e == "object" && e !== null && (e.$$typeof === D || e.$$typeof === k || e.$$typeof === h || e.$$typeof === _ || e.$$typeof === R || // This needs to include all possible module reference object
+      return !!(typeof e == "string" || typeof e == "function" || e === s || e === c || me || e === u || e === P || e === T || pe || e === B || te || re || F || typeof e == "object" && e !== null && (e.$$typeof === D || e.$$typeof === k || e.$$typeof === x || e.$$typeof === S || e.$$typeof === _ || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
-      e.$$typeof === ie || e.getModuleId !== void 0));
+      e.$$typeof === ne || e.getModuleId !== void 0));
     }
     function he(e, a, o) {
       var f = e.displayName;
       if (f)
         return f;
-      var x = a.displayName || a.name || "";
-      return x !== "" ? o + "(" + x + ")" : o;
+      var y = a.displayName || a.name || "";
+      return y !== "" ? o + "(" + y + ")" : o;
     }
-    function ae(e) {
+    function ie(e) {
       return e.displayName || "Context";
     }
     function A(e) {
@@ -98,24 +98,24 @@ function Bt() {
           return "StrictMode";
         case P:
           return "Suspense";
-        case E:
+        case T:
           return "SuspenseList";
       }
       if (typeof e == "object")
         switch (e.$$typeof) {
-          case _:
+          case S:
             var a = e;
-            return ae(a) + ".Consumer";
-          case h:
+            return ie(a) + ".Consumer";
+          case x:
             var o = e;
-            return ae(o._context) + ".Provider";
-          case R:
+            return ie(o._context) + ".Provider";
+          case _:
             return he(e, e.render, "ForwardRef");
           case k:
             var f = e.displayName || null;
             return f !== null ? f : A(e.type) || "Memo";
           case D: {
-            var x = e, v = x._payload, g = x._init;
+            var y = e, v = y._payload, g = y._init;
             try {
               return A(g(v));
             } catch {
@@ -125,14 +125,14 @@ function Bt() {
         }
       return null;
     }
-    var $ = Object.assign, U = 0, se, w, X, Ee, ke, we, Ce;
+    var I = Object.assign, N = 0, ae, w, K, Te, ke, we, Ce;
     function Oe() {
     }
     Oe.__reactDisabledLog = !0;
     function dt() {
       {
-        if (U === 0) {
-          se = console.log, w = console.info, X = console.warn, Ee = console.error, ke = console.group, we = console.groupCollapsed, Ce = console.groupEnd;
+        if (N === 0) {
+          ae = console.log, w = console.info, K = console.warn, Te = console.error, ke = console.group, we = console.groupCollapsed, Ce = console.groupEnd;
           var e = {
             configurable: !0,
             enumerable: !0,
@@ -149,74 +149,74 @@ function Bt() {
             groupEnd: e
           });
         }
-        U++;
+        N++;
       }
     }
     function ut() {
       {
-        if (U--, U === 0) {
+        if (N--, N === 0) {
           var e = {
             configurable: !0,
             enumerable: !0,
             writable: !0
           };
           Object.defineProperties(console, {
-            log: $({}, e, {
-              value: se
+            log: I({}, e, {
+              value: ae
             }),
-            info: $({}, e, {
+            info: I({}, e, {
               value: w
             }),
-            warn: $({}, e, {
-              value: X
+            warn: I({}, e, {
+              value: K
             }),
-            error: $({}, e, {
-              value: Ee
+            error: I({}, e, {
+              value: Te
             }),
-            group: $({}, e, {
+            group: I({}, e, {
               value: ke
             }),
-            groupCollapsed: $({}, e, {
+            groupCollapsed: I({}, e, {
               value: we
             }),
-            groupEnd: $({}, e, {
+            groupEnd: I({}, e, {
               value: Ce
             })
           });
         }
-        U < 0 && p("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
+        N < 0 && p("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
       }
     }
     var ye = d.ReactCurrentDispatcher, xe;
-    function le(e, a, o) {
+    function se(e, a, o) {
       {
         if (xe === void 0)
           try {
             throw Error();
-          } catch (x) {
-            var f = x.stack.trim().match(/\n( *(at )?)/);
+          } catch (y) {
+            var f = y.stack.trim().match(/\n( *(at )?)/);
             xe = f && f[1] || "";
           }
         return `
 ` + xe + e;
       }
     }
-    var ve = !1, oe;
+    var ve = !1, le;
     {
       var ft = typeof WeakMap == "function" ? WeakMap : Map;
-      oe = new ft();
+      le = new ft();
     }
     function Pe(e, a) {
       if (!e || ve)
         return "";
       {
-        var o = oe.get(e);
+        var o = le.get(e);
         if (o !== void 0)
           return o;
       }
       var f;
       ve = !0;
-      var x = Error.prepareStackTrace;
+      var y = Error.prepareStackTrace;
       Error.prepareStackTrace = void 0;
       var v;
       v = ye.current, ye.current = null, dt();
@@ -256,26 +256,26 @@ function Bt() {
         if (O && f && typeof O.stack == "string") {
           for (var m = O.stack.split(`
 `), C = f.stack.split(`
-`), S = m.length - 1, T = C.length - 1; S >= 1 && T >= 0 && m[S] !== C[T]; )
-            T--;
-          for (; S >= 1 && T >= 0; S--, T--)
-            if (m[S] !== C[T]) {
-              if (S !== 1 || T !== 1)
+`), R = m.length - 1, E = C.length - 1; R >= 1 && E >= 0 && m[R] !== C[E]; )
+            E--;
+          for (; R >= 1 && E >= 0; R--, E--)
+            if (m[R] !== C[E]) {
+              if (R !== 1 || E !== 1)
                 do
-                  if (S--, T--, T < 0 || m[S] !== C[T]) {
+                  if (R--, E--, E < 0 || m[R] !== C[E]) {
                     var W = `
-` + m[S].replace(" at new ", " at ");
-                    return e.displayName && W.includes("<anonymous>") && (W = W.replace("<anonymous>", e.displayName)), typeof e == "function" && oe.set(e, W), W;
+` + m[R].replace(" at new ", " at ");
+                    return e.displayName && W.includes("<anonymous>") && (W = W.replace("<anonymous>", e.displayName)), typeof e == "function" && le.set(e, W), W;
                   }
-                while (S >= 1 && T >= 0);
+                while (R >= 1 && E >= 0);
               break;
             }
         }
       } finally {
-        ve = !1, ye.current = v, ut(), Error.prepareStackTrace = x;
+        ve = !1, ye.current = v, ut(), Error.prepareStackTrace = y;
       }
-      var H = e ? e.displayName || e.name : "", V = H ? le(H) : "";
-      return typeof e == "function" && oe.set(e, V), V;
+      var q = e ? e.displayName || e.name : "", V = q ? se(q) : "";
+      return typeof e == "function" && le.set(e, V), V;
     }
     function pt(e, a, o) {
       return Pe(e, !1);
@@ -284,46 +284,46 @@ function Bt() {
       var a = e.prototype;
       return !!(a && a.isReactComponent);
     }
-    function ce(e, a, o) {
+    function oe(e, a, o) {
       if (e == null)
         return "";
       if (typeof e == "function")
         return Pe(e, mt(e));
       if (typeof e == "string")
-        return le(e);
+        return se(e);
       switch (e) {
         case P:
-          return le("Suspense");
-        case E:
-          return le("SuspenseList");
+          return se("Suspense");
+        case T:
+          return se("SuspenseList");
       }
       if (typeof e == "object")
         switch (e.$$typeof) {
-          case R:
+          case _:
             return pt(e.render);
           case k:
-            return ce(e.type, a, o);
+            return oe(e.type, a, o);
           case D: {
-            var f = e, x = f._payload, v = f._init;
+            var f = e, y = f._payload, v = f._init;
             try {
-              return ce(v(x), a, o);
+              return oe(v(y), a, o);
             } catch {
             }
           }
         }
       return "";
     }
-    var Z = Object.prototype.hasOwnProperty, De = {}, We = d.ReactDebugCurrentFrame;
-    function de(e) {
+    var X = Object.prototype.hasOwnProperty, De = {}, We = d.ReactDebugCurrentFrame;
+    function ce(e) {
       if (e) {
-        var a = e._owner, o = ce(e.type, e._source, a ? a.type : null);
+        var a = e._owner, o = oe(e.type, e._source, a ? a.type : null);
         We.setExtraStackFrame(o);
       } else
         We.setExtraStackFrame(null);
     }
-    function gt(e, a, o, f, x) {
+    function gt(e, a, o, f, y) {
       {
-        var v = Function.call.bind(Z);
+        var v = Function.call.bind(X);
         for (var g in e)
           if (v(e, g)) {
             var m = void 0;
@@ -333,10 +333,10 @@ function Bt() {
                 throw C.name = "Invariant Violation", C;
               }
               m = e[g](a, g, f, o, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
-            } catch (S) {
-              m = S;
+            } catch (R) {
+              m = R;
             }
-            m && !(m instanceof Error) && (de(x), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", f || "React class", o, g, typeof m), de(null)), m instanceof Error && !(m.message in De) && (De[m.message] = !0, de(x), p("Failed %s type: %s", o, m.message), de(null));
+            m && !(m instanceof Error) && (ce(y), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", f || "React class", o, g, typeof m), ce(null)), m instanceof Error && !(m.message in De) && (De[m.message] = !0, ce(y), p("Failed %s type: %s", o, m.message), ce(null));
           }
       }
     }
@@ -360,18 +360,18 @@ function Bt() {
     function Ae(e) {
       return "" + e;
     }
-    function Le(e) {
+    function $e(e) {
       if (xt(e))
         return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", yt(e)), Ae(e);
     }
-    var $e = d.ReactCurrentOwner, vt = {
+    var Ie = d.ReactCurrentOwner, vt = {
       key: !0,
       ref: !0,
       __self: !0,
       __source: !0
-    }, Ie, Me;
+    }, Le, Me;
     function bt(e) {
-      if (Z.call(e, "ref")) {
+      if (X.call(e, "ref")) {
         var a = Object.getOwnPropertyDescriptor(e, "ref").get;
         if (a && a.isReactWarning)
           return !1;
@@ -379,7 +379,7 @@ function Bt() {
       return e.ref !== void 0;
     }
     function jt(e) {
-      if (Z.call(e, "key")) {
+      if (X.call(e, "key")) {
         var a = Object.getOwnPropertyDescriptor(e, "key").get;
         if (a && a.isReactWarning)
           return !1;
@@ -387,12 +387,12 @@ function Bt() {
       return e.key !== void 0;
     }
     function _t(e, a) {
-      typeof e.ref == "string" && $e.current;
+      typeof e.ref == "string" && Ie.current;
     }
     function Rt(e, a) {
       {
         var o = function() {
-          Ie || (Ie = !0, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
+          Le || (Le = !0, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
         };
         o.isReactWarning = !0, Object.defineProperty(e, "key", {
           get: o,
@@ -411,7 +411,7 @@ function Bt() {
         });
       }
     }
-    var Tt = function(e, a, o, f, x, v, g) {
+    var Et = function(e, a, o, f, y, v, g) {
       var m = {
         // This tag allows us to uniquely identify this as a React Element
         $$typeof: n,
@@ -437,31 +437,31 @@ function Bt() {
         configurable: !1,
         enumerable: !1,
         writable: !1,
-        value: x
+        value: y
       }), Object.freeze && (Object.freeze(m.props), Object.freeze(m)), m;
     };
-    function Et(e, a, o, f, x) {
+    function Tt(e, a, o, f, y) {
       {
         var v, g = {}, m = null, C = null;
-        o !== void 0 && (Le(o), m = "" + o), jt(a) && (Le(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, x));
+        o !== void 0 && ($e(o), m = "" + o), jt(a) && ($e(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, y));
         for (v in a)
-          Z.call(a, v) && !vt.hasOwnProperty(v) && (g[v] = a[v]);
+          X.call(a, v) && !vt.hasOwnProperty(v) && (g[v] = a[v]);
         if (e && e.defaultProps) {
-          var S = e.defaultProps;
-          for (v in S)
-            g[v] === void 0 && (g[v] = S[v]);
+          var R = e.defaultProps;
+          for (v in R)
+            g[v] === void 0 && (g[v] = R[v]);
         }
         if (m || C) {
-          var T = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
-          m && Rt(g, T), C && St(g, T);
+          var E = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
+          m && Rt(g, E), C && St(g, E);
         }
-        return Tt(e, m, C, x, f, $e.current, g);
+        return Et(e, m, C, y, f, Ie.current, g);
       }
     }
     var je = d.ReactCurrentOwner, Be = d.ReactDebugCurrentFrame;
-    function q(e) {
+    function Y(e) {
       if (e) {
-        var a = e._owner, o = ce(e.type, e._source, a ? a.type : null);
+        var a = e._owner, o = oe(e.type, e._source, a ? a.type : null);
         Be.setExtraStackFrame(o);
       } else
         Be.setExtraStackFrame(null);
@@ -509,10 +509,10 @@ Check the top-level render call using <` + o + ">.");
           return;
         Fe[o] = !0;
         var f = "";
-        e && e._owner && e._owner !== je.current && (f = " It was passed a child from " + A(e._owner.type) + "."), q(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', o, f), q(null);
+        e && e._owner && e._owner !== je.current && (f = " It was passed a child from " + A(e._owner.type) + "."), Y(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', o, f), Y(null);
       }
     }
-    function Ue(e, a) {
+    function Ve(e, a) {
       {
         if (typeof e != "object")
           return;
@@ -524,9 +524,9 @@ Check the top-level render call using <` + o + ">.");
         else if (Re(e))
           e._store && (e._store.validated = !0);
         else if (e) {
-          var x = K(e);
-          if (typeof x == "function" && x !== e.entries)
-            for (var v = x.call(e), g; !(g = v.next()).done; )
+          var y = J(e);
+          if (typeof y == "function" && y !== e.entries)
+            for (var v = y.call(e), g; !(g = v.next()).done; )
               Re(g.value) && Ne(g.value, a);
         }
       }
@@ -539,7 +539,7 @@ Check the top-level render call using <` + o + ">.");
         var o;
         if (typeof a == "function")
           o = a.propTypes;
-        else if (typeof a == "object" && (a.$$typeof === R || // Note: Memo only checks outer props here.
+        else if (typeof a == "object" && (a.$$typeof === _ || // Note: Memo only checks outer props here.
         // Inner props are checked in the reconciler.
         a.$$typeof === k))
           o = a.propTypes;
@@ -550,8 +550,8 @@ Check the top-level render call using <` + o + ">.");
           gt(o, e.props, "prop", f, e);
         } else if (a.PropTypes !== void 0 && !_e) {
           _e = !0;
-          var x = A(a);
-          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", x || "Unknown");
+          var y = A(a);
+          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", y || "Unknown");
         }
         typeof a.getDefaultProps == "function" && !a.getDefaultProps.isReactClassApproved && p("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
       }
@@ -561,15 +561,15 @@ Check the top-level render call using <` + o + ">.");
         for (var a = Object.keys(e.props), o = 0; o < a.length; o++) {
           var f = a[o];
           if (f !== "children" && f !== "key") {
-            q(e), p("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", f), q(null);
+            Y(e), p("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", f), Y(null);
             break;
           }
         }
-        e.ref !== null && (q(e), p("Invalid attribute `ref` supplied to `React.Fragment`."), q(null));
+        e.ref !== null && (Y(e), p("Invalid attribute `ref` supplied to `React.Fragment`."), Y(null));
       }
     }
-    var Ve = {};
-    function Ye(e, a, o, f, x, v) {
+    var Ue = {};
+    function Ye(e, a, o, f, y, v) {
       {
         var g = ge(e);
         if (!g) {
@@ -577,40 +577,40 @@ Check the top-level render call using <` + o + ">.");
           (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (m += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
           var C = kt();
           C ? m += C : m += ze();
-          var S;
-          e === null ? S = "null" : be(e) ? S = "array" : e !== void 0 && e.$$typeof === n ? (S = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : S = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", S, m);
+          var R;
+          e === null ? R = "null" : be(e) ? R = "array" : e !== void 0 && e.$$typeof === n ? (R = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : R = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", R, m);
         }
-        var T = Et(e, a, o, x, v);
-        if (T == null)
-          return T;
+        var E = Tt(e, a, o, y, v);
+        if (E == null)
+          return E;
         if (g) {
           var W = a.children;
           if (W !== void 0)
             if (f)
               if (be(W)) {
-                for (var H = 0; H < W.length; H++)
-                  Ue(W[H], e);
+                for (var q = 0; q < W.length; q++)
+                  Ve(W[q], e);
                 Object.freeze && Object.freeze(W);
               } else
                 p("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
             else
-              Ue(W, e);
+              Ve(W, e);
         }
-        if (Z.call(a, "key")) {
-          var V = A(e), O = Object.keys(a).filter(function($t) {
-            return $t !== "key";
+        if (X.call(a, "key")) {
+          var V = A(e), O = Object.keys(a).filter(function(It) {
+            return It !== "key";
           }), Se = O.length > 0 ? "{key: someKey, " + O.join(": ..., ") + ": ...}" : "{key: someKey}";
-          if (!Ve[V + Se]) {
-            var Lt = O.length > 0 ? "{" + O.join(": ..., ") + ": ...}" : "{}";
+          if (!Ue[V + Se]) {
+            var $t = O.length > 0 ? "{" + O.join(": ..., ") + ": ...}" : "{}";
             p(`A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
 React keys must be passed directly to JSX without using spread:
   let props = %s;
-  <%s key={someKey} {...props} />`, Se, V, Lt, V), Ve[V + Se] = !0;
+  <%s key={someKey} {...props} />`, Se, V, $t, V), Ue[V + Se] = !0;
           }
         }
-        return e === s ? Ot(T) : Ct(T), T;
+        return e === s ? Ot(E) : Ct(E), E;
       }
     }
     function Pt(e, a, o) {
@@ -620,11 +620,11 @@ React keys must be passed directly to JSX without using spread:
       return Ye(e, a, o, !1);
     }
     var Wt = Dt, At = Pt;
-    ee.Fragment = s, ee.jsx = Wt, ee.jsxs = At;
-  }()), ee;
+    Q.Fragment = s, Q.jsx = Wt, Q.jsxs = At;
+  }()), Q;
 }
-process.env.NODE_ENV === "production" ? Te.exports = Mt() : Te.exports = Bt();
-var t = Te.exports;
+process.env.NODE_ENV === "production" ? Ee.exports = Mt() : Ee.exports = Bt();
+var t = Ee.exports;
 const fe = {
   android: {
     title: 60,
@@ -649,8 +649,8 @@ function it() {
 }
 function at() {
   return {
-    title_template: "",
-    body_template: "",
+    title: "",
+    body: "",
     variables_used: [],
     // No actions by default; UI can add up to provider-supported count.
     // When omitted, mappers simply won't include actions.
@@ -686,11 +686,11 @@ function Nt(r) {
     ...r
   };
 }
-function Ut(r) {
+function Vt(r) {
   const n = r;
   return n.schema_version || (n.schema_version = rt), n.audience || (n.audience = it()), n.message || (n.message = at()), n.delivery || (n.delivery = st()), n.tracking || (n.tracking = lt()), tt.includes(n.delivery.priority) || (n.delivery.priority = et), nt.includes(n.audience.type) || (n.audience.type = "topic"), n.audience.type === "topic" && !n.audience.topic_name && (n.audience.topic_name = "default"), n;
 }
-const Vt = {
+const Ut = {
   3600: "1 hour",
   7200: "2 hours",
   86400: "24 hours",
@@ -710,7 +710,7 @@ function Yt(r) {
   }
 }
 function qt(r, n) {
-  const { audience: l, delivery: s } = r, u = n ?? l.estimated_reach, c = Vt[s.ttl_seconds] ?? `${s.ttl_seconds}s`;
+  const { audience: l, delivery: s } = r, u = n ?? l.estimated_reach, c = Ut[s.ttl_seconds] ?? `${s.ttl_seconds}s`;
   return {
     sendTime: Yt(s.scheduled_at),
     audienceType: l.type,
@@ -722,7 +722,7 @@ function qt(r, n) {
 }
 const Ht = 1e5;
 function Gt(r, n) {
-  var u, c, h;
+  var u, c, x;
   const l = [], s = n ?? r.audience.estimated_reach;
   return s !== void 0 && s >= Ht && l.push({
     message: `Estimated reach is very high (${s.toLocaleString()} users). Consider rate limits.`,
@@ -730,18 +730,19 @@ function Gt(r, n) {
   }), r.tracking && !((u = r.tracking.campaign_name) != null && u.trim()) && !((c = r.name) != null && c.trim()) && l.push({
     message: "No campaign name set for reporting.",
     severity: "warning"
-  }), (h = r.message.deep_link) != null && h.trim() || l.push({
+  }), (x = r.message.deep_link) != null && x.trim() || l.push({
     message: "Consider adding a deep link for better engagement.",
     severity: "info"
   }), l;
 }
-function I(r, n = "error") {
+function de(r, n = "error") {
   return { message: r, severity: n };
 }
 function ot(r) {
-  var l, s, u, c, h, _;
+  var l, s;
+  console.log("Validating campaign", r);
   const n = [];
-  return r.schema_version || n.push(I("Missing schema_version")), (l = r.name) != null && l.trim() || n.push(I("Template name is required")), (s = r.message.title_template) != null && s.trim() || n.push(I("Title is required")), (u = r.message.body_template) != null && u.trim() || n.push(I("Message body is required")), r.audience.type === "topic" && !((c = r.audience.topic_name) != null && c.trim()) && n.push(I("Topic name is required when targeting by topic")), r.audience.platforms.length === 0 && n.push(I("At least one platform (iOS, Android, Web) must be selected")), r.tracking && !((h = r.tracking.campaign_name) != null && h.trim()) && !((_ = r.name) != null && _.trim()) && n.push(I("Campaign name is required for tracking")), r.delivery.ttl_seconds <= 0 && n.push(I("TTL must be greater than 0")), {
+  return r.schema_version || n.push(de("Missing schema_version")), (l = r.name) != null && l.trim() || n.push(de("Template name is required")), (s = r.message.body) != null && s.trim() || n.push(de("Message body is required")), {
     valid: n.length === 0,
     errors: n
   };
@@ -752,7 +753,7 @@ function Jt(r, n) {
     valid: l.valid,
     errors: [
       ...l.errors,
-      ...s.map((u) => I(u.message, u.severity))
+      ...s.map((u) => de(u.message, u.severity))
     ]
   };
 }
@@ -762,12 +763,12 @@ function Kt(r) {
 function Xt(r) {
   return r.errors.filter((n) => n.severity !== "error");
 }
-function F(r, n) {
+function z(r, n) {
   return r.length <= n ? { text: r, truncated: !1 } : { text: r.slice(0, Math.max(0, n - 3)) + "...", truncated: !0 };
 }
 const ue = fe.android;
 function Zt(r) {
-  const { title: n, body: l } = r, s = F(n || "", ue.title), u = F(l || "", ue.body);
+  const { title: n, body: l } = r, s = z(n || "", ue.title), u = z(l || "", ue.body);
   return {
     title: s.text,
     body: u.text,
@@ -778,7 +779,7 @@ function Zt(r) {
   };
 }
 function Qt(r) {
-  const { title: n, body: l } = r, s = F(n || "", ue.title), u = F(l || "", ue.body);
+  const { title: n, body: l } = r, s = z(n || "", ue.title), u = z(l || "", ue.body);
   return {
     title: s.text,
     body: u.text,
@@ -794,7 +795,7 @@ function er(r, n = {}) {
 }
 const Ge = fe.ios;
 function ct(r) {
-  const { title: n, body: l } = r, s = F(n || "", Ge.title), u = F(l || "", Ge.body);
+  const { title: n, body: l } = r, s = z(n || "", Ge.title), u = z(l || "", Ge.body);
   return {
     title: s.text,
     body: u.text,
@@ -813,7 +814,7 @@ function rr(r, n = {}) {
 }
 const Je = fe.web;
 function Ke(r) {
-  const { title: n, body: l } = r, s = F(n || "", Je.title), u = F(l || "", Je.body);
+  const { title: n, body: l } = r, s = z(n || "", Je.title), u = z(l || "", Je.body);
   return {
     title: s.text,
     body: u.text,
@@ -828,11 +829,11 @@ const b = {
   12: 12,
   16: 16,
   24: 24
-}, M = {
+}, L = {
   input: 6,
   card: 12,
   button: 6
-}, y = {
+}, h = {
   primary: "#0f172a",
   danger: "#dc2626",
   dangerBg: "#fef2f2",
@@ -854,33 +855,33 @@ const b = {
   stickyBar: "0 -1px 4px rgba(0,0,0,0.08)"
 };
 function ir(r = {}) {
-  const [n, l] = B(
-    () => Ut(r.initial ?? Nt())
-  ), s = r.hooks ?? {}, [u, c] = B(!1), h = L(
+  const [n, l] = M(
+    () => Vt(r.initial ?? Nt())
+  ), s = r.hooks ?? {}, [u, c] = M(!1), x = $(
     (d) => {
       var p;
       l((j) => ({ ...j, ...d })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), _ = L(
+  ), S = $(
     (d) => {
       var p;
       l((j) => ({ ...j, audience: { ...j.audience, ...d } })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), R = L(
+  ), _ = $(
     (d) => {
       var p;
       l((j) => ({ ...j, message: { ...j.message, ...d } })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), P = L(
+  ), P = $(
     (d) => {
       var p;
       l((j) => ({ ...j, delivery: { ...j.delivery, ...d } })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), E = L(
+  ), T = $(
     (d) => {
       var p;
       l((j) => ({
@@ -889,7 +890,7 @@ function ir(r = {}) {
       })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), k = te(() => ot(n), [n]), D = L(
+  ), k = ee(() => ot(n), [n]), D = $(
     (d) => {
       const p = Jt(n, d);
       return {
@@ -900,18 +901,18 @@ function ir(r = {}) {
       };
     },
     [n]
-  ), z = te(
+  ), B = ee(
     () => ({
-      title: n.message.title_template,
-      body: n.message.body_template,
+      title: n.message.title,
+      body: n.message.body,
       imageUrl: n.message.image_url
     }),
     [n.message]
-  ), Y = L(
+  ), U = $(
     (d, p) => {
       const j = {
-        title: n.message.title_template,
-        body: n.message.body_template,
+        title: n.message.title,
+        body: n.message.body,
         imageUrl: n.message.image_url
       };
       switch (d) {
@@ -926,26 +927,26 @@ function ir(r = {}) {
       }
     },
     [n.message]
-  ), J = fe, K = L(async () => s.customValidators ? s.customValidators(n) : [], [s, n]);
+  ), G = fe, J = $(async () => s.customValidators ? s.customValidators(n) : [], [s, n]);
   return {
     campaign: n,
     setCampaign: l,
     dirty: u,
     validation: k,
     getValidationWithWarnings: D,
-    update: h,
-    updateAudience: _,
-    updateMessage: R,
+    update: x,
+    updateAudience: S,
+    updateMessage: _,
     updateDelivery: P,
-    updateTracking: E,
-    getPreview: Y,
-    previewInput: z,
-    characterLimits: J,
-    runCustomValidators: K,
+    updateTracking: T,
+    getPreview: U,
+    previewInput: B,
+    characterLimits: G,
+    runCustomValidators: J,
     hooks: s
   };
 }
-function G({
+function H({
   icon: r,
   title: n,
   subtitle: l,
@@ -956,8 +957,8 @@ function G({
     {
       style: {
         padding: `${b[24]}px`,
-        borderRadius: `${M.card}px`,
-        background: y.neutral.bgCard
+        borderRadius: `${L.card}px`,
+        background: h.neutral.bgCard
       },
       children: [
         /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", alignItems: "flex-start", gap: b[8] }, children: [
@@ -978,7 +979,7 @@ function G({
           ),
           /* @__PURE__ */ t.jsxs("div", { children: [
             /* @__PURE__ */ t.jsx("h3", { style: { fontSize: Xe.sectionTitle.fontSize, fontWeight: Xe.sectionTitle.fontWeight, margin: "0 0 4px 0" }, children: n }),
-            l && /* @__PURE__ */ t.jsx("p", { style: { fontSize: 14, color: y.neutral.textMuted, margin: 0, lineHeight: 1.3 }, children: l })
+            l && /* @__PURE__ */ t.jsx("p", { style: { fontSize: 14, color: h.neutral.textMuted, margin: 0, lineHeight: 1.3 }, children: l })
           ] })
         ] }),
         /* @__PURE__ */ t.jsx("div", { style: { marginTop: b[16] }, children: s })
@@ -998,7 +999,7 @@ function ar({
     {
       style: {
         padding: `${b[16]}px 0`,
-        borderBottom: `1px solid ${y.neutral.border}`,
+        borderBottom: `1px solid ${h.neutral.border}`,
         marginBottom: `${b[16]}px`
       },
       children: [
@@ -1026,16 +1027,16 @@ function ar({
             {
               style: {
                 padding: `${b[4]}px ${b[8]}px`,
-                borderRadius: `${M.input}px`,
-                background: y.neutral.bg,
+                borderRadius: `${L.input}px`,
+                background: h.neutral.bg,
                 fontSize: "0.8125rem",
-                color: y.neutral.textMuted
+                color: h.neutral.textMuted
               },
               children: n
             }
           )
         ] }),
-        (l || s) && /* @__PURE__ */ t.jsx("div", { style: { fontSize: "0.8125rem", color: y.neutral.textMuted, marginTop: `${b[4]}px` }, children: s ? "Saving…" : "Unsaved changes" })
+        (l || s) && /* @__PURE__ */ t.jsx("div", { style: { fontSize: "0.8125rem", color: h.neutral.textMuted, marginTop: `${b[4]}px` }, children: s ? "Saving…" : "Unsaved changes" })
       ]
     }
   );
@@ -1046,36 +1047,36 @@ function sr({ summary: r }) {
     {
       style: {
         padding: `${b[16]}px`,
-        borderRadius: `${M.card}px`,
-        background: y.neutral.bgCard,
-        border: `1px solid ${y.neutral.border}`,
+        borderRadius: `${L.card}px`,
+        background: h.neutral.bgCard,
+        border: `1px solid ${h.neutral.border}`,
         marginTop: `${b[16]}px`
       },
       children: [
         /* @__PURE__ */ t.jsx("h4", { style: { fontSize: "0.875rem", fontWeight: 600, margin: `0 0 ${b[8]}px 0` }, children: "Delivery summary" }),
-        /* @__PURE__ */ t.jsxs("dl", { style: { margin: 0, fontSize: "0.8125rem", color: y.neutral.textMeta }, children: [
+        /* @__PURE__ */ t.jsxs("dl", { style: { margin: 0, fontSize: "0.8125rem", color: h.neutral.textMeta }, children: [
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Send time" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Send time" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.sendTime })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Audience" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Audience" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.audienceType })
           ] }),
           r.estimatedReach !== void 0 && /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Estimated reach" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Estimated reach" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.estimatedReach.toLocaleString() })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Platforms" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Platforms" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.platforms.join(", ") })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "Priority" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "Priority" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.priority })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0" }, children: [
-            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: y.neutral.textMuted }, children: "TTL" }),
+            /* @__PURE__ */ t.jsx("dt", { style: { margin: 0, color: h.neutral.textMuted }, children: "TTL" }),
             /* @__PURE__ */ t.jsx("dd", { style: { margin: 0 }, children: r.ttlLabel })
           ] })
         ] })
@@ -1191,7 +1192,7 @@ user_456`,
 `)) ?? "",
           onChange: (c) => s({
             user_list: c.target.value.split(`
-`).map((h) => h.trim()).filter(Boolean)
+`).map((x) => x.trim()).filter(Boolean)
           })
         }
       )
@@ -1205,7 +1206,7 @@ user_456`,
             type: "checkbox",
             checked: r.platforms.includes(c),
             onChange: () => s({
-              platforms: r.platforms.includes(c) ? r.platforms.filter((h) => h !== c) : [...r.platforms, c]
+              platforms: r.platforms.includes(c) ? r.platforms.filter((x) => x !== c) : [...r.platforms, c]
             })
           }
         ),
@@ -1255,8 +1256,8 @@ function or({
           type: "text",
           style: i.input,
           placeholder: "Notification title",
-          value: r.title_template,
-          onChange: (h) => c({ title_template: h.target.value })
+          value: r.title,
+          onChange: (x) => c({ title: x.target.value })
         }
       )
     ] }),
@@ -1275,8 +1276,8 @@ function or({
           style: i.textarea,
           rows: 3,
           placeholder: "Notification body",
-          value: r.body_template,
-          onChange: (h) => c({ body_template: h.target.value })
+          value: r.body,
+          onChange: (x) => c({ body: x.target.value })
         }
       )
     ] }),
@@ -1289,7 +1290,7 @@ function or({
           style: i.input,
           placeholder: "https://...",
           value: r.image_url ?? "",
-          onChange: (h) => c({ image_url: h.target.value || void 0 })
+          onChange: (x) => c({ image_url: x.target.value || void 0 })
         }
       )
     ] }),
@@ -1302,7 +1303,7 @@ function or({
           style: i.input,
           placeholder: "https:// or app://...",
           value: r.deep_link ?? "",
-          onChange: (h) => c({ deep_link: h.target.value || void 0 })
+          onChange: (x) => c({ deep_link: x.target.value || void 0 })
         }
       )
     ] })
@@ -1313,7 +1314,7 @@ function dr({
   variableOptions: r,
   onInsertVariable: n
 }) {
-  const l = r ?? cr, [s, u] = B(l[0] ?? "first_name");
+  const l = r ?? cr, [s, u] = M(l[0] ?? "first_name");
   return /* @__PURE__ */ t.jsxs("section", { style: i.section, children: [
     /* @__PURE__ */ t.jsx("h3", { style: i.sectionTitle, children: "Personalization (optional)" }),
     /* @__PURE__ */ t.jsx("p", { style: i.sectionDesc, children: "Use variables like {{ first_name }}" }),
@@ -1468,7 +1469,7 @@ function pr({
   delivery: r,
   onUpdate: n
 }) {
-  const [l, s] = B(!1);
+  const [l, s] = M(!1);
   return /* @__PURE__ */ t.jsxs("div", { style: i.accordion, children: [
     /* @__PURE__ */ t.jsx("div", { style: i.accordionSummary, onClick: () => s(!l), role: "button", tabIndex: 0, onKeyDown: (u) => u.key === "Enter" && s(!l), children: "Advanced push behavior" }),
     l && /* @__PURE__ */ t.jsxs("div", { style: i.accordionBody, children: [
@@ -1566,28 +1567,28 @@ function gr({
   selectedPlatform: n,
   onPlatformChange: l
 }) {
-  const [s, u] = B(!1), c = te(
+  const [s, u] = M(!1), c = ee(
     () => r(n, {
       expanded: n === "android" ? s : void 0
     }),
     [r, n, s]
-  ), h = ["android", "ios", "web"];
+  ), x = ["android", "ios", "web"];
   return /* @__PURE__ */ t.jsxs("div", { style: i.preview, children: [
-    /* @__PURE__ */ t.jsx("div", { style: i.previewTabs, children: h.map((_) => /* @__PURE__ */ t.jsx(
+    /* @__PURE__ */ t.jsx("div", { style: i.previewTabs, children: x.map((S) => /* @__PURE__ */ t.jsx(
       "button",
       {
         type: "button",
         style: {
           ...i.previewTab,
-          ...n === _ ? i.previewTabActive : {}
+          ...n === S ? i.previewTabActive : {}
         },
-        onClick: () => l(_),
-        children: _
+        onClick: () => l(S),
+        children: S
       },
-      _
+      S
     )) }),
     n === "android" && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: "0.5rem" }, children: /* @__PURE__ */ t.jsxs("label", { style: i.checkbox, children: [
-      /* @__PURE__ */ t.jsx("input", { type: "checkbox", checked: s, onChange: (_) => u(_.target.checked) }),
+      /* @__PURE__ */ t.jsx("input", { type: "checkbox", checked: s, onChange: (S) => u(S.target.checked) }),
       /* @__PURE__ */ t.jsx("span", { children: "Expanded" })
     ] }) }),
     /* @__PURE__ */ t.jsx("div", { style: i.previewDevice, children: /* @__PURE__ */ t.jsxs("div", { style: { fontSize: "0.875rem" }, children: [
@@ -1604,15 +1605,15 @@ function yr({
   variableOptions: s,
   onChange: u,
   onSave: c,
-  onSendTest: h,
-  onSchedule: _,
-  onSend: R
+  onSendTest: x,
+  onSchedule: S,
+  onSend: _
 }) {
-  const [P, E] = B("android"), [k, D] = B(), [z, Y] = B(!0), [J, K] = B(!0), d = ir({
+  const [P, T] = M("android"), [k, D] = M(), [B, U] = M(!0), [G, J] = M(!0), d = ir({
     initial: r,
     hooks: n,
     onDirty: () => u == null ? void 0 : u(d.campaign)
-  }), p = L(async () => {
+  }), p = $(async () => {
     if (n != null && n.estimateReach)
       try {
         const w = await n.estimateReach(d.campaign.audience);
@@ -1620,67 +1621,67 @@ function yr({
       } catch {
         D(void 0);
       }
-    n != null && n.canSend && Y(await Promise.resolve(n.canSend())), n != null && n.canSchedule && K(await Promise.resolve(n.canSchedule()));
+    n != null && n.canSend && U(await Promise.resolve(n.canSend())), n != null && n.canSchedule && J(await Promise.resolve(n.canSchedule()));
   }, [n, d.campaign.audience]);
-  It(() => {
+  Lt(() => {
     p();
   }, [p]);
-  const j = te(
+  const j = ee(
     () => d.getValidationWithWarnings(k),
     [d.campaign, k, d.getValidationWithWarnings]
-  ), re = j.blockingErrors, ne = j.warnings, N = j.valid, pe = te(
+  ), te = j.blockingErrors, re = j.warnings, F = j.valid, pe = ee(
     () => qt(d.campaign, k),
     [d.campaign, k]
-  ), me = d.characterLimits[P].title, ie = d.characterLimits[P].body, ge = d.campaign.message.title_template.length, he = d.campaign.message.body_template.length, ae = L(
+  ), me = d.characterLimits[P].title, ne = d.characterLimits[P].body, ge = d.campaign.message.title.length, he = d.campaign.message.body.length, ie = $(
     (w) => {
       d.update({ name: w });
     },
     [d]
   ), A = () => {
-    N && (c == null || c(d.campaign));
-  }, $ = () => h == null ? void 0 : h(d.campaign), U = () => {
-    N && (_ == null || _(d.campaign));
-  }, se = () => {
-    N && (R == null || R(d.campaign));
+    F && (c == null || c(d.campaign));
+  }, I = () => x == null ? void 0 : x(d.campaign), N = () => {
+    F && (S == null || S(d.campaign));
+  }, ae = () => {
+    F && (_ == null || _(d.campaign));
   };
-  return /* @__PURE__ */ t.jsxs("div", { style: { fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 14, color: y.neutral.text, maxWidth: "100%" }, children: [
+  return /* @__PURE__ */ t.jsxs("div", { style: { fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 14, color: h.neutral.text, maxWidth: "100%" }, children: [
     /* @__PURE__ */ t.jsx(
       ar,
       {
         campaignName: d.campaign.name,
         status: d.campaign.status,
         dirty: d.dirty,
-        onCampaignNameChange: ae
+        onCampaignNameChange: ie
       }
     ),
-    re.length > 0 && /* @__PURE__ */ t.jsx(
+    te.length > 0 && /* @__PURE__ */ t.jsx(
       "div",
       {
         style: {
-          background: y.dangerBg,
-          border: `1px solid ${y.dangerBorder}`,
-          borderRadius: M.input,
+          background: h.dangerBg,
+          border: `1px solid ${h.dangerBorder}`,
+          borderRadius: L.input,
           padding: `${b[12]}px ${b[16]}px`,
           marginBottom: b[16]
         },
-        children: /* @__PURE__ */ t.jsx("ul", { style: { margin: 0, paddingLeft: "1.25rem", color: y.danger }, children: re.map((w) => /* @__PURE__ */ t.jsx("li", { children: w.message }, w.message)) })
+        children: /* @__PURE__ */ t.jsx("ul", { style: { margin: 0, paddingLeft: "1.25rem", color: h.danger }, children: te.map((w) => /* @__PURE__ */ t.jsx("li", { children: w.message }, w.message)) })
       }
     ),
-    ne.length > 0 && /* @__PURE__ */ t.jsxs(
+    re.length > 0 && /* @__PURE__ */ t.jsxs(
       "div",
       {
         style: {
-          background: y.neutral.bg,
-          border: `1px solid ${y.neutral.border}`,
-          borderRadius: M.input,
+          background: h.neutral.bg,
+          border: `1px solid ${h.neutral.border}`,
+          borderRadius: L.input,
           padding: `${b[12]}px ${b[16]}px`,
           marginBottom: b[16],
           fontSize: "0.875rem",
-          color: y.neutral.textMuted
+          color: h.neutral.textMuted
         },
         children: [
           /* @__PURE__ */ t.jsx("strong", { style: { display: "block", marginBottom: b[4] }, children: "Warnings" }),
-          /* @__PURE__ */ t.jsx("ul", { style: { margin: 0, paddingLeft: "1.25rem" }, children: ne.map((w) => /* @__PURE__ */ t.jsx("li", { children: w.message }, w.message)) })
+          /* @__PURE__ */ t.jsx("ul", { style: { margin: 0, paddingLeft: "1.25rem" }, children: re.map((w) => /* @__PURE__ */ t.jsx("li", { children: w.message }, w.message)) })
         ]
       }
     ),
@@ -1697,7 +1698,7 @@ function yr({
         className: "kb-two-pane",
         children: [
           /* @__PURE__ */ t.jsxs("div", { style: { minWidth: 0, maxWidth: 640, overflowY: "auto" }, className: "kb-pane-left", children: [
-            !l.includes("audience") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(G, { icon: "📣", title: "Audience", subtitle: "Choose who receives this notification", children: /* @__PURE__ */ t.jsx(
+            !l.includes("audience") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(H, { icon: "📣", title: "Audience", subtitle: "Choose who receives this notification", children: /* @__PURE__ */ t.jsx(
               lr,
               {
                 audience: d.campaign.audience,
@@ -1706,32 +1707,32 @@ function yr({
                 onUpdate: d.updateAudience
               }
             ) }) }),
-            !l.includes("message") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(G, { icon: "✉️", title: "Message content", subtitle: "What users see", children: /* @__PURE__ */ t.jsx(
+            !l.includes("message") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(H, { icon: "✉️", title: "Message content", subtitle: "What users see", children: /* @__PURE__ */ t.jsx(
               or,
               {
                 message: d.campaign.message,
                 titleCount: ge,
                 bodyCount: he,
                 titleLimit: me,
-                bodyLimit: ie,
+                bodyLimit: ne,
                 selectedPlatform: P,
                 onUpdate: d.updateMessage
               }
             ) }) }),
-            !l.includes("personalization") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(G, { icon: "🔤", title: "Personalization", subtitle: "Optional variables", children: /* @__PURE__ */ t.jsx(
+            !l.includes("personalization") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(H, { icon: "🔤", title: "Personalization", subtitle: "Optional variables", children: /* @__PURE__ */ t.jsx(
               dr,
               {
                 message: d.campaign.message,
                 variableOptions: s,
                 onInsertVariable: (w) => {
-                  const X = ` {{ ${w.variable} }}`;
-                  w.field === "title" ? d.updateMessage({ title_template: d.campaign.message.title_template + X }) : d.updateMessage({ body_template: d.campaign.message.body_template + X });
+                  const K = ` {{ ${w.variable} }}`;
+                  w.field === "title" ? d.updateMessage({ title: d.campaign.message.title + K }) : d.updateMessage({ body: d.campaign.message.body + K });
                 }
               }
             ) }) }),
-            !l.includes("delivery") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(G, { icon: "⏱", title: "Delivery controls", subtitle: "When and how it sends", children: /* @__PURE__ */ t.jsx(fr, { delivery: d.campaign.delivery, onUpdate: d.updateDelivery }) }) }),
-            !l.includes("advanced") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(G, { icon: "⚙️", title: "Advanced", subtitle: "Collapse key, silent push", children: /* @__PURE__ */ t.jsx(pr, { delivery: d.campaign.delivery, onUpdate: d.updateDelivery }) }) }),
-            !l.includes("tracking") && d.campaign.tracking && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(G, { icon: "📊", title: "Tracking & analytics", subtitle: "Campaign name and tags", children: /* @__PURE__ */ t.jsx(mr, { tracking: d.campaign.tracking, onUpdate: d.updateTracking }) }) })
+            !l.includes("delivery") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(H, { icon: "⏱", title: "Delivery controls", subtitle: "When and how it sends", children: /* @__PURE__ */ t.jsx(fr, { delivery: d.campaign.delivery, onUpdate: d.updateDelivery }) }) }),
+            !l.includes("advanced") && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(H, { icon: "⚙️", title: "Advanced", subtitle: "Collapse key, silent push", children: /* @__PURE__ */ t.jsx(pr, { delivery: d.campaign.delivery, onUpdate: d.updateDelivery }) }) }),
+            !l.includes("tracking") && d.campaign.tracking && /* @__PURE__ */ t.jsx("div", { style: { marginBottom: b[16] }, children: /* @__PURE__ */ t.jsx(H, { icon: "📊", title: "Tracking & analytics", subtitle: "Campaign name and tags", children: /* @__PURE__ */ t.jsx(mr, { tracking: d.campaign.tracking, onUpdate: d.updateTracking }) }) })
           ] }),
           /* @__PURE__ */ t.jsxs("div", { style: { position: "sticky", top: 0, overflowY: "auto", maxHeight: "calc(100vh - 180px)" }, className: "kb-pane-right", children: [
             /* @__PURE__ */ t.jsxs("details", { open: !0, style: { marginBottom: 16 }, children: [
@@ -1743,7 +1744,7 @@ function yr({
                   {
                     getPreview: d.getPreview,
                     selectedPlatform: P,
-                    onPlatformChange: E
+                    onPlatformChange: T
                   }
                 )
               ] })
@@ -1761,7 +1762,7 @@ function yr({
           flexWrap: "wrap",
           gap: b[8],
           padding: `${b[16]}px 0`,
-          borderTop: `1px solid ${y.neutral.border}`,
+          borderTop: `1px solid ${h.neutral.border}`,
           background: "#fff",
           boxShadow: nr.stickyBar,
           position: "sticky",
@@ -1773,7 +1774,7 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.neutral.border}`, background: "#fff", color: y.neutral.text },
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: L.button, cursor: "pointer", border: `1px solid ${h.neutral.border}`, background: "#fff", color: h.neutral.text },
               onClick: A,
               children: "Save template"
             }
@@ -1782,8 +1783,8 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.neutral.border}`, background: "#fff", color: y.neutral.text },
-              onClick: $,
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: L.button, cursor: "pointer", border: `1px solid ${h.neutral.border}`, background: "#fff", color: h.neutral.text },
+              onClick: I,
               children: "Send test"
             }
           ),
@@ -1791,9 +1792,9 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.neutral.border}`, background: "#fff", color: y.neutral.text },
-              disabled: !J || !N,
-              onClick: U,
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: L.button, cursor: "pointer", border: `1px solid ${h.neutral.border}`, background: "#fff", color: h.neutral.text },
+              disabled: !G || !F,
+              onClick: N,
               children: "Schedule"
             }
           ),
@@ -1801,9 +1802,9 @@ function yr({
             "button",
             {
               type: "button",
-              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: M.button, cursor: "pointer", border: `1px solid ${y.primary}`, background: y.primary, color: "#fff" },
-              disabled: !z || !N,
-              onClick: se,
+              style: { padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, borderRadius: L.button, cursor: "pointer", border: `1px solid ${h.primary}`, background: h.primary, color: "#fff" },
+              disabled: !B || !F,
+              onClick: ae,
               children: "Send"
             }
           )

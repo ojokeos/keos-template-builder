@@ -95,8 +95,8 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
 
   const previewInput = useMemo(
     () => ({
-      title: raw.message.title_template,
-      body: raw.message.body_template,
+      title: raw.message.title,
+      body: raw.message.body,
       imageUrl: raw.message.image_url,
     }),
     [raw.message]
@@ -105,8 +105,8 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
   const getPreview = useCallback(
     (platform: Platform, opts?: { expanded?: boolean }): PreviewResult => {
       const input = {
-        title: raw.message.title_template,
-        body: raw.message.body_template,
+        title: raw.message.title,
+        body: raw.message.body,
         imageUrl: raw.message.image_url,
       };
       switch (platform) {

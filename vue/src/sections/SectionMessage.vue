@@ -40,7 +40,7 @@ defineEmits<{
       </button>
     </div>
     <p class="kb-section__desc">
-      Title and body are required. Character limits depend on the selected platform ({{ selectedPlatform }}).
+      Message body is required. Title is optional. Character limits depend on the selected platform ({{ selectedPlatform }}).
     </p>
 
     <div class="kb-field">
@@ -55,10 +55,10 @@ defineEmits<{
           type="text"
           class="kb-input"
           placeholder="Notification title"
-          :value="message.title_template"
+          :value="message.title"
           :aria-invalid="!!titleError"
           :aria-describedby="titleError ? 'title-error' : undefined"
-          @input="(e) => $emit('update', { title_template: (e.target as HTMLInputElement).value })"
+          @input="(e) => $emit('update', { title: (e.target as HTMLInputElement).value })"
         />
         <div class="kb-char-rail" role="presentation" :style="{ '--pct': Math.min(100, (titleCount / titleLimit) * 100) + '%' }">
           <div class="kb-char-rail__fill" />
@@ -79,10 +79,10 @@ defineEmits<{
           class="kb-textarea"
           rows="3"
           placeholder="Notification body"
-          :value="message.body_template"
+          :value="message.body"
           :aria-invalid="!!bodyError"
           :aria-describedby="bodyError ? 'body-error' : undefined"
-          @input="(e) => $emit('update', { body_template: (e.target as HTMLTextAreaElement).value })"
+          @input="(e) => $emit('update', { body: (e.target as HTMLTextAreaElement).value })"
         />
         <div class="kb-char-rail" role="presentation" :style="{ '--pct': Math.min(100, (bodyCount / bodyLimit) * 100) + '%' }">
           <div class="kb-char-rail__fill" />

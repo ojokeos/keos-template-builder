@@ -13,8 +13,8 @@ export const PUSH_PRESETS: PresetOption[] = [
     label: 'Simple alert',
     campaign: {
       message: {
-        title_template: 'Heads up',
-        body_template: 'Your update is ready.',
+        title: 'Heads up',
+        body: 'Your update is ready.',
         variables_used: [],
       },
     },
@@ -24,8 +24,8 @@ export const PUSH_PRESETS: PresetOption[] = [
     label: 'Promotion with image',
     campaign: {
       message: {
-        title_template: 'Special offer inside',
-        body_template: 'Tap to see your exclusive deal.',
+        title: 'Special offer inside',
+        body: 'Tap to see your exclusive deal.',
         image_url: 'https://example.com/promo.png',
         variables_used: [],
       },
@@ -36,8 +36,8 @@ export const PUSH_PRESETS: PresetOption[] = [
     label: 'Transactional',
     campaign: {
       message: {
-        title_template: 'Order {{ order_id }} update',
-        body_template: 'Hi {{ first_name }}, your order has shipped.',
+        title: 'Order {{ order_id }} update',
+        body: 'Hi {{ first_name }}, your order has shipped.',
         variables_used: ['first_name', 'order_id'],
       },
     },
@@ -50,8 +50,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'OTP',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: [],
         whatsapp_template_type: 'text',
         whatsapp_template_name: 'otp_verification',
@@ -64,8 +64,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Order status',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name', 'order_id'],
         whatsapp_template_type: 'text',
         whatsapp_template_name: 'order_update',
@@ -78,8 +78,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Promotion',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'text',
         whatsapp_template_name: 'promo_alert',
@@ -92,8 +92,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Support reply',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'text',
         whatsapp_template_name: 'support_reply',
@@ -106,8 +106,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Image promotion',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'image',
         whatsapp_template_name: 'image_promo',
@@ -122,8 +122,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Video launch',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'video',
         whatsapp_template_name: 'video_launch',
@@ -138,8 +138,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Document receipt',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name', 'order_id'],
         whatsapp_template_type: 'document',
         whatsapp_template_name: 'order_receipt',
@@ -154,8 +154,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Store location',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'location',
         whatsapp_template_name: 'store_location',
@@ -174,8 +174,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Coupon offer',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'coupon',
         whatsapp_template_name: 'coupon_offer',
@@ -189,8 +189,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Limited time offer',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'lto',
         whatsapp_template_name: 'limited_time_offer',
@@ -204,8 +204,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Multi product message',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         whatsapp_template_type: 'mpm',
         whatsapp_template_name: 'multi_product',
@@ -230,8 +230,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Catalog showcase',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: [],
         whatsapp_template_type: 'catalog',
         whatsapp_template_name: 'catalog_showcase',
@@ -256,8 +256,8 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     label: 'Authentication code',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: [],
         whatsapp_template_type: 'auth',
         whatsapp_template_name: 'auth_code',
@@ -274,8 +274,8 @@ export const SMS_PRESETS: PresetOption[] = [
     label: 'Short alert',
     campaign: {
       message: {
-        title_template: '',
-        body_template: 'Your appointment is confirmed for tomorrow at 10am.',
+        title: '',
+        body: 'Your appointment is confirmed for tomorrow at 10am.',
         variables_used: [],
         sms_sender_id: 'YourBrand',
         sms_body: 'Your appointment is confirmed for tomorrow at 10am.',
@@ -287,8 +287,8 @@ export const SMS_PRESETS: PresetOption[] = [
     label: 'OTP',
     campaign: {
       message: {
-        title_template: '',
-        body_template: 'Your code: {{ otp_code }}',
+        title: '',
+        body: 'Your code: {{ otp_code }}',
         variables_used: ['otp_code'],
         sms_sender_id: 'YourBrand',
         sms_body: 'Your code: {{ otp_code }}',
@@ -300,8 +300,8 @@ export const SMS_PRESETS: PresetOption[] = [
     label: 'Shipping update',
     campaign: {
       message: {
-        title_template: '',
-        body_template: 'Hi {{ first_name }}, your order {{ order_id }} has shipped.',
+        title: '',
+        body: 'Hi {{ first_name }}, your order {{ order_id }} has shipped.',
         variables_used: ['first_name', 'order_id'],
         sms_sender_id: 'YourBrand',
         sms_body: 'Hi {{ first_name }}, your order {{ order_id }} has shipped.',
@@ -313,8 +313,8 @@ export const SMS_PRESETS: PresetOption[] = [
     label: 'Promo text',
     campaign: {
       message: {
-        title_template: '',
-        body_template: 'Flash sale today! Use SAVE20 at checkout. {{ link }}',
+        title: '',
+        body: 'Flash sale today! Use SAVE20 at checkout. {{ link }}',
         variables_used: ['link'],
         sms_sender_id: 'YourBrand',
         sms_body: 'Flash sale today! Use SAVE20 at checkout. {{ link }}',
@@ -329,8 +329,8 @@ export const EMAIL_PRESETS: PresetOption[] = [
     label: 'Announcement',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: [],
         email_subject: 'Important update',
         email_preview_text: 'We have news for you.',
@@ -348,8 +348,8 @@ export const EMAIL_PRESETS: PresetOption[] = [
     label: 'Newsletter',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         email_subject: 'Your weekly digest',
         email_preview_text: 'Top stories and updates',
@@ -368,8 +368,8 @@ export const EMAIL_PRESETS: PresetOption[] = [
     label: 'Offer',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name'],
         email_subject: 'Special offer for you, {{ first_name }}',
         email_preview_text: 'Limited time only',
@@ -388,8 +388,8 @@ export const EMAIL_PRESETS: PresetOption[] = [
     label: 'Receipt',
     campaign: {
       message: {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: ['first_name', 'order_id'],
         email_subject: 'Receipt for order {{ order_id }}',
         email_preview_text: 'Thank you for your order',

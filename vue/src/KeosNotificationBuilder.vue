@@ -177,13 +177,11 @@ const isValid = computed(() => validationFull.value.valid);
 
 const titleLimit = computed(() => characterLimits[selectedPlatform.value].title);
 const bodyLimit = computed(() => characterLimits[selectedPlatform.value].body);
-const titleCount = computed(() => campaign.value.message.title_template.length);
-const bodyCount = computed(() => campaign.value.message.body_template.length);
+const titleCount = computed(() => campaign.value.message.title.length);
+const bodyCount = computed(() => campaign.value.message.body.length);
 
 const titleError = computed(() => {
-  const e = blockingErrors.value.find((x) => x.message === 'Title is required');
-  if (e) return e.message;
-  if (titleCount.value > titleLimit.value) return `Title exceeds ${titleLimit} characters for ${selectedPlatform.value}.`;
+  if (titleCount.value > titleLimit.value) return `Title exceeds ${titleLimit.value} characters for ${selectedPlatform.value}.`;
   return undefined;
 });
 const bodyError = computed(() => {
@@ -212,12 +210,12 @@ function onInsertVariable(payload: { variable: string; field: 'title' | 'body' }
   const nextVars = Array.from(new Set([...existingVars, payload.variable]));
   if (payload.field === 'title') {
     updateMessage({
-      title_template: campaign.value.message.title_template + token,
+      title: campaign.value.message.title + token,
       variables_used: nextVars,
     });
   } else {
     updateMessage({
-      body_template: campaign.value.message.body_template + token,
+      body: campaign.value.message.body + token,
       variables_used: nextVars,
     });
   }
@@ -265,7 +263,7 @@ function onSave() {
           v-if="!disabledSections.includes('message')"
           class="kb-push-form"
         >
-          <div v-if="!campaign.message.title_template && !campaign.message.body_template" class="kb-hint-card">
+          <div v-if="!campaign.message.title && !campaign.message.body" class="kb-hint-card">
             Add a title and message below to get started.
           </div>
           <div class="kb-push-form-head">
@@ -359,7 +357,7 @@ function onSave() {
             </button>
           </div>
           <div class="kb-push-preview-frame">
-            <div v-if="!campaign.message.title_template && !campaign.message.body_template" class="kb-push-preview-empty" data-preview-empty>
+            <div v-if="!campaign.message.title && !campaign.message.body" class="kb-push-preview-empty" data-preview-empty>
               <p class="kb-push-preview-empty-text">Start adding content to see a live preview here.</p>
             </div>
             <PreviewPanel

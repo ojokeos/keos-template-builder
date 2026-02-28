@@ -26,13 +26,13 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
             test_tokens?: string[] | undefined;
         };
         message: {
-            title_template: string;
-            body_template: string;
+            title: string;
+            body: string;
             image_url?: string | undefined;
             deep_link?: string | undefined;
             variables_used?: string[] | undefined;
-            title_template_by_locale?: Record<string, string> | undefined;
-            body_template_by_locale?: Record<string, string> | undefined;
+            title_by_locale?: Record<string, string> | undefined;
+            body_by_locale?: Record<string, string> | undefined;
         };
         delivery: {
             priority: import('@keos/notification-builder-core').Priority;
@@ -70,13 +70,13 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
             test_tokens?: string[] | undefined;
         };
         message: {
-            title_template: string;
-            body_template: string;
+            title: string;
+            body: string;
             image_url?: string | undefined;
             deep_link?: string | undefined;
             variables_used?: string[] | undefined;
-            title_template_by_locale?: Record<string, string> | undefined;
-            body_template_by_locale?: Record<string, string> | undefined;
+            title_by_locale?: Record<string, string> | undefined;
+            body_by_locale?: Record<string, string> | undefined;
         };
         delivery: {
             priority: import('@keos/notification-builder-core').Priority;

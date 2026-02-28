@@ -9,8 +9,8 @@ export function toAPNs(campaign) {
     const expirationTimestamp = Math.floor(Date.now() / 1000) + ttlSeconds;
     const aps = {
         alert: {
-            title: message.title_template,
-            body: message.body_template,
+            title: message.title,
+            body: message.body,
         },
         'mutable-content': !!message.image_url,
         ...(delivery.silent_push && { 'content-available': 1 }),
