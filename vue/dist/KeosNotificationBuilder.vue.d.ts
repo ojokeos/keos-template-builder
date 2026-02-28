@@ -14,6 +14,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showHistory?: boolean;
     showSaveVersion?: boolean;
     showDuplicate?: boolean;
+    /**
+     * When true (default), builder is design-only: message content + preview.
+     * Audience, delivery/schedule, and send options are configured on another page.
+     */
+    designOnly?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
@@ -23,6 +28,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showHistory: boolean;
     showSaveVersion: boolean;
     showDuplicate: boolean;
+    designOnly: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
     "update:modelValue": (campaign: Campaign) => void;
@@ -46,6 +52,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showHistory?: boolean;
     showSaveVersion?: boolean;
     showDuplicate?: boolean;
+    /**
+     * When true (default), builder is design-only: message content + preview.
+     * Audience, delivery/schedule, and send options are configured on another page.
+     */
+    designOnly?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
@@ -55,6 +66,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showHistory: boolean;
     showSaveVersion: boolean;
     showDuplicate: boolean;
+    designOnly: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
     "onUpdate:modelValue"?: ((campaign: Campaign) => any) | undefined;
@@ -72,6 +84,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
+    designOnly: boolean;
     showHistory: boolean;
     showSaveVersion: boolean;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;

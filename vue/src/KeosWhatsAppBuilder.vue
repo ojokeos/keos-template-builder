@@ -23,6 +23,11 @@ const props = withDefaults(
     showSave?: boolean;
     showClose?: boolean;
     showDuplicate?: boolean;
+    /**
+     * When true (default), builder is design-only: template content + preview.
+     * Audience and send options are configured on another page.
+     */
+    designOnly?: boolean;
   }>(),
   {
     disabledSections: () => [],
@@ -30,6 +35,7 @@ const props = withDefaults(
     showSave: true,
     showClose: true,
     showDuplicate: true,
+    designOnly: true,
   }
 );
 
@@ -351,7 +357,7 @@ function onSave() {
       </aside>
 
       <main class="kb-wa-canvas">
-        <div v-if="campaign.audience.test_mode" class="kb-wa-test-banner">
+        <div v-if="!designOnly && campaign.audience.test_mode" class="kb-wa-test-banner">
           <span class="kb-wa-test-banner-dot"></span>
           Test mode — only your test segment will receive this.
         </div>
