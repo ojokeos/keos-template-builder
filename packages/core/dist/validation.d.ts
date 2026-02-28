@@ -8,6 +8,11 @@ export interface ValidationResult {
     valid: boolean;
     errors: ValidationIssue[];
 }
+/**
+ * Core validation: builder-agnostic, only schema_version.
+ * All other rules (name, message body/title/subject, audience, delivery, etc.)
+ * are builder-specific and should be provided via hooks.customValidators.
+ */
 export declare function validateCampaign(campaign: Campaign): ValidationResult;
 /** Returns validation result with optional warnings (from computeSendWarnings) merged in. */
 export declare function validateCampaignWithWarnings(campaign: Campaign, estimatedReach?: number): ValidationResult;

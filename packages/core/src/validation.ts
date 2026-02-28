@@ -20,23 +20,16 @@ function issue(
   return { message, severity };
 }
 
+/**
+ * Core validation: builder-agnostic, only schema_version.
+ * All other rules (name, message body/title/subject, audience, delivery, etc.)
+ * are builder-specific and should be provided via hooks.customValidators.
+ */
 export function validateCampaign(campaign: Campaign): ValidationResult {
-  console.log("Validating campaign", campaign);
   const errors: ValidationIssue[] = [];
   if (!campaign.schema_version) {
     errors.push(issue("Missing schema_version"));
   }
-
-  if (!campaign.name?.trim()) {
-    errors.push(issue("Template name is required"));
-  }
-
-  if (!campaign.message.body?.trim()) {
-    errors.push(issue("Message body is required"));
-  }
-
-  // All other rules (audience, platforms, tracking, TTL, etc.) are left to hooks.customValidators
-
   return {
     valid: errors.length === 0,
     errors,

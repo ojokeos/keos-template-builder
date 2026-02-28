@@ -356,6 +356,7 @@ const emit = defineEmits<{
 const {
   campaign,
   dirty,
+  customValidatorErrors,
   getValidationWithWarnings,
   update,
   updateMessage,
@@ -367,7 +368,17 @@ const {
   hooks,
 } = useCampaignState({
   initial: props.modelValue,
-  hooks: props.hooks,
+  hooks: {
+    ...props.hooks,
+    customValidators: async (c) => {
+      const errors: string[] = [];
+      if (!c.name?.trim()) errors.push('Template name is required');
+      const msg = c.message as { email_subject?: string; email_html?: string; email_blocks?: unknown[] };
+      if (!msg?.email_subject?.trim()) errors.push('Subject is required');
+      const fromHost = props.hooks?.customValidators ? await props.hooks.customValidators(c) : [];
+      return [...errors, ...fromHost];
+    },
+  },
   onDirty: () => emit('change', campaign.value),
 });
 
@@ -411,7 +422,10 @@ async function resolveHooks() {
 resolveHooks();
 watch(() => campaign.value.audience, resolveHooks, { deep: true });
 
-const validationFull = computed(() => getValidationWithWarnings(estimatedReach.value));
+const validationFull = computed(() => {
+  void customValidatorErrors.value;
+  return getValidationWithWarnings(estimatedReach.value);
+});
 const blockingErrors = computed(() => validationFull.value.blockingErrors);
 const warningsList = computed(() => validationFull.value.warnings);
 const isValid = computed(() => validationFull.value.valid);
