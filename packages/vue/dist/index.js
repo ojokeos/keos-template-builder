@@ -1,4 +1,4 @@
-import { ref as J, watch as ye, computed as I, defineComponent as ie, openBlock as a, createElementBlock as n, normalizeStyle as ne, unref as c, createElementVNode as e, Fragment as W, renderList as K, toDisplayString as k, createTextVNode as X, createCommentVNode as x, normalizeClass as ce, withDirectives as Ue, vModelSelect as Me, vModelText as Je, vModelCheckbox as _t, createStaticVNode as Oe, withKeys as wt, onMounted as Ne, onUnmounted as De, createVNode as ue, createBlock as $t, renderSlot as Le } from "vue";
+import { ref as J, watch as ye, computed as I, defineComponent as ie, openBlock as a, createElementBlock as n, normalizeStyle as ne, unref as c, createElementVNode as e, Fragment as W, renderList as K, toDisplayString as k, createTextVNode as X, createCommentVNode as x, normalizeClass as ce, withDirectives as Ue, vModelSelect as Oe, vModelText as Je, vModelCheckbox as _t, createStaticVNode as Me, withKeys as wt, onMounted as Ne, onUnmounted as De, createVNode as ue, createBlock as $t, renderSlot as Le } from "vue";
 const j = {
   4: 4,
   8: 8,
@@ -174,11 +174,11 @@ function vt(s) {
     expanded: !1
   };
 }
-function Mt(s) {
+function Ot(s) {
   return vt(s);
 }
-function Ot(s, r = {}) {
-  const l = r.variant === "lockscreen" ? Mt(s) : vt(s);
+function Mt(s, r = {}) {
+  const l = r.variant === "lockscreen" ? Ot(s) : vt(s);
   return r.darkMode !== void 0 && (l.darkMode = r.darkMode), l;
 }
 const tt = He.web;
@@ -236,7 +236,7 @@ function We(s = {}) {
     { deep: !0 }
   );
   const _ = I(() => mt(r.value));
-  function M(F) {
+  function O(F) {
     const se = Bt(r.value, F), $ = Nt(i.value), oe = [...Lt(se), ...$], be = [...se.errors, ...$], ke = se.valid && $.length === 0;
     return {
       ...se,
@@ -310,7 +310,7 @@ function We(s = {}) {
         oe = Et($, { expanded: se == null ? void 0 : se.expanded });
         break;
       case "ios":
-        oe = Ot($);
+        oe = Mt($);
         break;
       case "web":
         oe = st($);
@@ -331,7 +331,7 @@ function We(s = {}) {
     validation: _,
     /** Reactive ref updated by hooks.customValidators; read this in computed so validation re-runs when async validators resolve. */
     customValidatorErrors: i,
-    getValidationWithWarnings: M,
+    getValidationWithWarnings: O,
     update: E,
     updateAudience: H,
     updateMessage: A,
@@ -776,25 +776,25 @@ const Wt = { class: "kb-header__row" }, Ft = ["value"], jt = { class: "kb-header
         _[4] || (_[4] = e("label", { class: "kb-label" }, "Variable", -1)),
         e("div", Us, [
           Ue(e("select", {
-            "onUpdate:modelValue": _[0] || (_[0] = (M) => g.value = M),
+            "onUpdate:modelValue": _[0] || (_[0] = (O) => g.value = O),
             class: "kb-select"
           }, [
-            (a(!0), n(W, null, K(y.value, (M) => (a(), n("option", {
-              key: M,
-              value: M
-            }, k(M), 9, Rs))), 128))
+            (a(!0), n(W, null, K(y.value, (O) => (a(), n("option", {
+              key: O,
+              value: O
+            }, k(O), 9, Rs))), 128))
           ], 512), [
-            [Me, g.value]
+            [Oe, g.value]
           ]),
           e("button", {
             type: "button",
             class: "kb-btn-insert",
-            onClick: _[1] || (_[1] = (M) => R("title"))
+            onClick: _[1] || (_[1] = (O) => R("title"))
           }, "Into title"),
           e("button", {
             type: "button",
             class: "kb-btn-insert",
-            onClick: _[2] || (_[2] = (M) => R("body"))
+            onClick: _[2] || (_[2] = (O) => R("body"))
           }, "Into message")
         ])
       ]),
@@ -802,7 +802,7 @@ const Wt = { class: "kb-header__row" }, Ft = ["value"], jt = { class: "kb-header
         _[5] || (_[5] = e("label", { class: "kb-label" }, "Add custom variable", -1)),
         e("div", Bs, [
           Ue(e("input", {
-            "onUpdate:modelValue": _[3] || (_[3] = (M) => p.value = M),
+            "onUpdate:modelValue": _[3] || (_[3] = (O) => p.value = O),
             type: "text",
             class: "kb-input",
             placeholder: "e.g. account_id"
@@ -820,14 +820,14 @@ const Wt = { class: "kb-header__row" }, Ft = ["value"], jt = { class: "kb-header
         _[6] || (_[6] = e("label", { class: "kb-label" }, "Available variables", -1)),
         _[7] || (_[7] = e("p", { class: "kb-hint" }, " Insert in title or message: {{ variable_name }}. Fallback can be set when sending. ", -1)),
         e("ul", Ts, [
-          (a(!0), n(W, null, K(y.value, (M) => (a(), n("li", { key: M }, [
-            e("code", null, "{{ " + k(M) + " }}", 1)
+          (a(!0), n(W, null, K(y.value, (O) => (a(), n("li", { key: O }, [
+            e("code", null, "{{ " + k(O) + " }}", 1)
           ]))), 128))
         ])
       ])
     ]));
   }
-}), bt = /* @__PURE__ */ re(Ps, [["__scopeId", "data-v-6d49f6dc"]]), Vs = { class: "kb-section kb-section--template-type" }, Es = { class: "kb-field" }, Ms = { class: "kb-radio-group" }, Os = { class: "kb-radio" }, Ns = ["checked"], Ds = { class: "kb-radio" }, zs = ["checked"], Hs = /* @__PURE__ */ ie({
+}), bt = /* @__PURE__ */ re(Ps, [["__scopeId", "data-v-6d49f6dc"]]), Vs = { class: "kb-section kb-section--template-type" }, Es = { class: "kb-field" }, Os = { class: "kb-radio-group" }, Ms = { class: "kb-radio" }, Ns = ["checked"], Ds = { class: "kb-radio" }, zs = ["checked"], Hs = /* @__PURE__ */ ie({
   __name: "SectionTemplateType",
   props: {
     templateType: {}
@@ -839,8 +839,8 @@ const Wt = { class: "kb-header__row" }, Ft = ["value"], jt = { class: "kb-header
       i[5] || (i[5] = e("h3", { class: "kb-section__title" }, "Template type", -1)),
       i[6] || (i[6] = e("p", { class: "kb-section__desc" }, " Choose how this template will be used. Your system uses this to route and apply policies. ", -1)),
       e("div", Es, [
-        e("div", Ms, [
-          e("label", Os, [
+        e("div", Os, [
+          e("label", Ms, [
             e("input", {
               type: "radio",
               name: "template-type",
@@ -1064,10 +1064,10 @@ const Ve = [
 }, Ea = {
   key: 2,
   class: "kb-ios-actions"
-}, Ma = {
+}, Oa = {
   key: 0,
   class: "kb-ios-thumb"
-}, Oa = ["src"], Na = {
+}, Ma = ["src"], Na = {
   key: 3,
   id: "kb-preview-panel-web",
   class: "kb-preview__device kb-preview__device--web",
@@ -1125,7 +1125,7 @@ const Ve = [
         e("div", {
           class: ce(["kb-android-notification", { "kb-android-notification--expanded": l.value }])
         }, [
-          g[2] || (g[2] = Oe('<div class="kb-android-header" data-v-539e2af6><div class="kb-android-app-icon" data-v-539e2af6>A</div><div class="kb-android-app-meta" data-v-539e2af6><div class="kb-android-app-name" data-v-539e2af6>Your App</div><div class="kb-android-app-channel" data-v-539e2af6>Promotions · now</div></div><div class="kb-android-more" data-v-539e2af6>⋮</div></div>', 1)),
+          g[2] || (g[2] = Me('<div class="kb-android-header" data-v-539e2af6><div class="kb-android-app-icon" data-v-539e2af6>A</div><div class="kb-android-app-meta" data-v-539e2af6><div class="kb-android-app-name" data-v-539e2af6>Your App</div><div class="kb-android-app-channel" data-v-539e2af6>Promotions · now</div></div><div class="kb-android-more" data-v-539e2af6>⋮</div></div>', 1)),
           e("div", Ca, [
             i.value.title ? (a(), n("div", Sa, k(i.value.title), 1)) : x("", !0),
             i.value.body ? (a(), n("div", Ia, k(i.value.body), 1)) : x("", !0),
@@ -1166,17 +1166,17 @@ const Ve = [
               }, k(p.label || "Action"), 1))), 128))
             ])) : x("", !0)
           ]),
-          i.value.imageUrl ? (a(), n("div", Ma, [
+          i.value.imageUrl ? (a(), n("div", Oa, [
             e("img", {
               src: i.value.imageUrl,
               alt: ""
-            }, null, 8, Oa)
+            }, null, 8, Ma)
           ])) : x("", !0)
         ])
       ])) : (a(), n("div", Na, [
-        g[8] || (g[8] = Oe('<div class="kb-web-browser-chrome" data-v-539e2af6><span class="kb-web-dots" data-v-539e2af6><span data-v-539e2af6></span><span data-v-539e2af6></span><span data-v-539e2af6></span></span><div class="kb-web-url-bar" data-v-539e2af6><span class="kb-web-lock" data-v-539e2af6>🔒</span><span class="kb-web-origin" data-v-539e2af6>yourapp.com</span></div></div>', 1)),
+        g[8] || (g[8] = Me('<div class="kb-web-browser-chrome" data-v-539e2af6><span class="kb-web-dots" data-v-539e2af6><span data-v-539e2af6></span><span data-v-539e2af6></span><span data-v-539e2af6></span></span><div class="kb-web-url-bar" data-v-539e2af6><span class="kb-web-lock" data-v-539e2af6>🔒</span><span class="kb-web-origin" data-v-539e2af6>yourapp.com</span></div></div>', 1)),
         e("div", Da, [
-          g[7] || (g[7] = Oe('<div class="kb-web-header" data-v-539e2af6><div class="kb-web-site-icon" data-v-539e2af6>Y</div><div class="kb-web-site-meta" data-v-539e2af6><div class="kb-web-site-name" data-v-539e2af6>yourapp.com</div><div class="kb-web-site-time" data-v-539e2af6>now</div></div></div>', 1)),
+          g[7] || (g[7] = Me('<div class="kb-web-header" data-v-539e2af6><div class="kb-web-site-icon" data-v-539e2af6>Y</div><div class="kb-web-site-meta" data-v-539e2af6><div class="kb-web-site-name" data-v-539e2af6>yourapp.com</div><div class="kb-web-site-time" data-v-539e2af6>now</div></div></div>', 1)),
           e("div", za, [
             i.value.title ? (a(), n("div", Ha, k(i.value.title), 1)) : x("", !0),
             i.value.body ? (a(), n("div", Wa, k(i.value.body), 1)) : x("", !0),
@@ -1687,7 +1687,8 @@ const Ve = [
     showClose: { type: Boolean, default: !0 },
     showHistory: { type: Boolean, default: !0 },
     showSaveVersion: { type: Boolean, default: !0 },
-    showDuplicate: { type: Boolean, default: !0 }
+    showDuplicate: { type: Boolean, default: !0 },
+    designOnly: { type: Boolean, default: !0 }
   },
   emits: ["update:modelValue", "change", "save", "edit", "send-test", "schedule", "send", "duplicate", "save-version"],
   setup(s, { emit: r }) {
@@ -1709,7 +1710,7 @@ const Ve = [
       const S = at.find((Q) => Q.id === v);
       S && (H.value ? (p.value = S, g.value = !0) : z(S), h.target.value = "");
     }
-    function M(h) {
+    function O(h) {
       E.value = h, y.value = !1;
     }
     const {
@@ -1766,12 +1767,12 @@ const Ve = [
       $.canSend && (Re.value = await Promise.resolve($.canSend())), $.canSchedule && (Be.value = await Promise.resolve($.canSchedule()));
     }
     Se(), ye(() => E.value.audience, Se, { deep: !0 });
-    const ge = I(() => (A.value, w(ke.value))), he = I(() => ge.value.blockingErrors), Ae = I(() => ge.value.warnings), U = I(() => ge.value.valid), V = I(() => se[i.value].title), q = I(() => se[i.value].body), le = I(() => E.value.message.title.length), O = I(() => E.value.message.body.length), N = I(() => {
+    const ge = I(() => (A.value, w(ke.value))), he = I(() => ge.value.blockingErrors), Ae = I(() => ge.value.warnings), U = I(() => ge.value.valid), V = I(() => se[i.value].title), q = I(() => se[i.value].body), le = I(() => E.value.message.title.length), M = I(() => E.value.message.body.length), N = I(() => {
       if (le.value > V.value) return `Title exceeds ${V.value} characters for ${i.value}.`;
     }), Y = I(() => {
       const h = he.value.find((v) => v.message === "Message body is required");
       if (h) return h.message;
-      if (O.value > q.value) return `Body exceeds ${q} characters for ${i.value}.`;
+      if (M.value > q.value) return `Body exceeds ${q} characters for ${i.value}.`;
     }), $e = I(() => E.value.template_type ?? "transactional");
     function D(h) {
       te({ template_type: h });
@@ -1865,7 +1866,7 @@ const Ve = [
             ue(Cs, {
               message: c(E).message,
               "title-count": le.value,
-              "body-count": O.value,
+              "body-count": M.value,
               "title-limit": V.value,
               "body-limit": q.value,
               "selected-platform": i.value,
@@ -1882,7 +1883,7 @@ const Ve = [
               onInsertVariable: B
             }, null, 8, ["message", "variable-options", "onUpdate"])
           ])),
-          s.disabledSections.includes("delivery") ? x("", !0) : (a(), n("div", mn, [
+          !s.designOnly && !s.disabledSections.includes("delivery") ? (a(), n("div", mn, [
             v[14] || (v[14] = e("div", { class: "kb-push-form-head" }, [
               e("span", { class: "kb-push-form-head-label" }, "Schedule")
             ], -1)),
@@ -1897,10 +1898,10 @@ const Ve = [
               delivery: c(E).delivery,
               onUpdate: c(me)
             }, null, 8, ["delivery", "onUpdate"])
-          ]))
+          ])) : x("", !0)
         ]),
         e("main", vn, [
-          c(E).audience.test_mode ? (a(), n("div", bn, [...v[15] || (v[15] = [
+          !s.designOnly && c(E).audience.test_mode ? (a(), n("div", bn, [...v[15] || (v[15] = [
             e("span", { class: "kb-push-test-banner-dot" }, null, -1),
             X(" Test mode — only your test segment will receive this. ", -1)
           ])])) : x("", !0),
@@ -1919,7 +1920,7 @@ const Ve = [
                     value: S.id
                   }, k(S.label), 9, hn))), 128))
                 ], 512), [
-                  [Me, m.value]
+                  [Oe, m.value]
                 ])
               ])
             ]),
@@ -1949,13 +1950,13 @@ const Ve = [
         ])
       ]),
       e("footer", xn, [
-        s.showHistory ? (a(), n("button", {
+        !s.designOnly && s.showHistory ? (a(), n("button", {
           key: 0,
           type: "button",
           class: "kb-push-action kb-push-action--secondary",
           onClick: v[5] || (v[5] = (S) => y.value = !0)
         }, " Version history ")) : x("", !0),
-        s.showSaveVersion ? (a(), n("button", {
+        !s.designOnly && s.showSaveVersion ? (a(), n("button", {
           key: 1,
           type: "button",
           class: "kb-push-action kb-push-action--secondary",
@@ -2007,17 +2008,17 @@ const Ve = [
         open: y.value,
         versions: s.versions,
         onClose: v[11] || (v[11] = (S) => y.value = !1),
-        onRestore: M
+        onRestore: O
       }, null, 8, ["open", "versions"])
     ]));
   }
-}), yt = /* @__PURE__ */ re(Un, [["__scopeId", "data-v-47cd1b10"]]), Rn = { class: "kb-section" }, An = { class: "kb-section__head" }, Bn = { class: "kb-field" }, Ln = ["value"], Tn = { class: "kb-field" }, Pn = ["value"], Vn = {
+}), yt = /* @__PURE__ */ re(Un, [["__scopeId", "data-v-23164be6"]]), Rn = { class: "kb-section" }, An = { class: "kb-section__head" }, Bn = { class: "kb-field" }, Ln = ["value"], Tn = { class: "kb-field" }, Pn = ["value"], Vn = {
   key: 0,
   class: "kb-field"
-}, En = ["value"], Mn = {
+}, En = ["value"], On = {
   key: 1,
   class: "kb-field"
-}, On = ["value"], Nn = {
+}, Mn = ["value"], Nn = {
   key: 2,
   class: "kb-field kb-field--inline"
 }, Dn = { class: "kb-location-row" }, zn = ["value"], Hn = ["value"], Wn = ["value"], Fn = ["value"], jn = {
@@ -2080,7 +2081,7 @@ const Ve = [
               whatsapp_template_type: _.target.value
             }))
           }, [...p[19] || (p[19] = [
-            Oe('<option value="text" data-v-03de154f>Text</option><option value="image" data-v-03de154f>Image</option><option value="video" data-v-03de154f>Video</option><option value="document" data-v-03de154f>Document</option><option value="location" data-v-03de154f>Location</option><option value="coupon" data-v-03de154f>Coupon code</option><option value="lto" data-v-03de154f>Limited time offer</option><option value="mpm" data-v-03de154f>Multi product message</option><option value="catalog" data-v-03de154f>Catalog</option><option value="auth" data-v-03de154f>Authentication</option>', 10)
+            Me('<option value="text" data-v-03de154f>Text</option><option value="image" data-v-03de154f>Image</option><option value="video" data-v-03de154f>Video</option><option value="document" data-v-03de154f>Document</option><option value="location" data-v-03de154f>Location</option><option value="coupon" data-v-03de154f>Coupon code</option><option value="lto" data-v-03de154f>Limited time offer</option><option value="mpm" data-v-03de154f>Multi product message</option><option value="catalog" data-v-03de154f>Catalog</option><option value="auth" data-v-03de154f>Authentication</option>', 10)
           ])], 40, Ln)
         ]),
         e("div", Tn, [
@@ -2113,7 +2114,7 @@ const Ve = [
             }))
           }, null, 40, En)
         ])) : x("", !0),
-        ["image", "video", "document"].includes(l.message.whatsapp_template_type ?? "text") ? (a(), n("div", Mn, [
+        ["image", "video", "document"].includes(l.message.whatsapp_template_type ?? "text") ? (a(), n("div", On, [
           p[23] || (p[23] = e("label", { class: "kb-label" }, [
             X(" Media caption (optional) "),
             e("span", { class: "kb-helper" }, "Short line shown below the media.")
@@ -2126,7 +2127,7 @@ const Ve = [
             onInput: p[4] || (p[4] = (_) => d("update", {
               whatsapp_media_caption: _.target.value || void 0
             }))
-          }, null, 40, On)
+          }, null, 40, Mn)
         ])) : x("", !0),
         l.message.whatsapp_template_type === "location" ? (a(), n("div", Nn, [
           p[24] || (p[24] = e("label", { class: "kb-label" }, [
@@ -2141,8 +2142,8 @@ const Ve = [
               placeholder: "Latitude",
               value: ((y = l.message.whatsapp_location) == null ? void 0 : y.lat) ?? "",
               onInput: p[5] || (p[5] = (_) => {
-                const M = { ...l.message.whatsapp_location ?? {} };
-                M.lat = Number(_.target.value), d("update", { whatsapp_location: M });
+                const O = { ...l.message.whatsapp_location ?? {} };
+                O.lat = Number(_.target.value), d("update", { whatsapp_location: O });
               })
             }, null, 40, zn),
             e("input", {
@@ -2152,8 +2153,8 @@ const Ve = [
               placeholder: "Longitude",
               value: ((R = l.message.whatsapp_location) == null ? void 0 : R.lon) ?? "",
               onInput: p[6] || (p[6] = (_) => {
-                const M = { ...l.message.whatsapp_location ?? {} };
-                M.lon = Number(_.target.value), d("update", { whatsapp_location: M });
+                const O = { ...l.message.whatsapp_location ?? {} };
+                O.lon = Number(_.target.value), d("update", { whatsapp_location: O });
               })
             }, null, 40, Hn)
           ]),
@@ -2163,8 +2164,8 @@ const Ve = [
             placeholder: "Location name",
             value: ((G = l.message.whatsapp_location) == null ? void 0 : G.name) ?? "",
             onInput: p[7] || (p[7] = (_) => {
-              const M = { ...l.message.whatsapp_location ?? {} };
-              M.name = _.target.value || void 0, d("update", { whatsapp_location: M });
+              const O = { ...l.message.whatsapp_location ?? {} };
+              O.name = _.target.value || void 0, d("update", { whatsapp_location: O });
             })
           }, null, 40, Wn),
           e("input", {
@@ -2173,8 +2174,8 @@ const Ve = [
             placeholder: "Address (optional)",
             value: ((z = l.message.whatsapp_location) == null ? void 0 : z.address) ?? "",
             onInput: p[8] || (p[8] = (_) => {
-              const M = { ...l.message.whatsapp_location ?? {} };
-              M.address = _.target.value || void 0, d("update", { whatsapp_location: M });
+              const O = { ...l.message.whatsapp_location ?? {} };
+              O.address = _.target.value || void 0, d("update", { whatsapp_location: O });
             })
           }, null, 40, Fn)
         ])) : x("", !0),
@@ -2213,8 +2214,8 @@ const Ve = [
             e("span", { class: "kb-helper" }, " Add product identifiers in the order they should appear in the WhatsApp template. ")
           ], -1)),
           e("div", Gn, [
-            (a(!0), n(W, null, K(l.message.whatsapp_products ?? [], (_, M) => (a(), n("div", {
-              key: _.id || M,
+            (a(!0), n(W, null, K(l.message.whatsapp_products ?? [], (_, O) => (a(), n("div", {
+              key: _.id || O,
               class: "kb-wa-button-row"
             }, [
               e("input", {
@@ -2224,7 +2225,7 @@ const Ve = [
                 value: _.productId,
                 onInput: (E) => {
                   var w;
-                  const H = [...l.message.whatsapp_products ?? []], A = Number(M);
+                  const H = [...l.message.whatsapp_products ?? []], A = Number(O);
                   H[A] = {
                     ...H[A],
                     id: ((w = H[A]) == null ? void 0 : w.id) || `prod_${A + 1}`,
@@ -2239,7 +2240,7 @@ const Ve = [
                 value: _.sectionTitle,
                 onInput: (E) => {
                   var w;
-                  const H = [...l.message.whatsapp_products ?? []], A = Number(M);
+                  const H = [...l.message.whatsapp_products ?? []], A = Number(O);
                   H[A] = {
                     ...H[A],
                     id: ((w = H[A]) == null ? void 0 : w.id) || `prod_${A + 1}`,
@@ -2252,7 +2253,7 @@ const Ve = [
                 class: "kb-wa-btn-remove",
                 onClick: () => {
                   const E = [...l.message.whatsapp_products ?? []];
-                  E.splice(Number(M), 1), d("update", { whatsapp_products: E });
+                  E.splice(Number(O), 1), d("update", { whatsapp_products: E });
                 }
               }, " Remove ", 8, Zn)
             ]))), 128)),
@@ -2260,11 +2261,11 @@ const Ve = [
               type: "button",
               class: "kb-wa-btn-add",
               onClick: p[11] || (p[11] = () => {
-                const M = [...l.message.whatsapp_products ?? []];
-                M.push({
-                  id: `prod_${M.length + 1}`,
+                const O = [...l.message.whatsapp_products ?? []];
+                O.push({
+                  id: `prod_${O.length + 1}`,
                   productId: ""
-                }), d("update", { whatsapp_products: M });
+                }), d("update", { whatsapp_products: O });
               })
             }, " Add product ")
           ])
@@ -2358,8 +2359,8 @@ const Ve = [
             e("span", { class: "kb-helper" }, " Add quick replies or call-to-action buttons. Order should match your provider configuration. ")
           ], -1)),
           e("div", bo, [
-            (a(!0), n(W, null, K(l.message.whatsapp_buttons ?? [], (_, M) => (a(), n("div", {
-              key: _.id || M,
+            (a(!0), n(W, null, K(l.message.whatsapp_buttons ?? [], (_, O) => (a(), n("div", {
+              key: _.id || O,
               class: "kb-wa-button-row"
             }, [
               e("input", {
@@ -2369,7 +2370,7 @@ const Ve = [
                 value: _.label,
                 onInput: (E) => {
                   var w;
-                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(M);
+                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(O);
                   H[A] = {
                     ...H[A],
                     id: ((w = H[A]) == null ? void 0 : w.id) || `btn_${A + 1}`,
@@ -2382,7 +2383,7 @@ const Ve = [
                 value: _.type ?? "quick_reply",
                 onChange: (E) => {
                   var w;
-                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(M);
+                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(O);
                   H[A] = {
                     ...H[A],
                     id: ((w = H[A]) == null ? void 0 : w.id) || `btn_${A + 1}`,
@@ -2402,7 +2403,7 @@ const Ve = [
                 value: _.url,
                 onInput: (E) => {
                   var w;
-                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(M);
+                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(O);
                   H[A] = {
                     ...H[A],
                     id: ((w = H[A]) == null ? void 0 : w.id) || `btn_${A + 1}`,
@@ -2417,7 +2418,7 @@ const Ve = [
                 value: _.phone,
                 onInput: (E) => {
                   var w;
-                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(M);
+                  const H = [...l.message.whatsapp_buttons ?? []], A = Number(O);
                   H[A] = {
                     ...H[A],
                     id: ((w = H[A]) == null ? void 0 : w.id) || `btn_${A + 1}`,
@@ -2430,7 +2431,7 @@ const Ve = [
                 class: "kb-wa-btn-remove",
                 onClick: () => {
                   const E = [...l.message.whatsapp_buttons ?? []];
-                  E.splice(Number(M), 1), d("update", { whatsapp_buttons: E });
+                  E.splice(Number(O), 1), d("update", { whatsapp_buttons: E });
                 }
               }, " Remove ", 8, ko)
             ]))), 128)),
@@ -2439,12 +2440,12 @@ const Ve = [
               class: "kb-wa-btn-add",
               disabled: (l.message.whatsapp_buttons ?? []).length >= 3,
               onClick: p[17] || (p[17] = () => {
-                const M = [...l.message.whatsapp_buttons ?? []];
-                M.push({
-                  id: `btn_${M.length + 1}`,
+                const O = [...l.message.whatsapp_buttons ?? []];
+                O.push({
+                  id: `btn_${O.length + 1}`,
                   label: "",
                   type: "quick_reply"
-                }), d("update", { whatsapp_buttons: M });
+                }), d("update", { whatsapp_buttons: O });
               })
             }, " Add button ", 8, _o)
           ])
@@ -2467,7 +2468,7 @@ const Ve = [
 }, Po = ["src"], Vo = { class: "location-info" }, Eo = {
   key: 2,
   class: "catalog-card"
-}, Mo = { class: "catalog-header" }, Oo = { class: "catalog-title" }, No = {
+}, Oo = { class: "catalog-header" }, Mo = { class: "catalog-title" }, No = {
   key: 3,
   class: "multi-products"
 }, Do = ["src"], zo = { class: "product-info" }, Ho = { class: "title" }, Wo = { class: "price" }, Fo = {
@@ -2607,9 +2608,9 @@ const Ve = [
                 ])
               ])) : x("", !0),
               s.template.catalog ? (a(), n("div", Eo, [
-                e("div", Mo, [
+                e("div", Oo, [
                   y[2] || (y[2] = X(" 🛍 ", -1)),
-                  e("span", Oo, k(typeof s.template.catalog == "object" && s.template.catalog.label ? s.template.catalog.label : "Full catalog"), 1)
+                  e("span", Mo, k(typeof s.template.catalog == "object" && s.template.catalog.label ? s.template.catalog.label : "Full catalog"), 1)
                 ]),
                 y[3] || (y[3] = e("div", { class: "catalog-sub" }, "Browse all items", -1)),
                 y[4] || (y[4] = e("div", { class: "catalog-cta" }, "VIEW CATALOG", -1))
@@ -2684,7 +2685,8 @@ const Ve = [
     variableOptions: { default: () => [] },
     showSave: { type: Boolean, default: !0 },
     showClose: { type: Boolean, default: !0 },
-    showDuplicate: { type: Boolean, default: !0 }
+    showDuplicate: { type: Boolean, default: !0 },
+    designOnly: { type: Boolean, default: !0 }
   },
   emits: ["update:modelValue", "change", "save", "edit", "send-test", "schedule", "send", "duplicate"],
   setup(s, { emit: r }) {
@@ -2698,7 +2700,7 @@ const Ve = [
       undo: G,
       redo: z,
       canUndo: _,
-      canRedo: M,
+      canRedo: O,
       resetMessage: E,
       hooks: H
     } = We({
@@ -2706,10 +2708,10 @@ const Ve = [
       hooks: {
         ...l.hooks,
         customValidators: async (U) => {
-          var le, O;
+          var le, M;
           const V = [];
           (le = U.name) != null && le.trim() || V.push("Template name is required");
-          const q = (O = l.hooks) != null && O.customValidators ? await l.hooks.customValidators(U) : [];
+          const q = (M = l.hooks) != null && M.customValidators ? await l.hooks.customValidators(U) : [];
           return [...V, ...q];
         }
       },
@@ -2749,7 +2751,7 @@ const Ve = [
       return se.value ? Te(U, se.value.data) : U;
     }), be = I(() => {
       const U = i.value.message, V = U.whatsapp_template_type ?? "text";
-      let q, le, O, N, Y, $e, D;
+      let q, le, M, N, Y, $e, D;
       V === "image" && U.whatsapp_media_url ? q = { type: "image", url: U.whatsapp_media_url } : V === "video" && U.whatsapp_media_url ? q = { type: "video", url: U.whatsapp_media_url } : V === "document" && U.whatsapp_document_filename ? q = { type: "document", filename: U.whatsapp_document_filename } : U.whatsapp_header && (q = { type: "text", text: oe.value });
       const f = $.value || "Start adding content to see a live preview here.";
       if (V === "location" && U.whatsapp_location) {
@@ -2761,7 +2763,7 @@ const Ve = [
           address: C.address ?? `${h}, ${v}`
         });
       }
-      (V === "catalog" || V === "mpm") && Array.isArray(U.whatsapp_products) && U.whatsapp_products.length && (O = !0, N = U.whatsapp_products.map((C) => ({
+      (V === "catalog" || V === "mpm") && Array.isArray(U.whatsapp_products) && U.whatsapp_products.length && (M = !0, N = U.whatsapp_products.map((C) => ({
         image: C.image ?? C.imageUrl,
         name: C.name ?? C.sectionTitle ?? C.title ?? "Product",
         price: C.price ?? C.productId ?? ""
@@ -2773,7 +2775,7 @@ const Ve = [
         footer: U.whatsapp_footer || void 0,
         buttons: B.map((C) => ({ text: C.label || "Button" })),
         location: le,
-        catalog: O,
+        catalog: M,
         multiProduct: N,
         coupon: Y,
         limitedOffer: $e,
@@ -2806,19 +2808,19 @@ const Ve = [
     function he(U) {
       const V = ` {{ ${U.variable} }}`, q = i.value.message.variables_used ?? [], le = Array.from(/* @__PURE__ */ new Set([...q, U.variable]));
       if (U.field === "title") {
-        const O = i.value.message.whatsapp_header ?? "";
+        const M = i.value.message.whatsapp_header ?? "";
         R(
           {
             variables_used: le
           }
-        ), i.value.message.whatsapp_header = O + V;
+        ), i.value.message.whatsapp_header = M + V;
       } else {
-        const O = i.value.message.whatsapp_body ?? "";
+        const M = i.value.message.whatsapp_body ?? "";
         R(
           {
             variables_used: le
           }
-        ), i.value.message.whatsapp_body = O + V;
+        ), i.value.message.whatsapp_body = M + V;
       }
     }
     function Ae() {
@@ -2832,7 +2834,7 @@ const Ve = [
           dirty: c(m),
           "last-saved-at": c(A),
           "can-undo": c(_),
-          "can-redo": c(M),
+          "can-redo": c(O),
           "onUpdate:campaignName": ge,
           onUndo: c(G),
           onRedo: c(z)
@@ -2903,7 +2905,7 @@ const Ve = [
           ]))
         ]),
         e("main", rl, [
-          c(i).audience.test_mode ? (a(), n("div", dl, [...V[8] || (V[8] = [
+          !s.designOnly && c(i).audience.test_mode ? (a(), n("div", dl, [...V[8] || (V[8] = [
             e("span", { class: "kb-wa-test-banner-dot" }, null, -1),
             X(" Test mode — only your test segment will receive this. ", -1)
           ])])) : x("", !0),
@@ -2922,7 +2924,7 @@ const Ve = [
                     value: q.id
                   }, k(q.label), 9, ml))), 128))
                 ], 512), [
-                  [Me, we.value]
+                  [Oe, we.value]
                 ])
               ])
             ]),
@@ -2977,7 +2979,7 @@ const Ve = [
       ])) : x("", !0)
     ]));
   }
-}), ft = /* @__PURE__ */ re(hl, [["__scopeId", "data-v-e017da09"]]), kl = { class: "kb-section" }, _l = { class: "kb-section__head" }, wl = { class: "kb-field" }, $l = ["value"], xl = { class: "kb-field" }, Cl = { class: "kb-label" }, Sl = { key: 0 }, Il = { key: 1 }, Ul = { key: 2 }, Rl = ["value"], Al = {
+}), ft = /* @__PURE__ */ re(hl, [["__scopeId", "data-v-cadbf5c8"]]), kl = { class: "kb-section" }, _l = { class: "kb-section__head" }, wl = { class: "kb-field" }, $l = ["value"], xl = { class: "kb-field" }, Cl = { class: "kb-label" }, Sl = { key: 0 }, Il = { key: 1 }, Ul = { key: 2 }, Rl = ["value"], Al = {
   key: 0,
   class: "kb-truncation-hint"
 }, Bl = { class: "kb-field" }, Ll = { class: "kb-insert-row" }, Tl = ["value"], Pl = { class: "kb-field" }, Vl = { class: "kb-insert-row" }, El = /* @__PURE__ */ ie({
@@ -3006,7 +3008,7 @@ const Ve = [
         sms_sender_id: w || void 0
       });
     }
-    function M(A) {
+    function O(A) {
       const w = A.target.value;
       d("update", {
         sms_body: w
@@ -3064,7 +3066,7 @@ const Ve = [
           rows: "4",
           placeholder: "Hi {{ first_name }}, your order {{ order_id }} is out for delivery.",
           value: y.value,
-          onInput: M
+          onInput: O
         }, null, 40, Rl),
         w[6] || (w[6] = e("p", { class: "kb-hint" }, " Standard GSM messages are up to 160 characters. Longer messages are sent as multi-part SMS (153 characters per segment). ", -1)),
         z.value ? (a(), n("p", Al, k(z.value), 1)) : x("", !0)
@@ -3081,7 +3083,7 @@ const Ve = [
               value: te
             }, k(te), 9, Tl))), 128))
           ], 512), [
-            [Me, g.value]
+            [Oe, g.value]
           ]),
           e("button", {
             type: "button",
@@ -3111,7 +3113,7 @@ const Ve = [
       ])
     ]));
   }
-}), Ml = /* @__PURE__ */ re(El, [["__scopeId", "data-v-1be89c79"]]), Ol = { class: "keos-sms-builder" }, Nl = { class: "kb-builder-top" }, Dl = { style: { margin: 0, paddingLeft: "1.25rem" } }, zl = { class: "kb-sms-layout" }, Hl = { class: "kb-sms-sidebar" }, Wl = {
+}), Ol = /* @__PURE__ */ re(El, [["__scopeId", "data-v-1be89c79"]]), Ml = { class: "keos-sms-builder" }, Nl = { class: "kb-builder-top" }, Dl = { style: { margin: 0, paddingLeft: "1.25rem" } }, zl = { class: "kb-sms-layout" }, Hl = { class: "kb-sms-sidebar" }, Wl = {
   key: 0,
   class: "kb-sms-form"
 }, Fl = { class: "kb-sms-form-head" }, jl = { class: "kb-wa-form-head-row" }, ql = ["value"], Kl = { class: "kb-sms-canvas" }, Yl = {
@@ -3139,7 +3141,8 @@ const Ve = [
     costPerSegment: { default: 0 },
     showSave: { type: Boolean, default: !0 },
     showClose: { type: Boolean, default: !0 },
-    showDuplicate: { type: Boolean, default: !0 }
+    showDuplicate: { type: Boolean, default: !0 },
+    designOnly: { type: Boolean, default: !0 }
   },
   emits: ["update:modelValue", "change", "save", "edit", "send-test", "schedule", "send", "duplicate"],
   setup(s, { emit: r }) {
@@ -3153,25 +3156,25 @@ const Ve = [
       undo: G,
       redo: z,
       canUndo: _,
-      canRedo: M,
+      canRedo: O,
       resetMessage: E,
       hooks: H
     } = We({
       initial: l.modelValue,
       hooks: {
         ...l.hooks,
-        customValidators: async (O) => {
+        customValidators: async (M) => {
           var $e, D;
           const N = [];
-          ($e = O.name) != null && $e.trim() || N.push("Template name is required");
-          const Y = (D = l.hooks) != null && D.customValidators ? await l.hooks.customValidators(O) : [];
+          ($e = M.name) != null && $e.trim() || N.push("Template name is required");
+          const Y = (D = l.hooks) != null && D.customValidators ? await l.hooks.customValidators(M) : [];
           return [...N, ...Y];
         }
       },
       onDirty: () => d("change", i.value)
     }), { lastSavedAt: A } = Fe(i, { channel: "sms" });
-    function w(O) {
-      (O.metaKey || O.ctrlKey) && O.key === "z" && (O.preventDefault(), O.shiftKey ? z() : G());
+    function w(M) {
+      (M.metaKey || M.ctrlKey) && M.key === "z" && (M.preventDefault(), M.shiftKey ? z() : G());
     }
     Ne(() => {
       window.addEventListener("keydown", w);
@@ -3179,7 +3182,7 @@ const Ve = [
       window.removeEventListener("keydown", w);
     }), ye(
       i,
-      (O) => d("update:modelValue", O),
+      (M) => d("update:modelValue", M),
       { deep: !0 }
     );
     const te = J(), de = J(!0);
@@ -3194,50 +3197,50 @@ const Ve = [
     }
     me(), ye(() => i.value.audience, me, { deep: !0 });
     const pe = I(() => (g.value, p(te.value))), ve = I(() => pe.value.blockingErrors), fe = I(() => pe.value.warnings), xe = I(() => pe.value.valid), we = I(() => i.value.template_type ?? "transactional"), Z = J(""), F = J(!1), se = J(null), $ = I(() => {
-      const O = Z.value;
-      return O ? Ve.find((N) => N.id === O) ?? null : null;
+      const M = Z.value;
+      return M ? Ve.find((N) => N.id === M) ?? null : null;
     }), oe = I(() => {
-      const O = Se.value;
-      return $.value ? Te(O, $.value.data) : O;
+      const M = Se.value;
+      return $.value ? Te(M, $.value.data) : M;
     });
-    function be(O) {
-      const N = i.value, Y = O.campaign.message ? { ...N.message, ...O.campaign.message } : N.message;
+    function be(M) {
+      const N = i.value, Y = M.campaign.message ? { ...N.message, ...M.campaign.message } : N.message;
       y({
-        ...O.campaign,
+        ...M.campaign,
         message: Y
       }), se.value = null, F.value = !1;
     }
-    function ke(O) {
-      const N = O.target.value;
+    function ke(M) {
+      const N = M.target.value;
       if (!N) return;
       const Y = ot.find(($e) => $e.id === N);
-      Y && (m.value ? (se.value = Y, F.value = !0) : be(Y), O.target.value = "");
+      Y && (m.value ? (se.value = Y, F.value = !0) : be(Y), M.target.value = "");
     }
-    function Re(O) {
-      y({ template_type: O });
+    function Re(M) {
+      y({ template_type: M });
     }
-    function Be(O) {
+    function Be(M) {
       y({
-        name: O,
-        tracking: { ...i.value.tracking ?? {}, campaign_name: O }
+        name: M,
+        tracking: { ...i.value.tracking ?? {}, campaign_name: M }
       });
     }
     const Se = I(() => (i.value.message.sms_body ?? "") || ""), ge = I(() => Se.value.length), he = I(() => ge.value ? ge.value <= 160 ? 1 : Math.ceil(ge.value / 153) : 0), Ae = I(() => {
-      const O = oe.value;
-      return O.trim().length ? O : "Your SMS message preview will appear here.";
+      const M = oe.value;
+      return M.trim().length ? M : "Your SMS message preview will appear here.";
     }), U = I(() => {
-      const O = l.costPerSegment ?? 0;
-      return !O || he.value === 0 ? null : (he.value * O).toFixed(2);
+      const M = l.costPerSegment ?? 0;
+      return !M || he.value === 0 ? null : (he.value * M).toFixed(2);
     }), V = I(() => {
-      const O = ge.value;
-      return O <= 160 ? null : O <= 306 ? "Consider shortening to stay within 2 segments." : "Shorten this message to reduce segment count and cost.";
+      const M = ge.value;
+      return M <= 160 ? null : M <= 306 ? "Consider shortening to stay within 2 segments." : "Shorten this message to reduce segment count and cost.";
     }), q = I(
       () => i.value.message.sms_sender_id ?? "YourBrand"
     );
     function le() {
       xe.value && d("save", i.value);
     }
-    return (O, N) => (a(), n("div", Ol, [
+    return (M, N) => (a(), n("div", Ml, [
       e("div", Nl, [
         ue(je, {
           "campaign-name": c(i).name,
@@ -3245,7 +3248,7 @@ const Ve = [
           dirty: c(m),
           "last-saved-at": c(A),
           "can-undo": c(_),
-          "can-redo": c(M),
+          "can-redo": c(O),
           "onUpdate:campaignName": Be,
           onUndo: c(G),
           onRedo: c(z)
@@ -3315,7 +3318,7 @@ const Ve = [
                 ], 32)
               ])
             ]),
-            ue(Ml, {
+            ue(Ol, {
               message: c(i).message,
               "variable-options": s.variableOptions,
               "show-reset": !0,
@@ -3325,7 +3328,7 @@ const Ve = [
           ]))
         ]),
         e("main", Kl, [
-          c(i).audience.test_mode ? (a(), n("div", Yl, [...N[8] || (N[8] = [
+          !s.designOnly && c(i).audience.test_mode ? (a(), n("div", Yl, [...N[8] || (N[8] = [
             e("span", { class: "kb-sms-test-banner-dot" }, null, -1),
             X(" Test mode — only your test segment will receive this. ", -1)
           ])])) : x("", !0),
@@ -3344,7 +3347,7 @@ const Ve = [
                     value: Y.id
                   }, k(Y.label), 9, Xl))), 128))
                 ], 512), [
-                  [Me, Z.value]
+                  [Oe, Z.value]
                 ])
               ])
             ]),
@@ -3425,7 +3428,7 @@ const Ve = [
       ])) : x("", !0)
     ]));
   }
-}), ht = /* @__PURE__ */ re(fi, [["__scopeId", "data-v-705d260f"]]), hi = 30, ki = 60, _i = 130;
+}), ht = /* @__PURE__ */ re(fi, [["__scopeId", "data-v-32c53abf"]]), hi = 30, ki = 60, _i = 130;
 function wi(s) {
   const r = (s ?? "").trim().length;
   return r < hi ? "too_short" : r <= ki ? "good" : "too_long";
@@ -3478,7 +3481,7 @@ function Si(s) {
       return "";
   }
 }
-const Ii = { class: "em-section" }, Ui = { class: "em-strip" }, Ri = { class: "em-strip-head" }, Ai = { class: "em-field" }, Bi = ["value"], Li = { class: "em-field" }, Ti = ["value"], Pi = { class: "em-field" }, Vi = ["value"], Ei = { class: "em-field" }, Mi = { class: "em-input-group" }, Oi = ["value"], Ni = {
+const Ii = { class: "em-section" }, Ui = { class: "em-strip" }, Ri = { class: "em-strip-head" }, Ai = { class: "em-field" }, Bi = ["value"], Li = { class: "em-field" }, Ti = ["value"], Pi = { class: "em-field" }, Vi = ["value"], Ei = { class: "em-field" }, Oi = { class: "em-input-group" }, Mi = ["value"], Ni = {
   key: 0,
   class: "em-analyzer em-analyzer--spam"
 }, Di = { class: "em-field" }, zi = { class: "em-input-group" }, Hi = ["value"], Wi = {
@@ -3508,7 +3511,7 @@ const Ii = { class: "em-section" }, Ui = { class: "em-strip" }, Ri = { class: "e
 }, Ar = ["value", "onChange"], Br = { class: "em-list-items" }, Lr = ["value", "onInput", "placeholder"], Tr = ["onClick"], Pr = ["onClick"], Vr = {
   key: 7,
   class: "em-block-fields"
-}, Er = ["value", "onChange"], Mr = ["value", "onInput"], Or = ["onClick"], Nr = {
+}, Er = ["value", "onChange"], Or = ["value", "onInput"], Mr = ["onClick"], Nr = {
   key: 8,
   class: "em-block-fields"
 }, Dr = { class: "em-social-links" }, zr = ["value", "onChange"], Hr = ["value", "onInput"], Wr = ["onClick"], Fr = ["onClick"], jr = {
@@ -3538,7 +3541,7 @@ const Ii = { class: "em-section" }, Ui = { class: "em-strip" }, Ri = { class: "e
 }, Bd = ["value", "onInput"], Ld = ["value", "onInput"], Td = ["value", "onInput"], Pd = ["onClick"], Vd = ["onClick"], Ed = {
   key: 17,
   class: "em-block-fields"
-}, Md = ["value", "onInput"], Od = ["value", "onInput"], Nd = {
+}, Od = ["value", "onInput"], Md = ["value", "onInput"], Nd = {
   key: 18,
   class: "em-block-fields"
 }, Dd = ["value", "onInput"], zd = ["value", "onInput"], Hd = ["value", "onInput"], Wd = ["value", "onInput"], Fd = ["value", "onInput"], jd = {
@@ -3716,7 +3719,7 @@ const example = {{ order_id }};`,
         b != null && b.length && (y.value = [...b], y.value.includes(R.value) || (R.value = y.value[0]));
       }
     );
-    const z = I(() => m.message.email_subject ?? ""), _ = I(() => m.message.email_preview_text ?? ""), M = I(() => wi(z.value)), E = I(() => $i(_.value)), H = I(() => it(z.value)), A = I(() => it(_.value)), w = I(() => {
+    const z = I(() => m.message.email_subject ?? ""), _ = I(() => m.message.email_preview_text ?? ""), O = I(() => wi(z.value)), E = I(() => $i(_.value)), H = I(() => it(z.value)), A = I(() => it(_.value)), w = I(() => {
       const b = m.message.email_blocks;
       return Array.isArray(b) && b.length > 0 ? b : [i("paragraph")];
     });
@@ -3878,7 +3881,7 @@ const example = {{ order_id }};`,
       const T = (u.links || []).map((L, _e) => _e === o ? { ...L, [t]: P } : L);
       $(b, { links: T });
     }
-    function O(b) {
+    function M(b) {
       const o = w.value.find((t) => t.id === b);
       !o || o.type !== "navbar" || $(b, { links: [...o.links || [], { text: "", url: "" }] });
     }
@@ -3989,14 +3992,14 @@ const example = {{ order_id }};`,
         ]),
         e("div", Ei, [
           o[32] || (o[32] = e("label", { class: "em-label" }, "Subject line", -1)),
-          e("div", Mi, [
+          e("div", Oi, [
             e("input", {
               type: "text",
               class: "em-input em-input--flex",
               placeholder: "e.g. Your order {{ order_id }} has shipped",
               value: z.value,
               onInput: de
-            }, null, 40, Oi),
+            }, null, 40, Mi),
             e("button", {
               type: "button",
               class: "em-chip",
@@ -4005,8 +4008,8 @@ const example = {{ order_id }};`,
             }, k(Ie))
           ]),
           e("span", {
-            class: ce(["em-analyzer", `em-analyzer--${M.value}`])
-          }, k(c(Ci)(M.value)), 3),
+            class: ce(["em-analyzer", `em-analyzer--${O.value}`])
+          }, k(c(Ci)(O.value)), 3),
           H.value.length ? (a(), n("span", Ni, "Spammy: " + k(H.value.join(", ")), 1)) : x("", !0)
         ]),
         e("div", Di, [
@@ -4274,12 +4277,12 @@ const example = {{ order_id }};`,
                 onInput: (u) => $(t.id, { content: u.target.value }),
                 placeholder: "Quote or callout text",
                 rows: "3"
-              }, null, 40, Mr),
+              }, null, 40, Or),
               e("button", {
                 type: "button",
                 class: "em-chip em-chip--sm",
                 onClick: (u) => v(t.id)
-              }, k(Ie), 8, Or)
+              }, k(Ie), 8, Mr)
             ])) : t.type === "social" ? (a(), n("div", Nr, [
               e("div", Dr, [
                 (a(!0), n(W, null, K(t.links || [], (u, T) => (a(), n("div", {
@@ -4291,7 +4294,7 @@ const example = {{ order_id }};`,
                     class: "em-select em-select--sm",
                     onChange: (L) => Re(t.id, T, "platform", L.target.value)
                   }, [...o[46] || (o[46] = [
-                    Oe('<option value="facebook" data-v-5a131abf>Facebook</option><option value="twitter" data-v-5a131abf>Twitter / X</option><option value="instagram" data-v-5a131abf>Instagram</option><option value="linkedin" data-v-5a131abf>LinkedIn</option><option value="youtube" data-v-5a131abf>YouTube</option><option value="tiktok" data-v-5a131abf>TikTok</option><option value="custom" data-v-5a131abf>Custom</option>', 7)
+                    Me('<option value="facebook" data-v-5a131abf>Facebook</option><option value="twitter" data-v-5a131abf>Twitter / X</option><option value="instagram" data-v-5a131abf>Instagram</option><option value="linkedin" data-v-5a131abf>LinkedIn</option><option value="youtube" data-v-5a131abf>YouTube</option><option value="tiktok" data-v-5a131abf>TikTok</option><option value="custom" data-v-5a131abf>Custom</option>', 7)
                   ])], 40, zr),
                   e("input", {
                     type: "url",
@@ -4507,7 +4510,7 @@ const example = {{ order_id }};`,
               e("button", {
                 type: "button",
                 class: "em-add-btn em-add-btn--sm",
-                onClick: (u) => O(t.id)
+                onClick: (u) => M(t.id)
               }, "+ Add link", 8, xd)
             ])) : t.type === "accordion" ? (a(), n("div", Cd, [
               (a(!0), n(W, null, K(t.items || [], (u, T) => (a(), n("div", {
@@ -4587,14 +4590,14 @@ const example = {{ order_id }};`,
                 value: t.label,
                 onInput: (u) => $(t.id, { label: u.target.value }),
                 placeholder: "Label (e.g. Offer ends in)"
-              }, null, 40, Md),
+              }, null, 40, Od),
               e("input", {
                 type: "datetime-local",
                 class: "em-input",
                 value: t.endDateTime ? t.endDateTime.slice(0, 16) : "",
                 onInput: (u) => $(t.id, { endDateTime: u.target.value ? new Date(u.target.value).toISOString() : "" }),
                 placeholder: "End date & time"
-              }, null, 40, Od),
+              }, null, 40, Md),
               o[55] || (o[55] = e("span", { class: "em-hint" }, "Preview shows placeholder; real countdown uses dynamic GIF in send.", -1))
             ])) : t.type === "product_card" ? (a(), n("div", Nd, [
               e("input", {
@@ -4871,7 +4874,7 @@ const example = {{ order_id }};`,
                 value: t
               }, k(t), 9, cu))), 128))
             ], 512), [
-              [Me, R.value]
+              [Oe, R.value]
             ])
           ])
         ]),
@@ -4906,7 +4909,7 @@ const example = {{ order_id }};`,
   class: "kb-email-device-toggle",
   role: "tablist",
   "aria-label": "Viewport"
-}, Lu = { class: "kb-email-inbox-strip" }, Tu = { class: "kb-email-inbox-from" }, Pu = { class: "kb-email-inbox-from-name" }, Vu = { class: "kb-email-inbox-from-addr" }, Eu = { class: "kb-email-inbox-subject" }, Mu = ["title"], Ou = {
+}, Lu = { class: "kb-email-inbox-strip" }, Tu = { class: "kb-email-inbox-from" }, Pu = { class: "kb-email-inbox-from-name" }, Vu = { class: "kb-email-inbox-from-addr" }, Eu = { class: "kb-email-inbox-subject" }, Ou = ["title"], Mu = {
   key: 0,
   class: "kb-email-inbox-preheader"
 }, Nu = { class: "kb-email-body-canvas" }, Du = ["innerHTML"], zu = { class: "kb-email-actions" }, Hu = {
@@ -4924,7 +4927,8 @@ const example = {{ order_id }};`,
     variableOptions: { default: () => [] },
     showSave: { type: Boolean, default: !0 },
     showClose: { type: Boolean, default: !0 },
-    showDuplicate: { type: Boolean, default: !0 }
+    showDuplicate: { type: Boolean, default: !0 },
+    designOnly: { type: Boolean, default: !0 }
   },
   emits: ["update:modelValue", "change", "save", "edit", "send-test", "schedule", "send", "duplicate"],
   setup(s, { emit: r }) {
@@ -5126,7 +5130,7 @@ const example = {{ order_id }};`,
       updateMessage: G,
       undo: z,
       redo: _,
-      canUndo: M,
+      canUndo: O,
       canRedo: E,
       resetMessage: H,
       hooks: A
@@ -5213,7 +5217,7 @@ const example = {{ order_id }};`,
     }), le = I(() => {
       const D = Se.value;
       return oe.value ? Te(D, oe.value.data) : D;
-    }), O = I(() => {
+    }), M = I(() => {
       const D = ge.value;
       return oe.value ? Te(D, oe.value.data) : D;
     }), N = I(() => {
@@ -5230,7 +5234,7 @@ const example = {{ order_id }};`,
           status: c(m).status,
           dirty: c(g),
           "last-saved-at": c(w),
-          "can-undo": c(M),
+          "can-undo": c(O),
           "can-redo": c(E),
           "onUpdate:campaignName": Be,
           onUndo: c(z),
@@ -5311,7 +5315,7 @@ const example = {{ order_id }};`,
           ]))
         ]),
         e("main", Cu, [
-          c(m).audience.test_mode ? (a(), n("div", Su, [...f[10] || (f[10] = [
+          !s.designOnly && c(m).audience.test_mode ? (a(), n("div", Su, [...f[10] || (f[10] = [
             e("span", { class: "kb-email-test-banner-dot" }, null, -1),
             X(" Test mode — only your test segment will receive this. ", -1)
           ])])) : x("", !0),
@@ -5330,7 +5334,7 @@ const example = {{ order_id }};`,
                     value: B.id
                   }, k(B.label), 9, Au))), 128))
                 ], 512), [
-                  [Me, F.value]
+                  [Oe, F.value]
                 ])
               ])
             ]),
@@ -5412,8 +5416,8 @@ const example = {{ order_id }};`,
                   e("span", {
                     class: "kb-email-inbox-subject-text",
                     title: le.value || "No subject"
-                  }, k(le.value || "No subject"), 9, Mu),
-                  O.value ? (a(), n("span", Ou, " — " + k(O.value), 1)) : x("", !0)
+                  }, k(le.value || "No subject"), 9, Ou),
+                  M.value ? (a(), n("span", Mu, " — " + k(M.value), 1)) : x("", !0)
                 ])
               ]),
               e("div", Nu, [
@@ -5472,7 +5476,7 @@ const example = {{ order_id }};`,
       ])) : x("", !0)
     ]));
   }
-}), kt = /* @__PURE__ */ re(ju, [["__scopeId", "data-v-7810b836"]]), qu = { class: "kb-shell" }, Ku = {
+}), kt = /* @__PURE__ */ re(ju, [["__scopeId", "data-v-564f7f14"]]), qu = { class: "kb-shell" }, Ku = {
   class: "kb-shell__nav",
   role: "tablist",
   "aria-label": "Channel"

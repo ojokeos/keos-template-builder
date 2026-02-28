@@ -31,6 +31,11 @@ const props = withDefaults(
     showHistory?: boolean;
     showSaveVersion?: boolean;
     showDuplicate?: boolean;
+    /**
+     * When true (default), builder is design-only: message content + preview.
+     * Audience, delivery/schedule, and send options are configured on another page.
+     */
+    designOnly?: boolean;
   }>(),
   {
     disabledSections: () => [],
@@ -41,6 +46,7 @@ const props = withDefaults(
     showHistory: true,
     showSaveVersion: true,
     showDuplicate: true,
+    designOnly: true,
   }
 );
 
@@ -318,7 +324,7 @@ function onSave() {
         </div>
 
         <div
-          v-if="!disabledSections.includes('delivery')"
+          v-if="!designOnly && !disabledSections.includes('delivery')"
           class="kb-push-form"
         >
           <div class="kb-push-form-head">
@@ -336,7 +342,7 @@ function onSave() {
       </aside>
 
       <main class="kb-push-canvas">
-        <div v-if="campaign.audience.test_mode" class="kb-push-test-banner">
+        <div v-if="!designOnly && campaign.audience.test_mode" class="kb-push-test-banner">
           <span class="kb-push-test-banner-dot"></span>
           Test mode — only your test segment will receive this.
         </div>
@@ -387,7 +393,7 @@ function onSave() {
 
     <footer class="kb-push-actions">
       <button
-        v-if="showHistory"
+        v-if="!designOnly && showHistory"
         type="button"
         class="kb-push-action kb-push-action--secondary"
         @click="versionHistoryOpen = true"
@@ -395,7 +401,7 @@ function onSave() {
         Version history
       </button>
       <button
-        v-if="showSaveVersion"
+        v-if="!designOnly && showSaveVersion"
         type="button"
         class="kb-push-action kb-push-action--secondary"
         @click="emit('save-version', JSON.parse(JSON.stringify(campaign)))"
