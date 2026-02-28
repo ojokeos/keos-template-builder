@@ -1,5 +1,5 @@
-import Ze, { useState as M, useCallback as $, useMemo as ee, useEffect as Lt } from "react";
-var Ee = { exports: {} }, Z = {};
+import Xe, { useState as M, useCallback as $, useMemo as ee, useEffect as Lt } from "react";
+var Se = { exports: {} }, Z = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -9,11 +9,11 @@ var Ee = { exports: {} }, Z = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var qe;
+var Ye;
 function Mt() {
-  if (qe) return Z;
-  qe = 1;
-  var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.fragment"), s = Object.prototype.hasOwnProperty, u = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, c = { key: !0, ref: !0, __self: !0, __source: !0 };
+  if (Ye) return Z;
+  Ye = 1;
+  var r = Xe, n = Symbol.for("react.element"), l = Symbol.for("react.fragment"), s = Object.prototype.hasOwnProperty, u = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, c = { key: !0, ref: !0, __self: !0, __source: !0 };
   function x(S, _, P) {
     var T, k = {}, D = null, B = null;
     P !== void 0 && (D = "" + P), _.key !== void 0 && (D = "" + _.key), _.ref !== void 0 && (B = _.ref);
@@ -33,14 +33,14 @@ var Q = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var He;
+var qe;
 function Bt() {
-  return He || (He = 1, process.env.NODE_ENV !== "production" && function() {
-    var r = Ze, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), x = Symbol.for("react.provider"), S = Symbol.for("react.context"), _ = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), T = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), B = Symbol.for("react.offscreen"), U = Symbol.iterator, G = "@@iterator";
+  return qe || (qe = 1, process.env.NODE_ENV !== "production" && function() {
+    var r = Xe, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), x = Symbol.for("react.provider"), S = Symbol.for("react.context"), _ = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), T = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), B = Symbol.for("react.offscreen"), V = Symbol.iterator, G = "@@iterator";
     function J(e) {
       if (e === null || typeof e != "object")
         return null;
-      var a = U && e[U] || e[G];
+      var a = V && e[V] || e[G];
       return typeof a == "function" ? a : null;
     }
     var d = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
@@ -61,16 +61,16 @@ function Bt() {
         v.unshift("Warning: " + a), Function.prototype.apply.call(console[e], console, v);
       }
     }
-    var te = !1, re = !1, F = !1, pe = !1, me = !1, ne;
+    var te = !1, re = !1, F = !1, fe = !1, pe = !1, ne;
     ne = Symbol.for("react.module.reference");
-    function ge(e) {
-      return !!(typeof e == "string" || typeof e == "function" || e === s || e === c || me || e === u || e === P || e === T || pe || e === B || te || re || F || typeof e == "object" && e !== null && (e.$$typeof === D || e.$$typeof === k || e.$$typeof === x || e.$$typeof === S || e.$$typeof === _ || // This needs to include all possible module reference object
+    function me(e) {
+      return !!(typeof e == "string" || typeof e == "function" || e === s || e === c || pe || e === u || e === P || e === T || fe || e === B || te || re || F || typeof e == "object" && e !== null && (e.$$typeof === D || e.$$typeof === k || e.$$typeof === x || e.$$typeof === S || e.$$typeof === _ || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
       e.$$typeof === ne || e.getModuleId !== void 0));
     }
-    function he(e, a, o) {
+    function ge(e, a, o) {
       var f = e.displayName;
       if (f)
         return f;
@@ -110,7 +110,7 @@ function Bt() {
             var o = e;
             return ie(o._context) + ".Provider";
           case _:
-            return he(e, e.render, "ForwardRef");
+            return ge(e, e.render, "ForwardRef");
           case k:
             var f = e.displayName || null;
             return f !== null ? f : A(e.type) || "Memo";
@@ -125,18 +125,18 @@ function Bt() {
         }
       return null;
     }
-    var I = Object.assign, N = 0, ae, w, K, Te, ke, we, Ce;
-    function Oe() {
+    var I = Object.assign, N = 0, ae, w, K, Ee, Te, ke, we;
+    function Ce() {
     }
-    Oe.__reactDisabledLog = !0;
+    Ce.__reactDisabledLog = !0;
     function dt() {
       {
         if (N === 0) {
-          ae = console.log, w = console.info, K = console.warn, Te = console.error, ke = console.group, we = console.groupCollapsed, Ce = console.groupEnd;
+          ae = console.log, w = console.info, K = console.warn, Ee = console.error, Te = console.group, ke = console.groupCollapsed, we = console.groupEnd;
           var e = {
             configurable: !0,
             enumerable: !0,
-            value: Oe,
+            value: Ce,
             writable: !0
           };
           Object.defineProperties(console, {
@@ -171,43 +171,43 @@ function Bt() {
               value: K
             }),
             error: I({}, e, {
-              value: Te
+              value: Ee
             }),
             group: I({}, e, {
-              value: ke
+              value: Te
             }),
             groupCollapsed: I({}, e, {
-              value: we
+              value: ke
             }),
             groupEnd: I({}, e, {
-              value: Ce
+              value: we
             })
           });
         }
         N < 0 && p("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
       }
     }
-    var ye = d.ReactCurrentDispatcher, xe;
+    var he = d.ReactCurrentDispatcher, ye;
     function se(e, a, o) {
       {
-        if (xe === void 0)
+        if (ye === void 0)
           try {
             throw Error();
           } catch (y) {
             var f = y.stack.trim().match(/\n( *(at )?)/);
-            xe = f && f[1] || "";
+            ye = f && f[1] || "";
           }
         return `
-` + xe + e;
+` + ye + e;
       }
     }
-    var ve = !1, le;
+    var xe = !1, le;
     {
       var ft = typeof WeakMap == "function" ? WeakMap : Map;
       le = new ft();
     }
-    function Pe(e, a) {
-      if (!e || ve)
+    function Oe(e, a) {
+      if (!e || xe)
         return "";
       {
         var o = le.get(e);
@@ -215,11 +215,11 @@ function Bt() {
           return o;
       }
       var f;
-      ve = !0;
+      xe = !0;
       var y = Error.prepareStackTrace;
       Error.prepareStackTrace = void 0;
       var v;
-      v = ye.current, ye.current = null, dt();
+      v = he.current, he.current = null, dt();
       try {
         if (a) {
           var g = function() {
@@ -272,13 +272,13 @@ function Bt() {
             }
         }
       } finally {
-        ve = !1, ye.current = v, ut(), Error.prepareStackTrace = y;
+        xe = !1, he.current = v, ut(), Error.prepareStackTrace = y;
       }
-      var q = e ? e.displayName || e.name : "", V = q ? se(q) : "";
-      return typeof e == "function" && le.set(e, V), V;
+      var q = e ? e.displayName || e.name : "", U = q ? se(q) : "";
+      return typeof e == "function" && le.set(e, U), U;
     }
     function pt(e, a, o) {
-      return Pe(e, !1);
+      return Oe(e, !1);
     }
     function mt(e) {
       var a = e.prototype;
@@ -288,7 +288,7 @@ function Bt() {
       if (e == null)
         return "";
       if (typeof e == "function")
-        return Pe(e, mt(e));
+        return Oe(e, mt(e));
       if (typeof e == "string")
         return se(e);
       switch (e) {
@@ -313,13 +313,13 @@ function Bt() {
         }
       return "";
     }
-    var X = Object.prototype.hasOwnProperty, De = {}, We = d.ReactDebugCurrentFrame;
+    var X = Object.prototype.hasOwnProperty, Pe = {}, De = d.ReactDebugCurrentFrame;
     function ce(e) {
       if (e) {
         var a = e._owner, o = oe(e.type, e._source, a ? a.type : null);
-        We.setExtraStackFrame(o);
+        De.setExtraStackFrame(o);
       } else
-        We.setExtraStackFrame(null);
+        De.setExtraStackFrame(null);
     }
     function gt(e, a, o, f, y) {
       {
@@ -336,12 +336,12 @@ function Bt() {
             } catch (R) {
               m = R;
             }
-            m && !(m instanceof Error) && (ce(y), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", f || "React class", o, g, typeof m), ce(null)), m instanceof Error && !(m.message in De) && (De[m.message] = !0, ce(y), p("Failed %s type: %s", o, m.message), ce(null));
+            m && !(m instanceof Error) && (ce(y), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", f || "React class", o, g, typeof m), ce(null)), m instanceof Error && !(m.message in Pe) && (Pe[m.message] = !0, ce(y), p("Failed %s type: %s", o, m.message), ce(null));
           }
       }
     }
     var ht = Array.isArray;
-    function be(e) {
+    function ve(e) {
       return ht(e);
     }
     function yt(e) {
@@ -352,24 +352,24 @@ function Bt() {
     }
     function xt(e) {
       try {
-        return Ae(e), !1;
+        return We(e), !1;
       } catch {
         return !0;
       }
     }
-    function Ae(e) {
+    function We(e) {
       return "" + e;
     }
-    function $e(e) {
+    function Ae(e) {
       if (xt(e))
-        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", yt(e)), Ae(e);
+        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", yt(e)), We(e);
     }
-    var Ie = d.ReactCurrentOwner, vt = {
+    var $e = d.ReactCurrentOwner, vt = {
       key: !0,
       ref: !0,
       __self: !0,
       __source: !0
-    }, Le, Me;
+    }, Ie, Le;
     function bt(e) {
       if (X.call(e, "ref")) {
         var a = Object.getOwnPropertyDescriptor(e, "ref").get;
@@ -387,12 +387,12 @@ function Bt() {
       return e.key !== void 0;
     }
     function _t(e, a) {
-      typeof e.ref == "string" && Ie.current;
+      typeof e.ref == "string" && $e.current;
     }
     function Rt(e, a) {
       {
         var o = function() {
-          Le || (Le = !0, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
+          Ie || (Ie = !0, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
         };
         o.isReactWarning = !0, Object.defineProperty(e, "key", {
           get: o,
@@ -403,7 +403,7 @@ function Bt() {
     function St(e, a) {
       {
         var o = function() {
-          Me || (Me = !0, p("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
+          Le || (Le = !0, p("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
         };
         o.isReactWarning = !0, Object.defineProperty(e, "ref", {
           get: o,
@@ -443,7 +443,7 @@ function Bt() {
     function Tt(e, a, o, f, y) {
       {
         var v, g = {}, m = null, C = null;
-        o !== void 0 && ($e(o), m = "" + o), jt(a) && ($e(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, y));
+        o !== void 0 && (Ae(o), m = "" + o), jt(a) && (Ae(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, y));
         for (v in a)
           X.call(a, v) && !vt.hasOwnProperty(v) && (g[v] = a[v]);
         if (e && e.defaultProps) {
@@ -455,26 +455,26 @@ function Bt() {
           var E = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
           m && Rt(g, E), C && St(g, E);
         }
-        return Et(e, m, C, y, f, Ie.current, g);
+        return Et(e, m, C, y, f, $e.current, g);
       }
     }
-    var je = d.ReactCurrentOwner, Be = d.ReactDebugCurrentFrame;
+    var be = d.ReactCurrentOwner, Me = d.ReactDebugCurrentFrame;
     function Y(e) {
       if (e) {
         var a = e._owner, o = oe(e.type, e._source, a ? a.type : null);
-        Be.setExtraStackFrame(o);
+        Me.setExtraStackFrame(o);
       } else
-        Be.setExtraStackFrame(null);
+        Me.setExtraStackFrame(null);
     }
-    var _e;
-    _e = !1;
-    function Re(e) {
+    var je;
+    je = !1;
+    function _e(e) {
       return typeof e == "object" && e !== null && e.$$typeof === n;
     }
-    function ze() {
+    function Be() {
       {
-        if (je.current) {
-          var e = A(je.current.type);
+        if (be.current) {
+          var e = A(be.current.type);
           if (e)
             return `
 
@@ -486,10 +486,10 @@ Check the render method of \`` + e + "`.";
     function kt(e) {
       return "";
     }
-    var Fe = {};
+    var ze = {};
     function wt(e) {
       {
-        var a = ze();
+        var a = Be();
         if (!a) {
           var o = typeof e == "string" ? e : e.displayName || e.name;
           o && (a = `
@@ -499,35 +499,35 @@ Check the top-level render call using <` + o + ">.");
         return a;
       }
     }
-    function Ne(e, a) {
+    function Fe(e, a) {
       {
         if (!e._store || e._store.validated || e.key != null)
           return;
         e._store.validated = !0;
         var o = wt(a);
-        if (Fe[o])
+        if (ze[o])
           return;
-        Fe[o] = !0;
+        ze[o] = !0;
         var f = "";
-        e && e._owner && e._owner !== je.current && (f = " It was passed a child from " + A(e._owner.type) + "."), Y(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', o, f), Y(null);
+        e && e._owner && e._owner !== be.current && (f = " It was passed a child from " + A(e._owner.type) + "."), Y(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', o, f), Y(null);
       }
     }
-    function Ve(e, a) {
+    function Ne(e, a) {
       {
         if (typeof e != "object")
           return;
-        if (be(e))
+        if (ve(e))
           for (var o = 0; o < e.length; o++) {
             var f = e[o];
-            Re(f) && Ne(f, a);
+            _e(f) && Fe(f, a);
           }
-        else if (Re(e))
+        else if (_e(e))
           e._store && (e._store.validated = !0);
         else if (e) {
           var y = J(e);
           if (typeof y == "function" && y !== e.entries)
             for (var v = y.call(e), g; !(g = v.next()).done; )
-              Re(g.value) && Ne(g.value, a);
+              _e(g.value) && Fe(g.value, a);
         }
       }
     }
@@ -548,8 +548,8 @@ Check the top-level render call using <` + o + ">.");
         if (o) {
           var f = A(a);
           gt(o, e.props, "prop", f, e);
-        } else if (a.PropTypes !== void 0 && !_e) {
-          _e = !0;
+        } else if (a.PropTypes !== void 0 && !je) {
+          je = !0;
           var y = A(a);
           p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", y || "Unknown");
         }
@@ -569,16 +569,16 @@ Check the top-level render call using <` + o + ">.");
       }
     }
     var Ue = {};
-    function Ye(e, a, o, f, y, v) {
+    function Ve(e, a, o, f, y, v) {
       {
-        var g = ge(e);
+        var g = me(e);
         if (!g) {
           var m = "";
           (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (m += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
           var C = kt();
-          C ? m += C : m += ze();
+          C ? m += C : m += Be();
           var R;
-          e === null ? R = "null" : be(e) ? R = "array" : e !== void 0 && e.$$typeof === n ? (R = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : R = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", R, m);
+          e === null ? R = "null" : ve(e) ? R = "array" : e !== void 0 && e.$$typeof === n ? (R = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : R = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", R, m);
         }
         var E = Tt(e, a, o, y, v);
         if (E == null)
@@ -587,45 +587,45 @@ Check the top-level render call using <` + o + ">.");
           var W = a.children;
           if (W !== void 0)
             if (f)
-              if (be(W)) {
+              if (ve(W)) {
                 for (var q = 0; q < W.length; q++)
-                  Ve(W[q], e);
+                  Ne(W[q], e);
                 Object.freeze && Object.freeze(W);
               } else
                 p("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
             else
-              Ve(W, e);
+              Ne(W, e);
         }
         if (X.call(a, "key")) {
-          var V = A(e), O = Object.keys(a).filter(function(It) {
+          var U = A(e), O = Object.keys(a).filter(function(It) {
             return It !== "key";
-          }), Se = O.length > 0 ? "{key: someKey, " + O.join(": ..., ") + ": ...}" : "{key: someKey}";
-          if (!Ue[V + Se]) {
+          }), Re = O.length > 0 ? "{key: someKey, " + O.join(": ..., ") + ": ...}" : "{key: someKey}";
+          if (!Ue[U + Re]) {
             var $t = O.length > 0 ? "{" + O.join(": ..., ") + ": ...}" : "{}";
             p(`A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
 React keys must be passed directly to JSX without using spread:
   let props = %s;
-  <%s key={someKey} {...props} />`, Se, V, $t, V), Ue[V + Se] = !0;
+  <%s key={someKey} {...props} />`, Re, U, $t, U), Ue[U + Re] = !0;
           }
         }
         return e === s ? Ot(E) : Ct(E), E;
       }
     }
     function Pt(e, a, o) {
-      return Ye(e, a, o, !0);
+      return Ve(e, a, o, !0);
     }
     function Dt(e, a, o) {
-      return Ye(e, a, o, !1);
+      return Ve(e, a, o, !1);
     }
     var Wt = Dt, At = Pt;
     Q.Fragment = s, Q.jsx = Wt, Q.jsxs = At;
   }()), Q;
 }
-process.env.NODE_ENV === "production" ? Ee.exports = Mt() : Ee.exports = Bt();
-var t = Ee.exports;
-const fe = {
+process.env.NODE_ENV === "production" ? Se.exports = Mt() : Se.exports = Bt();
+var t = Se.exports;
+const ue = {
   android: {
     title: 60,
     body: 240
@@ -638,16 +638,16 @@ const fe = {
     title: 60,
     body: 240
   }
-}, Qe = ["android", "ios", "web"], et = "normal", tt = ["low", "normal", "high"], zt = 86400, Ft = [3600, 7200, 86400, 172800], rt = "1.0", nt = ["topic", "segment", "user_list"];
-function it() {
+}, Ze = ["android", "ios", "web"], Qe = "normal", et = ["low", "normal", "high"], zt = 86400, Ft = [3600, 7200, 86400, 172800], tt = "1.0", rt = ["topic", "segment", "user_list"];
+function nt() {
   return {
     type: "topic",
     topic_name: "default",
-    platforms: [...Qe],
+    platforms: [...Ze],
     test_mode: !1
   };
 }
-function at() {
+function it() {
   return {
     title: "",
     body: "",
@@ -658,16 +658,16 @@ function at() {
     actions: []
   };
 }
-function st() {
+function at() {
   return {
-    priority: et,
+    priority: Qe,
     ttl_seconds: zt,
     quiet_hours_respected: !1,
     send_local_time: !1,
     silent_push: !1
   };
 }
-function lt() {
+function st() {
   return {
     campaign_name: "",
     tags: [],
@@ -676,21 +676,21 @@ function lt() {
 }
 function Nt(r) {
   return {
-    schema_version: rt,
+    schema_version: tt,
     name: "",
     status: "draft",
-    audience: it(),
-    message: at(),
-    delivery: st(),
-    tracking: lt(),
+    audience: nt(),
+    message: it(),
+    delivery: at(),
+    tracking: st(),
     ...r
   };
 }
-function Vt(r) {
+function Ut(r) {
   const n = r;
-  return n.schema_version || (n.schema_version = rt), n.audience || (n.audience = it()), n.message || (n.message = at()), n.delivery || (n.delivery = st()), n.tracking || (n.tracking = lt()), tt.includes(n.delivery.priority) || (n.delivery.priority = et), nt.includes(n.audience.type) || (n.audience.type = "topic"), n.audience.type === "topic" && !n.audience.topic_name && (n.audience.topic_name = "default"), n;
+  return n.schema_version || (n.schema_version = tt), n.audience || (n.audience = nt()), n.message || (n.message = it()), n.delivery || (n.delivery = at()), n.tracking || (n.tracking = st()), et.includes(n.delivery.priority) || (n.delivery.priority = Qe), rt.includes(n.audience.type) || (n.audience.type = "topic"), n.audience.type === "topic" && !n.audience.topic_name && (n.audience.topic_name = "default"), n;
 }
-const Ut = {
+const Vt = {
   3600: "1 hour",
   7200: "2 hours",
   86400: "24 hours",
@@ -710,7 +710,7 @@ function Yt(r) {
   }
 }
 function qt(r, n) {
-  const { audience: l, delivery: s } = r, u = n ?? l.estimated_reach, c = Ut[s.ttl_seconds] ?? `${s.ttl_seconds}s`;
+  const { audience: l, delivery: s } = r, u = n ?? l.estimated_reach, c = Vt[s.ttl_seconds] ?? `${s.ttl_seconds}s`;
   return {
     sendTime: Yt(s.scheduled_at),
     audienceType: l.type,
@@ -735,14 +735,12 @@ function Gt(r, n) {
     severity: "info"
   }), l;
 }
-function de(r, n = "error") {
+function lt(r, n = "error") {
   return { message: r, severity: n };
 }
 function ot(r) {
-  var l, s;
-  console.log("Validating campaign", r);
   const n = [];
-  return r.schema_version || n.push(de("Missing schema_version")), (l = r.name) != null && l.trim() || n.push(de("Template name is required")), (s = r.message.body) != null && s.trim() || n.push(de("Message body is required")), {
+  return r.schema_version || n.push(lt("Missing schema_version")), {
     valid: n.length === 0,
     errors: n
   };
@@ -753,7 +751,7 @@ function Jt(r, n) {
     valid: l.valid,
     errors: [
       ...l.errors,
-      ...s.map((u) => de(u.message, u.severity))
+      ...s.map((u) => lt(u.message, u.severity))
     ]
   };
 }
@@ -766,9 +764,9 @@ function Xt(r) {
 function z(r, n) {
   return r.length <= n ? { text: r, truncated: !1 } : { text: r.slice(0, Math.max(0, n - 3)) + "...", truncated: !0 };
 }
-const ue = fe.android;
+const de = ue.android;
 function Zt(r) {
-  const { title: n, body: l } = r, s = z(n || "", ue.title), u = z(l || "", ue.body);
+  const { title: n, body: l } = r, s = z(n || "", de.title), u = z(l || "", de.body);
   return {
     title: s.text,
     body: u.text,
@@ -779,7 +777,7 @@ function Zt(r) {
   };
 }
 function Qt(r) {
-  const { title: n, body: l } = r, s = z(n || "", ue.title), u = z(l || "", ue.body);
+  const { title: n, body: l } = r, s = z(n || "", de.title), u = z(l || "", de.body);
   return {
     title: s.text,
     body: u.text,
@@ -793,9 +791,9 @@ function er(r, n = {}) {
   const l = n.expanded ? Qt(r) : Zt(r);
   return n.darkMode !== void 0 && (l.darkMode = n.darkMode), l;
 }
-const Ge = fe.ios;
+const He = ue.ios;
 function ct(r) {
-  const { title: n, body: l } = r, s = z(n || "", Ge.title), u = z(l || "", Ge.body);
+  const { title: n, body: l } = r, s = z(n || "", He.title), u = z(l || "", He.body);
   return {
     title: s.text,
     body: u.text,
@@ -812,9 +810,9 @@ function rr(r, n = {}) {
   const l = n.variant === "lockscreen" ? tr(r) : ct(r);
   return n.darkMode !== void 0 && (l.darkMode = n.darkMode), l;
 }
-const Je = fe.web;
-function Ke(r) {
-  const { title: n, body: l } = r, s = z(n || "", Je.title), u = z(l || "", Je.body);
+const Ge = ue.web;
+function Je(r) {
+  const { title: n, body: l } = r, s = z(n || "", Ge.title), u = z(l || "", Ge.body);
   return {
     title: s.text,
     body: u.text,
@@ -846,7 +844,7 @@ const b = {
     textMuted: "#64748b",
     textMeta: "#475569"
   }
-}, Xe = {
+}, Ke = {
   sectionTitle: {
     fontSize: 16,
     fontWeight: 600
@@ -856,7 +854,7 @@ const b = {
 };
 function ir(r = {}) {
   const [n, l] = M(
-    () => Vt(r.initial ?? Nt())
+    () => Ut(r.initial ?? Nt())
   ), s = r.hooks ?? {}, [u, c] = M(!1), x = $(
     (d) => {
       var p;
@@ -908,7 +906,7 @@ function ir(r = {}) {
       imageUrl: n.message.image_url
     }),
     [n.message]
-  ), U = $(
+  ), V = $(
     (d, p) => {
       const j = {
         title: n.message.title,
@@ -921,13 +919,13 @@ function ir(r = {}) {
         case "ios":
           return rr(j);
         case "web":
-          return Ke(j);
+          return Je(j);
         default:
-          return Ke(j);
+          return Je(j);
       }
     },
     [n.message]
-  ), G = fe, J = $(async () => s.customValidators ? s.customValidators(n) : [], [s, n]);
+  ), G = ue, J = $(async () => s.customValidators ? s.customValidators(n) : [], [s, n]);
   return {
     campaign: n,
     setCampaign: l,
@@ -939,7 +937,7 @@ function ir(r = {}) {
     updateMessage: _,
     updateDelivery: P,
     updateTracking: T,
-    getPreview: U,
+    getPreview: V,
     previewInput: B,
     characterLimits: G,
     runCustomValidators: J,
@@ -978,7 +976,7 @@ function H({
             }
           ),
           /* @__PURE__ */ t.jsxs("div", { children: [
-            /* @__PURE__ */ t.jsx("h3", { style: { fontSize: Xe.sectionTitle.fontSize, fontWeight: Xe.sectionTitle.fontWeight, margin: "0 0 4px 0" }, children: n }),
+            /* @__PURE__ */ t.jsx("h3", { style: { fontSize: Ke.sectionTitle.fontSize, fontWeight: Ke.sectionTitle.fontWeight, margin: "0 0 4px 0" }, children: n }),
             l && /* @__PURE__ */ t.jsx("p", { style: { fontSize: 14, color: h.neutral.textMuted, margin: 0, lineHeight: 1.3 }, children: l })
           ] })
         ] }),
@@ -1140,7 +1138,7 @@ function lr({
     /* @__PURE__ */ t.jsx("p", { style: i.sectionDesc, children: "Who receives this push?" }),
     /* @__PURE__ */ t.jsxs("div", { style: i.field, children: [
       /* @__PURE__ */ t.jsx("label", { style: i.label, children: "Delivery type" }),
-      /* @__PURE__ */ t.jsx("div", { style: i.radioGroup, children: nt.map((c) => /* @__PURE__ */ t.jsxs("label", { style: i.radio, children: [
+      /* @__PURE__ */ t.jsx("div", { style: i.radioGroup, children: rt.map((c) => /* @__PURE__ */ t.jsxs("label", { style: i.radio, children: [
         /* @__PURE__ */ t.jsx(
           "input",
           {
@@ -1199,7 +1197,7 @@ user_456`,
     ] }),
     /* @__PURE__ */ t.jsxs("div", { style: i.field, children: [
       /* @__PURE__ */ t.jsx("label", { style: i.label, children: "Platforms" }),
-      /* @__PURE__ */ t.jsx("div", { style: i.checkboxGroup, children: Qe.map((c) => /* @__PURE__ */ t.jsxs("label", { style: i.checkbox, children: [
+      /* @__PURE__ */ t.jsx("div", { style: i.checkboxGroup, children: Ze.map((c) => /* @__PURE__ */ t.jsxs("label", { style: i.checkbox, children: [
         /* @__PURE__ */ t.jsx(
           "input",
           {
@@ -1448,7 +1446,7 @@ function fr({
           style: i.select,
           value: r.priority,
           onChange: (s) => n({ priority: s.target.value }),
-          children: tt.map((s) => /* @__PURE__ */ t.jsx("option", { value: s, children: s }, s))
+          children: et.map((s) => /* @__PURE__ */ t.jsx("option", { value: s, children: s }, s))
         }
       )
     ] }),
@@ -1609,7 +1607,7 @@ function yr({
   onSchedule: S,
   onSend: _
 }) {
-  const [P, T] = M("android"), [k, D] = M(), [B, U] = M(!0), [G, J] = M(!0), d = ir({
+  const [P, T] = M("android"), [k, D] = M(), [B, V] = M(!0), [G, J] = M(!0), d = ir({
     initial: r,
     hooks: n,
     onDirty: () => u == null ? void 0 : u(d.campaign)
@@ -1621,7 +1619,7 @@ function yr({
       } catch {
         D(void 0);
       }
-    n != null && n.canSend && U(await Promise.resolve(n.canSend())), n != null && n.canSchedule && J(await Promise.resolve(n.canSchedule()));
+    n != null && n.canSend && V(await Promise.resolve(n.canSend())), n != null && n.canSchedule && J(await Promise.resolve(n.canSchedule()));
   }, [n, d.campaign.audience]);
   Lt(() => {
     p();
@@ -1629,10 +1627,10 @@ function yr({
   const j = ee(
     () => d.getValidationWithWarnings(k),
     [d.campaign, k, d.getValidationWithWarnings]
-  ), te = j.blockingErrors, re = j.warnings, F = j.valid, pe = ee(
+  ), te = j.blockingErrors, re = j.warnings, F = j.valid, fe = ee(
     () => qt(d.campaign, k),
     [d.campaign, k]
-  ), me = d.characterLimits[P].title, ne = d.characterLimits[P].body, ge = d.campaign.message.title.length, he = d.campaign.message.body.length, ie = $(
+  ), pe = d.characterLimits[P].title, ne = d.characterLimits[P].body, me = d.campaign.message.title.length, ge = d.campaign.message.body.length, ie = $(
     (w) => {
       d.update({ name: w });
     },
@@ -1711,9 +1709,9 @@ function yr({
               or,
               {
                 message: d.campaign.message,
-                titleCount: ge,
-                bodyCount: he,
-                titleLimit: me,
+                titleCount: me,
+                bodyCount: ge,
+                titleLimit: pe,
                 bodyLimit: ne,
                 selectedPlatform: P,
                 onUpdate: d.updateMessage
@@ -1749,7 +1747,7 @@ function yr({
                 )
               ] })
             ] }),
-            /* @__PURE__ */ t.jsx(sr, { summary: pe })
+            /* @__PURE__ */ t.jsx(sr, { summary: fe })
           ] })
         ]
       }

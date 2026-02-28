@@ -19,6 +19,10 @@ import {
   type Platform,
 } from '@keos/notification-builder-core';
 
+function toValidationIssues(messages: string[]): { message: string; severity: 'error' }[] {
+  return messages.map((message) => ({ message, severity: 'error' as const }));
+}
+
 const HISTORY_MAX = 20;
 
 function cloneCampaign(c: Campaign): Campaign {
@@ -37,6 +41,22 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
   );
   const hooks = options.hooks ?? {};
   const dirty = ref(false);
+
+  /** Builder-specific errors from hooks.customValidators (merged into getValidationWithWarnings). */
+  const customValidatorErrors = ref<string[]>([]);
+  watch(
+    raw,
+    () => {
+      if (!hooks.customValidators) {
+        customValidatorErrors.value = [];
+        return;
+      }
+      hooks.customValidators(raw.value).then((errs) => {
+        customValidatorErrors.value = errs;
+      });
+    },
+    { deep: true, immediate: true }
+  );
 
   const past = ref<Campaign[]>([]);
   const future = ref<Campaign[]>([]);
@@ -75,14 +95,19 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
 
   const validation = computed(() => validateCampaign(raw.value));
 
-  /** Use when estimatedReach is available for full validation + warnings. */
+  /** Core validation + warnings + builder-specific hooks.customValidators. */
   function getValidationWithWarnings(estimatedReach?: number) {
     const result = validateCampaignWithWarnings(raw.value, estimatedReach);
+    const customErrors = toValidationIssues(customValidatorErrors.value);
+    const blockingErrors = [...getBlockingErrors(result), ...customErrors];
+    const errors = [...result.errors, ...customErrors];
+    const valid = result.valid && customErrors.length === 0;
     return {
       ...result,
-      blockingErrors: getBlockingErrors(result),
+      errors,
+      valid,
+      blockingErrors,
       warnings: getWarnings(result),
-      valid: result.valid,
     };
   }
 
@@ -194,6 +219,8 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
     campaign: raw,
     dirty,
     validation,
+    /** Reactive ref updated by hooks.customValidators; read this in computed so validation re-runs when async validators resolve. */
+    customValidatorErrors,
     getValidationWithWarnings,
     update,
     updateAudience,

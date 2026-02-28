@@ -97,11 +97,13 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
     }>;
     dirty: import('vue').Ref<boolean, boolean>;
     validation: import('vue').ComputedRef<import('@keos/notification-builder-core').ValidationResult>;
+    /** Reactive ref updated by hooks.customValidators; read this in computed so validation re-runs when async validators resolve. */
+    customValidatorErrors: import('vue').Ref<string[], string[]>;
     getValidationWithWarnings: (estimatedReach?: number) => {
+        errors: import('@keos/notification-builder-core').ValidationIssue[];
+        valid: boolean;
         blockingErrors: import('@keos/notification-builder-core').ValidationIssue[];
         warnings: import('@keos/notification-builder-core').ValidationIssue[];
-        valid: boolean;
-        errors: import('@keos/notification-builder-core').ValidationIssue[];
     };
     update: (partial: Partial<Campaign>) => void;
     updateAudience: (partial: Partial<Campaign["audience"]>) => void;
