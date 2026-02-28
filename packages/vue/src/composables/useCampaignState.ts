@@ -158,8 +158,8 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
   }
 
   const previewInput = computed(() => ({
-    title: raw.value.message.title_template,
-    body: raw.value.message.body_template,
+    title: raw.value.message.title,
+    body: raw.value.message.body,
     imageUrl: raw.value.message.image_url,
   }));
 

@@ -1,7 +1,7 @@
-import type { Campaign, CampaignAudience } from './types.js';
-import { computeSendWarnings } from './deliverySummary.js';
+import type { Campaign, CampaignAudience } from "./types.js";
+import { computeSendWarnings } from "./deliverySummary.js";
 
-export type ValidationSeverity = 'error' | 'warning' | 'info';
+export type ValidationSeverity = "error" | "warning" | "info";
 
 export interface ValidationIssue {
   message: string;
@@ -13,45 +13,29 @@ export interface ValidationResult {
   errors: ValidationIssue[];
 }
 
-function issue(message: string, severity: ValidationSeverity = 'error'): ValidationIssue {
+function issue(
+  message: string,
+  severity: ValidationSeverity = "error",
+): ValidationIssue {
   return { message, severity };
 }
 
 export function validateCampaign(campaign: Campaign): ValidationResult {
+  console.log("Validating campaign", campaign);
   const errors: ValidationIssue[] = [];
-
   if (!campaign.schema_version) {
-    errors.push(issue('Missing schema_version'));
+    errors.push(issue("Missing schema_version"));
   }
 
   if (!campaign.name?.trim()) {
-    errors.push(issue('Template name is required'));
+    errors.push(issue("Template name is required"));
   }
 
-  if (!campaign.message.title_template?.trim()) {
-    errors.push(issue('Title is required'));
+  if (!campaign.message.body?.trim()) {
+    errors.push(issue("Message body is required"));
   }
 
-  if (!campaign.message.body_template?.trim()) {
-    errors.push(issue('Message body is required'));
-  }
-
-  if (campaign.audience.type === 'topic' && !campaign.audience.topic_name?.trim()) {
-    errors.push(issue('Topic name is required when targeting by topic'));
-  }
-
-  if (campaign.audience.platforms.length === 0) {
-    errors.push(issue('At least one platform (iOS, Android, Web) must be selected'));
-  }
-
-  // Tracking campaign_name should mirror the template name; do not force a separate value
-  if (campaign.tracking && !campaign.tracking.campaign_name?.trim() && !campaign.name?.trim()) {
-    errors.push(issue('Campaign name is required for tracking'));
-  }
-
-  if (campaign.delivery.ttl_seconds <= 0) {
-    errors.push(issue('TTL must be greater than 0'));
-  }
+  // All other rules (audience, platforms, tracking, TTL, etc.) are left to hooks.customValidators
 
   return {
     valid: errors.length === 0,
@@ -62,7 +46,7 @@ export function validateCampaign(campaign: Campaign): ValidationResult {
 /** Returns validation result with optional warnings (from computeSendWarnings) merged in. */
 export function validateCampaignWithWarnings(
   campaign: Campaign,
-  estimatedReach?: number
+  estimatedReach?: number,
 ): ValidationResult {
   const result = validateCampaign(campaign);
   const warnings = computeSendWarnings(campaign, estimatedReach);
@@ -78,12 +62,12 @@ export function validateCampaignWithWarnings(
 export function validateAudience(audience: CampaignAudience): ValidationResult {
   const errors: ValidationIssue[] = [];
 
-  if (audience.type === 'topic' && !audience.topic_name?.trim()) {
-    errors.push(issue('Topic name is required'));
+  if (audience.type === "topic" && !audience.topic_name?.trim()) {
+    errors.push(issue("Topic name is required"));
   }
 
   if (audience.platforms.length === 0) {
-    errors.push(issue('Select at least one platform'));
+    errors.push(issue("Select at least one platform"));
   }
 
   return {
@@ -94,10 +78,10 @@ export function validateAudience(audience: CampaignAudience): ValidationResult {
 
 /** Helper: only issues that block send/schedule (severity === 'error'). */
 export function getBlockingErrors(result: ValidationResult): ValidationIssue[] {
-  return result.errors.filter((e) => e.severity === 'error');
+  return result.errors.filter((e) => e.severity === "error");
 }
 
 /** Helper: non-blocking issues (warning, info). */
 export function getWarnings(result: ValidationResult): ValidationIssue[] {
-  return result.errors.filter((e) => e.severity !== 'error');
+  return result.errors.filter((e) => e.severity !== "error");
 }

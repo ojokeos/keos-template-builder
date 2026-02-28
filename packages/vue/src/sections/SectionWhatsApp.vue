@@ -26,7 +26,7 @@ function extractPlaceholders(text: string): string[] {
 
 const templateFields = computed(() => {
   const header = (props.message as any).whatsapp_header ?? '';
-  const body = (props.message as any).whatsapp_body ?? props.message.body_template ?? '';
+  const body = (props.message as any).whatsapp_body ?? props.message.body ?? '';
   const vars = new Set((props.message.variables_used ?? []) as string[]);
   const placeholders = [...extractPlaceholders(header), ...extractPlaceholders(body)];
   const uniq = Array.from(new Set(placeholders));

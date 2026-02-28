@@ -7,8 +7,8 @@ export function toFCM(campaign) {
     const { message, delivery, audience } = campaign;
     const payload = {
         notification: {
-            title: message.title_template,
-            body: message.body_template,
+            title: message.title,
+            body: message.body,
             ...(message.image_url && { image: message.image_url }),
             ...(message.deep_link && { click_action: message.deep_link }),
         },

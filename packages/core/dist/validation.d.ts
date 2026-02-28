@@ -1,5 +1,5 @@
-import type { Campaign, CampaignAudience } from './types.js';
-export type ValidationSeverity = 'error' | 'warning' | 'info';
+import type { Campaign, CampaignAudience } from "./types.js";
+export type ValidationSeverity = "error" | "warning" | "info";
 export interface ValidationIssue {
     message: string;
     severity: ValidationSeverity;

@@ -10,8 +10,8 @@ export function createEmptyAudience() {
 }
 export function createEmptyMessage() {
     return {
-        title_template: '',
-        body_template: '',
+        title: '',
+        body: '',
         variables_used: [],
         // No actions by default; UI can add up to provider-supported count.
         // When omitted, mappers simply won't include actions.

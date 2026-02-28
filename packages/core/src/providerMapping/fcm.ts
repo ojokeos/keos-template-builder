@@ -11,8 +11,8 @@ export function toFCM(campaign: Campaign): ProviderMappingResult {
 
   const payload: Record<string, unknown> = {
     notification: {
-      title: message.title_template,
-      body: message.body_template,
+      title: message.title,
+      body: message.body,
       ...(message.image_url && { image: message.image_url }),
       ...(message.deep_link && { click_action: message.deep_link }),
     },

@@ -10,8 +10,8 @@ export function toWebPush(campaign: Campaign): ProviderMappingResult {
   const { message, delivery } = campaign;
 
   const payload: Record<string, unknown> = {
-    title: message.title_template,
-    body: message.body_template,
+    title: message.title,
+    body: message.body,
     ...(message.image_url && { image: message.image_url }),
     ...(message.deep_link && { url: message.deep_link }),
     ...(delivery.collapse_key && { tag: delivery.collapse_key }),

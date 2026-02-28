@@ -169,7 +169,7 @@ Campaign payload includes `schema_version: "1.0"` and:
 
 - **Campaign**: `name`, `status`, `audience`, `message`, `delivery`, `tracking`.
 - **CampaignAudience**: `type` (topic | segment | user_list), `topic_name`, `platforms[]`, `test_mode`, etc.
-- **CampaignMessage**: `title_template`, `body_template`, `image_url`, `deep_link`, `variables_used[]`.
+- **CampaignMessage**: `title`, `body`, `image_url`, `deep_link`, `variables_used[]`.
 - **CampaignDelivery**: `priority`, `ttl_seconds`, `collapse_key`, `quiet_hours_respected`, `scheduled_at`, etc.
 - **CampaignTracking**: `campaign_name`, `tags[]`, `ab_test`, `conversion_event`.
 

@@ -27,14 +27,14 @@ export interface CampaignAudience {
     test_tokens?: string[];
 }
 export interface CampaignMessage {
-    title_template: string;
-    body_template: string;
+    title: string;
+    body: string;
     image_url?: string;
     deep_link?: string;
     variables_used?: string[];
     /** Phase 2: localized title/body by locale code */
-    title_template_by_locale?: Record<string, string>;
-    body_template_by_locale?: Record<string, string>;
+    title_by_locale?: Record<string, string>;
+    body_by_locale?: Record<string, string>;
 }
 export interface NotificationAction {
     /** Stable identifier used in clients / handlers */

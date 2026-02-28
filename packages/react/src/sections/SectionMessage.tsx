@@ -34,8 +34,8 @@ export function SectionMessage({
           type="text"
           style={styles.input}
           placeholder="Notification title"
-          value={message.title_template}
-          onChange={(e) => onUpdate({ title_template: e.target.value })}
+          value={message.title}
+          onChange={(e) => onUpdate({ title: e.target.value })}
         />
       </div>
 
@@ -50,8 +50,8 @@ export function SectionMessage({
           style={styles.textarea}
           rows={3}
           placeholder="Notification body"
-          value={message.body_template}
-          onChange={(e) => onUpdate({ body_template: e.target.value })}
+          value={message.body}
+          onChange={(e) => onUpdate({ body: e.target.value })}
         />
       </div>
 

@@ -80,8 +80,8 @@ export function KeosNotificationBuilder({
 
   const titleLimit = state.characterLimits[selectedPlatform].title;
   const bodyLimit = state.characterLimits[selectedPlatform].body;
-  const titleCount = state.campaign.message.title_template.length;
-  const bodyCount = state.campaign.message.body_template.length;
+  const titleCount = state.campaign.message.title.length;
+  const bodyCount = state.campaign.message.body.length;
 
   const handleNameChange = useCallback(
     (name: string) => {
@@ -201,9 +201,9 @@ export function KeosNotificationBuilder({
                   onInsertVariable={(payload) => {
                     const token = ` {{ ${payload.variable} }}`;
                     if (payload.field === 'title') {
-                      state.updateMessage({ title_template: state.campaign.message.title_template + token });
+                      state.updateMessage({ title: state.campaign.message.title + token });
                     } else {
-                      state.updateMessage({ body_template: state.campaign.message.body_template + token });
+                      state.updateMessage({ body: state.campaign.message.body + token });
                     }
                   }}
                 />

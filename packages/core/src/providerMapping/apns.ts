@@ -14,8 +14,8 @@ export function toAPNs(campaign: Campaign): ProviderMappingResult {
 
   const aps: Record<string, unknown> = {
     alert: {
-      title: message.title_template,
-      body: message.body_template,
+      title: message.title,
+      body: message.body,
     },
     'mutable-content': !!message.image_url,
     ...(delivery.silent_push && { 'content-available': 1 }),
