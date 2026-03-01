@@ -1008,7 +1008,6 @@ function onSave() {
   position: sticky;
   bottom: 0;
   z-index: 10;
-  box-shadow: 0 -4px 24px -4px rgba(15, 23, 42, 0.06);
 }
 .kb-email-action {
   padding: 12px 24px;

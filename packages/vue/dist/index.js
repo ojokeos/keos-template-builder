@@ -2142,7 +2142,7 @@ const Ve = [
       }, null, 8, ["open", "versions"])
     ]));
   }
-}), ft = /* @__PURE__ */ ve(Kn, [["__scopeId", "data-v-9410b443"]]), Yn = { class: "kb-section" }, Jn = { class: "kb-section__head" }, Gn = { class: "kb-field" }, Qn = ["value"], Xn = { class: "kb-field" }, Zn = ["value"], eo = {
+}), ft = /* @__PURE__ */ ve(Kn, [["__scopeId", "data-v-dc66f45e"]]), Yn = { class: "kb-section" }, Jn = { class: "kb-section__head" }, Gn = { class: "kb-field" }, Qn = ["value"], Xn = { class: "kb-field" }, Zn = ["value"], eo = {
   key: 0,
   class: "kb-field"
 }, to = ["value"], so = {
@@ -3109,7 +3109,7 @@ const Ve = [
       ])) : $("", !0)
     ]));
   }
-}), kt = /* @__PURE__ */ ve(Ml, [["__scopeId", "data-v-069e9260"]]), Nl = { class: "kb-section" }, Dl = { class: "kb-section__head" }, zl = { class: "kb-field" }, Hl = ["value"], Wl = { class: "kb-field" }, Fl = { class: "kb-label" }, jl = { key: 0 }, ql = { key: 1 }, Kl = { key: 2 }, Yl = ["value"], Jl = {
+}), kt = /* @__PURE__ */ ve(Ml, [["__scopeId", "data-v-c10b3734"]]), Nl = { class: "kb-section" }, Dl = { class: "kb-section__head" }, zl = { class: "kb-field" }, Hl = ["value"], Wl = { class: "kb-field" }, Fl = { class: "kb-label" }, jl = { key: 0 }, ql = { key: 1 }, Kl = { key: 2 }, Yl = ["value"], Jl = {
   key: 0,
   class: "kb-truncation-hint"
 }, Gl = { class: "kb-field" }, Ql = { class: "kb-insert-row" }, Xl = ["value"], Zl = { class: "kb-field" }, ei = { class: "kb-insert-row" }, ti = /* @__PURE__ */ de({
@@ -3558,7 +3558,7 @@ const Ve = [
       ])) : $("", !0)
     ]));
   }
-}), ht = /* @__PURE__ */ ve(Oi, [["__scopeId", "data-v-86ff40ab"]]), Mi = 30, Ni = 60, Di = 130;
+}), ht = /* @__PURE__ */ ve(Oi, [["__scopeId", "data-v-edfbdd8b"]]), Mi = 30, Ni = 60, Di = 130;
 function zi(t) {
   const d = (t ?? "").trim().length;
   return d < Mi ? "too_short" : d <= Ni ? "good" : "too_long";
@@ -5606,7 +5606,7 @@ const example = {{ order_id }};`,
       ])) : $("", !0)
     ]));
   }
-}), _t = /* @__PURE__ */ ve(uc, [["__scopeId", "data-v-c1ff85da"]]), cc = { class: "kb-shell" }, pc = {
+}), _t = /* @__PURE__ */ ve(uc, [["__scopeId", "data-v-3cb6ed4c"]]), cc = { class: "kb-shell" }, pc = {
   class: "kb-shell__nav",
   role: "tablist",
   "aria-label": "Channel"
