@@ -469,8 +469,9 @@ function onSave() {
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 0;
-  min-height: calc(100vh - 120px);
-  align-items: start;
+  height: calc(100vh - 120px);
+  min-height: 320px;
+  align-items: stretch;
   margin-top: 24px;
 }
 @media (max-width: 1023px) {
@@ -484,13 +485,13 @@ function onSave() {
 .kb-wa-sidebar {
   background: #fff;
   overflow-y: auto;
-  max-height: calc(100vh - 120px);
   padding: 0;
   margin: 12px 0 0 0;
   border-radius: 0 20px 0 0;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-left: none;
   box-shadow: 2px 0 12px -4px rgba(15, 23, 42, 0.06);
+  min-height: 0;
 }
 @media (max-width: 1023px) {
   .kb-wa-sidebar {
@@ -538,6 +539,8 @@ function onSave() {
   gap: 28px;
   align-items: center;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 @media (max-width: 1023px) {
   .kb-wa-canvas {
