@@ -55,8 +55,8 @@ export function SectionAudience({
             style={{ ...styles.input, ...styles.textarea }}
             rows={3}
             placeholder='{"property": "country", "op": "eq", "value": "US"}'
-            value={audience.segment_query_json ?? ''}
-            onChange={(e) => onUpdate({ segment_query_json: e.target.value })}
+            value={audience.segment_query ?? ''}
+            onChange={(e) => onUpdate({ segment_query: e.target.value })}
           />
         </div>
       )}

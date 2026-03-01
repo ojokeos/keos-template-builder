@@ -12,7 +12,7 @@ export function createEmptyMessage() {
     return {
         title: '',
         body: '',
-        variables_used: [],
+        variables: [],
         // No actions by default; UI can add up to provider-supported count.
         // When omitted, mappers simply won't include actions.
         // @ts-expect-error actions is optional on CampaignMessage but we initialize as empty.
@@ -22,9 +22,9 @@ export function createEmptyMessage() {
 export function createEmptyDelivery() {
     return {
         priority: DEFAULT_PRIORITY,
-        ttl_seconds: DEFAULT_TTL_SECONDS,
-        quiet_hours_respected: false,
-        send_local_time: false,
+        ttl: DEFAULT_TTL_SECONDS,
+        quiet_hours: false,
+        local_time: false,
         silent_push: false,
     };
 }
@@ -62,6 +62,8 @@ export function ensureSchemaVersion(campaign) {
         c.tracking = createEmptyTracking();
     if (!PRIORITIES.includes(c.delivery.priority))
         c.delivery.priority = DEFAULT_PRIORITY;
+    if (c.delivery.ttl === undefined)
+        c.delivery.ttl = DEFAULT_TTL_SECONDS;
     if (!AUDIENCE_TYPES.includes(c.audience.type))
         c.audience.type = 'topic';
     if (c.audience.type === 'topic' && !c.audience.topic_name)

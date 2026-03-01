@@ -15,7 +15,7 @@ export function toFCM(campaign) {
         data: {},
         android: {
             priority: delivery.priority === 'high' ? 'high' : 'normal',
-            ttl: `${delivery.ttl_seconds}s`,
+            ttl: `${delivery.ttl}s`,
             ...(delivery.collapse_key && { collapseKey: delivery.collapse_key }),
             ...(message.deep_link && { clickAction: message.deep_link }),
         },
@@ -35,6 +35,9 @@ export function toFCM(campaign) {
     }
     if (message.deep_link) {
         payload.data['deep_link'] = message.deep_link;
+    }
+    if (message.location && (message.location.lat != null || message.location.lon != null || message.location.name || message.location.address)) {
+        payload.data['location'] = message.location;
     }
     if (Array.isArray(message.actions) && message.actions.length > 0) {
         payload.data['actions'] = message.actions;

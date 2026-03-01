@@ -69,8 +69,8 @@ function onTopicChange(e: Event) {
         class="kb-input kb-textarea"
         rows="3"
         placeholder='{"property": "country", "op": "eq", "value": "US"}'
-        :value="audience.segment_query_json"
-        @input="(e) => $emit('update', { segment_query_json: (e.target as HTMLTextAreaElement).value })"
+        :value="audience.segment_query"
+        @input="(e) => $emit('update', { segment_query: (e.target as HTMLTextAreaElement).value })"
       />
     </div>
 

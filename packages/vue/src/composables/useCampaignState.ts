@@ -204,8 +204,9 @@ export function useCampaignState(options: UseCampaignStateOptions = {}) {
       default:
         base = simulateWeb(input);
     }
-    const actions = (raw.value.message as any).actions ?? [];
-    return { ...(base as any), actions } as PreviewResult;
+    const actions = (raw.value.message as { actions?: Array<{ id: string; label?: string }> }).actions ?? [];
+    const location = (raw.value.message as { location?: unknown }).location;
+    return { ...base, actions, location: location ?? undefined };
   }
 
   const characterLimits = PLATFORM_LIMITS;

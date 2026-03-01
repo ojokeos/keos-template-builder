@@ -9,7 +9,7 @@ export function toAPNs(campaign: Campaign): ProviderMappingResult {
   const warnings: string[] = [];
   const { message, delivery } = campaign;
 
-  const ttlSeconds = delivery.ttl_seconds;
+  const ttlSeconds = delivery.ttl;
   const expirationTimestamp = Math.floor(Date.now() / 1000) + ttlSeconds;
 
   const aps: Record<string, unknown> = {
@@ -37,6 +37,9 @@ export function toAPNs(campaign: Campaign): ProviderMappingResult {
 
   if (message.deep_link) {
     (payload as Record<string, unknown>).deep_link = message.deep_link;
+  }
+  if (message.location && (message.location.lat != null || message.location.lon != null || message.location.name || message.location.address)) {
+    (payload as Record<string, unknown>).location = message.location;
   }
   if (campaign.tracking?.campaign_name) {
     (payload as Record<string, unknown>).campaign_name = campaign.tracking.campaign_name;

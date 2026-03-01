@@ -180,7 +180,7 @@ function updateName(name: string) {
   });
 }
 
-const smsBodyRaw = computed(() => (((campaign.value.message as any).sms_body ?? '') as string) || '');
+const smsBodyRaw = computed(() => (((campaign.value.message as any).body ?? '') as string) || '');
 const smsCharCount = computed(() => smsBodyRaw.value.length);
 const smsSegmentCount = computed(() => {
   if (!smsCharCount.value) return 0;
@@ -206,7 +206,7 @@ const smsTruncationHint = computed(() => {
   return 'Shorten this message to reduce segment count and cost.';
 });
 const smsSenderId = computed(
-  () => ((campaign.value.message as any).sms_sender_id as string | undefined) ?? 'YourBrand'
+  () => ((campaign.value.message as any).sender_id as string | undefined) ?? 'YourBrand'
 );
 
 function onSave() {

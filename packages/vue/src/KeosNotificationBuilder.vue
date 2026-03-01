@@ -225,17 +225,17 @@ function updateName(name: string) {
 
 function onInsertVariable(payload: { variable: string; field: 'title' | 'body' }) {
   const token = ` {{ ${payload.variable} }}`;
-  const existingVars = campaign.value.message.variables_used ?? [];
+  const existingVars = campaign.value.message.variables ?? [];
   const nextVars = Array.from(new Set([...existingVars, payload.variable]));
   if (payload.field === 'title') {
     updateMessage({
       title: campaign.value.message.title + token,
-      variables_used: nextVars,
+      variables: nextVars,
     });
   } else {
     updateMessage({
       body: campaign.value.message.body + token,
-      variables_used: nextVars,
+      variables: nextVars,
     });
   }
 }

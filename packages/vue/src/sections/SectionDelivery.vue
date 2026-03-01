@@ -90,8 +90,8 @@ const ttlLabels: Record<number, string> = {
         </label>
         <select
           class="kb-select"
-          :value="delivery.ttl_seconds"
-          @change="(e) => $emit('update', { ttl_seconds: Number((e.target as HTMLSelectElement).value) })"
+          :value="delivery.ttl"
+          @change="(e) => $emit('update', { ttl: Number((e.target as HTMLSelectElement).value) })"
         >
           <option v-for="s in TTL_PRESETS" :key="s" :value="s">{{ ttlLabels[s] ?? s + 's' }}</option>
         </select>
@@ -115,8 +115,8 @@ const ttlLabels: Record<number, string> = {
         <label class="kb-checkbox">
           <input
             type="checkbox"
-            :checked="delivery.quiet_hours_respected"
-            @change="$emit('update', { quiet_hours_respected: !delivery.quiet_hours_respected })"
+            :checked="delivery.quiet_hours"
+            @change="$emit('update', { quiet_hours: !delivery.quiet_hours })"
           />
           <span>Respect quiet hours</span>
         </label>
