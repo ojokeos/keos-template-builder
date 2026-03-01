@@ -34,9 +34,15 @@ export type EmailBlockType =
   | 'rss_feed'
   | 'dynamic_image';
 
+export type BlockAlignment = 'left' | 'center' | 'right';
+
 export interface EmailBlockBase {
   id: string;
   type: EmailBlockType;
+  /** Optional alignment for block content (left, center, right). */
+  alignment?: BlockAlignment;
+  /** Optional full-width layout (e.g. button, image). */
+  fullWidth?: boolean;
 }
 
 export interface EmailBlockHeading extends EmailBlockBase {
@@ -239,18 +245,24 @@ const DEFAULT_SOCIAL_LINKS: EmailSocialLink[] = [
   { platform: 'linkedin', url: '' },
 ];
 
+/** Block types that show Alignment and Full width layout options. */
+const blockLayoutTypes: EmailBlockType[] = [
+  'heading', 'paragraph', 'image', 'button', 'divider', 'spacer',
+  'footer', 'quote', 'list', 'social', 'video', 'link_list',
+];
+
 function createBlock(type: EmailBlockType): EmailBlock {
   switch (type) {
     case 'heading':
-      return { id: blockId(), type: 'heading', level: 1, content: 'Heading' };
+      return { id: blockId(), type: 'heading', level: 1, content: 'Heading', alignment: 'left', fullWidth: false };
     case 'paragraph':
-      return { id: blockId(), type: 'paragraph', content: 'Your text here. Use {{ first_name }} for personalization.' };
+      return { id: blockId(), type: 'paragraph', content: 'Your text here. Use {{ first_name }} for personalization.', alignment: 'left', fullWidth: false };
     case 'image':
-      return { id: blockId(), type: 'image', src: '', alt: '', linkUrl: '' };
+      return { id: blockId(), type: 'image', src: '', alt: '', linkUrl: '', alignment: 'left', fullWidth: false };
     case 'button':
-      return { id: blockId(), type: 'button', text: 'Click here', url: 'https://', borderRadius: 8, fullWidth: false, ghost: false };
+      return { id: blockId(), type: 'button', text: 'Click here', url: 'https://', borderRadius: 8, fullWidth: false, ghost: false, alignment: 'left' };
     case 'divider':
-      return { id: blockId(), type: 'divider', thickness: 1, color: '#e2e8f0', lineStyle: 'solid' };
+      return { id: blockId(), type: 'divider', thickness: 1, color: '#e2e8f0', lineStyle: 'solid', alignment: 'left', fullWidth: false };
     case 'spacer':
       return { id: blockId(), type: 'spacer', height: 24 };
     case 'footer':
@@ -260,15 +272,17 @@ function createBlock(type: EmailBlockType): EmailBlock {
         content: 'You received this email because you signed up at our site.',
         unsubscribeUrl: '',
         companyAddress: '',
+        alignment: 'left',
+        fullWidth: false,
       };
     case 'list':
-      return { id: blockId(), type: 'list', style: 'bullet', items: ['First item', 'Second item', 'Third item'] };
+      return { id: blockId(), type: 'list', style: 'bullet', items: ['First item', 'Second item', 'Third item'], alignment: 'left', fullWidth: false };
     case 'quote':
-      return { id: blockId(), type: 'quote', content: 'Highlight a key message or testimonial here.', style: 'default' };
+      return { id: blockId(), type: 'quote', content: 'Highlight a key message or testimonial here.', style: 'default', alignment: 'left', fullWidth: false };
     case 'social':
-      return { id: blockId(), type: 'social', links: DEFAULT_SOCIAL_LINKS.map((l) => ({ ...l })) };
+      return { id: blockId(), type: 'social', links: DEFAULT_SOCIAL_LINKS.map((l) => ({ ...l })), alignment: 'center', fullWidth: false };
     case 'video':
-      return { id: blockId(), type: 'video', thumbnailUrl: '', videoUrl: 'https://', caption: '' };
+      return { id: blockId(), type: 'video', thumbnailUrl: '', videoUrl: 'https://', caption: '', alignment: 'left', fullWidth: false };
     case 'link_list':
       return {
         id: blockId(),
@@ -279,6 +293,8 @@ function createBlock(type: EmailBlockType): EmailBlock {
           { text: 'View in browser', url: '' },
         ],
         separator: ' | ',
+        alignment: 'center',
+        fullWidth: false,
       };
     case 'columns':
       return {
@@ -904,10 +920,6 @@ const varChipLabel = '{{ var }}';
               <input type="number" class="em-input em-input--narrow" min="0" max="24" :value="(block as any).borderRadius ?? 8" @input="(e) => updateBlock(block.id, { borderRadius: Number((e.target as HTMLInputElement).value) || 0 })" />
             </div>
             <label class="em-check-row">
-              <input type="checkbox" :checked="(block as any).fullWidth" @change="(e) => updateBlock(block.id, { fullWidth: (e.target as HTMLInputElement).checked })" />
-              <span>Full width</span>
-            </label>
-            <label class="em-check-row">
               <input type="checkbox" :checked="(block as any).ghost" @change="(e) => updateBlock(block.id, { ghost: (e.target as HTMLInputElement).checked })" />
               <span>Ghost (outline) style</span>
             </label>
@@ -1138,6 +1150,23 @@ const varChipLabel = '{{ var }}';
             <input type="url" class="em-input" :value="(block as any).imageUrl" @input="(e) => updateBlock(block.id, { imageUrl: (e.target as HTMLInputElement).value })" placeholder="Image URL (use {{ var }} for per-recipient)" />
             <input type="text" class="em-input" :value="(block as any).alt" @input="(e) => updateBlock(block.id, { alt: (e.target as HTMLInputElement).value })" placeholder="Alt text" />
             <input type="url" class="em-input" :value="(block as any).fallbackUrl" @input="(e) => updateBlock(block.id, { fallbackUrl: (e.target as HTMLInputElement).value })" placeholder="Fallback URL (optional)" />
+          </div>
+
+          <div v-if="blockLayoutTypes.includes(block.type)" class="em-block-fields em-block-fields--row em-block-fields--layout">
+            <label class="em-inline-label">Alignment</label>
+            <select
+              :value="(block as any).alignment ?? 'left'"
+              class="em-select em-select--sm"
+              @change="(e) => updateBlock(block.id, { alignment: (e.target as HTMLSelectElement).value as BlockAlignment })"
+            >
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+            <label class="em-check-row">
+              <input type="checkbox" :checked="(block as any).fullWidth" @change="(e) => updateBlock(block.id, { fullWidth: (e.target as HTMLInputElement).checked })" />
+              <span>Full width</span>
+            </label>
           </div>
         </div>
       </div>
