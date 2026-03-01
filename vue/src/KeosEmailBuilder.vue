@@ -21,29 +21,38 @@ function emailBlocksToHtml(blocks: any[]): string {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  const LAYOUT_BLOCKS = ['heading', 'paragraph', 'image', 'button', 'divider', 'spacer', 'footer', 'quote', 'list', 'social', 'video', 'link_list'] as const;
+  const wrapLayout = (html: string, block: any) => {
+    if (!LAYOUT_BLOCKS.includes(block.type)) return html;
+    const align = block.alignment || 'left';
+    const fullW = !!block.fullWidth;
+    return `<div style="text-align:${align};${fullW ? 'width:100%;' : ''}">${html}</div>`;
+  };
   const parts: string[] = [];
   for (const b of blocks) {
     switch (b.type) {
       case 'heading': {
         const level = Math.min(3, Math.max(1, Number(b.level) || 1));
         const content = escape(b.content || '').replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
-        parts.push(`<h${level} style="margin:0 0 12px;font-size:${level === 1 ? '22' : level === 2 ? '18' : '16'}px;font-weight:600;line-height:1.3;color:#0f172a;">${content || 'Heading'}</h${level}>`);
+        parts.push(wrapLayout(`<h${level} style="margin:0 0 12px;font-size:${level === 1 ? '22' : level === 2 ? '18' : '16'}px;font-weight:600;line-height:1.3;color:#0f172a;">${content || 'Heading'}</h${level}>`, b));
         break;
       }
       case 'paragraph': {
         const content = escape(b.content || '').replace(/\n/g, '<br/>').replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
-        parts.push(`<p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#334155;">${content || 'Paragraph'}</p>`);
+        parts.push(wrapLayout(`<p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#334155;">${content || 'Paragraph'}</p>`, b));
         break;
       }
       case 'image': {
         const src = (b.src || '').trim();
         const alt = escape(b.alt || '');
         const linkUrl = (b.linkUrl || '').trim();
+        const fullW = !!b.fullWidth;
+        const imgStyle = fullW ? 'width:100%;max-width:100%;height:auto;display:block;border:0;' : 'max-width:100%;height:auto;display:block;border:0;';
         const img = src
-          ? `<img src="${escape(src)}" alt="${alt}" style="max-width:100%;height:auto;display:block;border:0;" />`
+          ? `<img src="${escape(src)}" alt="${alt}" style="${imgStyle}" />`
           : `<div style="background:#f1f5f9;color:#64748b;padding:40px 16px;text-align:center;font-size:13px;">Image URL</div>`;
         parts.push(
-          `<div style="margin:0 0 12px;">${linkUrl ? `<a href="${escape(linkUrl)}" style="color:#2563eb;">${img}</a>` : img}</div>`
+          wrapLayout(`<div style="margin:0 0 12px;">${linkUrl ? `<a href="${escape(linkUrl)}" style="color:#2563eb;">${img}</a>` : img}</div>`, b)
         );
         break;
       }
@@ -59,7 +68,7 @@ function emailBlocksToHtml(blocks: any[]): string {
         const display = fullWidth ? 'block' : 'inline-block';
         const width = fullWidth ? '100%' : 'auto';
         parts.push(
-          `<p style="margin:0 0 12px;"><a href="${escape(url)}" style="display:${display};width:${width};text-align:center;padding:12px 24px;background:${bg};color:${color};border:${border};text-decoration:none;font-size:14px;font-weight:600;border-radius:${radius}px;">${text}</a></p>`
+          wrapLayout(`<p style="margin:0 0 12px;"><a href="${escape(url)}" style="display:${display};width:${width};text-align:center;padding:12px 24px;background:${bg};color:${color};border:${border};text-decoration:none;font-size:14px;font-weight:600;border-radius:${radius}px;">${text}</a></p>`, b)
         );
         break;
       }
@@ -68,13 +77,13 @@ function emailBlocksToHtml(blocks: any[]): string {
         const color = (b.color || '#e2e8f0').trim() || '#e2e8f0';
         const lineStyle = b.lineStyle || 'solid';
         parts.push(
-          `<hr style="margin:16px 0;border:0;border-top:${thickness}px ${lineStyle} ${color};" />`
+          wrapLayout(`<hr style="margin:16px 0;border:0;border-top:${thickness}px ${lineStyle} ${color};" />`, b)
         );
         break;
       }
       case 'spacer': {
         const h = Math.min(120, Math.max(8, Number(b.height) || 24));
-        parts.push(`<div style="height:${h}px;"></div>`);
+        parts.push(wrapLayout(`<div style="height:${h}px;"></div>`, b));
         break;
       }
       case 'footer': {
@@ -82,10 +91,13 @@ function emailBlocksToHtml(blocks: any[]): string {
         const unsub = (b.unsubscribeUrl || '').trim();
         const addr = escape(b.companyAddress || '');
         parts.push(
-          `<div style="margin:16px 0 0;padding-top:12px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;line-height:1.5;">${content || 'Footer'}` +
-            (unsub ? `<p style="margin:8px 0 0;"><a href="${escape(unsub)}" style="color:#2563eb;">Unsubscribe</a></p>` : '') +
-            (addr ? `<p style="margin:4px 0 0;">${addr}</p>` : '') +
-            `</div>`
+          wrapLayout(
+            `<div style="margin:16px 0 0;padding-top:12px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;line-height:1.5;">${content || 'Footer'}` +
+              (unsub ? `<p style="margin:8px 0 0;"><a href="${escape(unsub)}" style="color:#2563eb;">Unsubscribe</a></p>` : '') +
+              (addr ? `<p style="margin:4px 0 0;">${addr}</p>` : '') +
+              `</div>`,
+            b
+          )
         );
         break;
       }
@@ -98,7 +110,7 @@ function emailBlocksToHtml(blocks: any[]): string {
               `<li style="margin:4px 0;font-size:14px;line-height:1.5;color:#334155;">${escape(String(item)).replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>')}</li>`
           )
           .join('');
-        parts.push(`<${style} style="margin:0 0 12px;padding-left:24px;">${lis || '<li>Item</li>'}</${style}>`);
+        parts.push(wrapLayout(`<${style} style="margin:0 0 12px;padding-left:24px;">${lis || '<li>Item</li>'}</${style}>`, b));
         break;
       }
       case 'quote': {
@@ -111,7 +123,10 @@ function emailBlocksToHtml(blocks: any[]): string {
         };
         const qStyle = styleMap[b.style || 'default'] || styleMap.default;
         parts.push(
-          `<div style="margin:0 0 12px;padding:16px 20px;border-radius:8px;${qStyle}font-size:14px;line-height:1.6;">${content || 'Quote'}</div>`
+          wrapLayout(
+            `<div style="margin:0 0 12px;padding:16px 20px;border-radius:8px;${qStyle}font-size:14px;line-height:1.6;">${content || 'Quote'}</div>`,
+            b
+          )
         );
         break;
       }
@@ -120,12 +135,12 @@ function emailBlocksToHtml(blocks: any[]): string {
         const validLinks = links.filter((l: any) => (l.url || '').trim());
         if (validLinks.length === 0) {
           parts.push(
-            '<p style="margin:0 0 12px;font-size:13px;color:#94a3b8;">Add social profile URLs in the sidebar.</p>'
+            wrapLayout('<p style="margin:0 0 12px;font-size:13px;color:#94a3b8;">Add social profile URLs in the sidebar.</p>', b)
           );
         } else {
           const anchor = (l: any) =>
             `<a href="${escape((l.url || '').trim())}" style="display:inline-block;margin:0 8px;color:#2563eb;text-decoration:none;font-size:13px;font-weight:500;">${escape(l.platform || 'Link')}</a>`;
-          parts.push(`<div style="margin:0 0 12px;text-align:center;">${validLinks.map(anchor).join('')}</div>`);
+          parts.push(wrapLayout(`<div style="margin:0 0 12px;">${validLinks.map(anchor).join('')}</div>`, b));
         }
         break;
       }
@@ -133,14 +148,19 @@ function emailBlocksToHtml(blocks: any[]): string {
         const thumb = (b.thumbnailUrl || '').trim();
         const videoUrl = (b.videoUrl || '#').trim();
         const caption = escape(b.caption || '');
+        const fullW = !!b.fullWidth;
+        const vidStyle = fullW ? 'width:100%;max-width:100%;height:auto;display:block;border:0;border-radius:8px;' : 'max-width:100%;height:auto;display:block;border:0;border-radius:8px;';
         const img = thumb
-          ? `<img src="${escape(thumb)}" alt="Video" style="max-width:100%;height:auto;display:block;border:0;border-radius:8px;" />`
+          ? `<img src="${escape(thumb)}" alt="Video" style="${vidStyle}" />`
           : '<div style="background:#e2e8f0;color:#64748b;padding:48px 16px;text-align:center;font-size:14px;border-radius:8px;">Video thumbnail URL</div>';
         parts.push(
-          `<div style="margin:0 0 12px;">` +
-            `<a href="${escape(videoUrl)}" style="display:block;color:inherit;">${img}</a>` +
-            (caption ? `<p style="margin:8px 0 0;font-size:12px;color:#64748b;">${caption}</p>` : '') +
-            `</div>`
+          wrapLayout(
+            `<div style="margin:0 0 12px;">` +
+              `<a href="${escape(videoUrl)}" style="display:block;color:inherit;">${img}</a>` +
+              (caption ? `<p style="margin:8px 0 0;font-size:12px;color:#64748b;">${caption}</p>` : '') +
+              `</div>`,
+            b
+          )
         );
         break;
       }
@@ -152,7 +172,7 @@ function emailBlocksToHtml(blocks: any[]): string {
           (l: any) => `<a href="${escape((l.url || '#').trim())}" style="color:#2563eb;text-decoration:none;font-size:12px;">${escape(l.text || 'Link')}</a>`
         );
         parts.push(
-          `<p style="margin:0 0 12px;font-size:12px;color:#64748b;text-align:center;">${linkParts.join(sep)}</p>`
+          wrapLayout(`<p style="margin:0 0 12px;font-size:12px;color:#64748b;">${linkParts.join(sep)}</p>`, b)
         );
         break;
       }
@@ -978,7 +998,6 @@ function onSave() {
 .kb-email-body-canvas {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
   padding: 28px 24px 36px 24px;
 }
 .kb-email-body-inner {

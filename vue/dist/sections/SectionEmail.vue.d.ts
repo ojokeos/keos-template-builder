@@ -1,9 +1,14 @@
 import { CampaignMessage } from '@keos/notification-builder-core';
 
 export type EmailBlockType = 'heading' | 'paragraph' | 'image' | 'button' | 'divider' | 'spacer' | 'footer' | 'list' | 'quote' | 'social' | 'video' | 'link_list' | 'columns' | 'row' | 'navbar' | 'accordion' | 'carousel' | 'countdown' | 'product_card' | 'liquid' | 'code_block' | 'rss_feed' | 'dynamic_image';
+export type BlockAlignment = 'left' | 'center' | 'right';
 export interface EmailBlockBase {
     id: string;
     type: EmailBlockType;
+    /** Optional alignment for block content (left, center, right). */
+    alignment?: BlockAlignment;
+    /** Optional full-width layout (e.g. button, image). */
+    fullWidth?: boolean;
 }
 export interface EmailBlockHeading extends EmailBlockBase {
     type: 'heading';
