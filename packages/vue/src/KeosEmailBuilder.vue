@@ -771,7 +771,7 @@ function onSave() {
   box-sizing: border-box;
   background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
-  padding: 0 0 32px 0;
+  /* padding: 0 0 32px 0; */
 }
 .kb-builder-top {
   margin-left: 24px;
@@ -799,21 +799,19 @@ function onSave() {
   overflow-y: auto;
   max-height: calc(100vh - 120px);
   padding: 0;
-  margin: 12px 0;
-  border-radius: 0 20px 20px 0;
+  margin: 12px 0 0 0;
+  border-radius: 0 20px 0 0;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-left: none;
-  box-shadow:
-    8px 0 32px -8px rgba(15, 23, 42, 0.1),
-    4px 0 16px -4px rgba(15, 23, 42, 0.06);
+  box-shadow: 2px 0 12px -4px rgba(15, 23, 42, 0.06);
 }
 @media (max-width: 1023px) {
   .kb-email-sidebar {
-    margin: 0 0 12px 0;
-    border-radius: 0 0 20px 20px;
+    margin: 0;
+    border-radius: 0 0 0 20px;
     border: 1px solid rgba(15, 23, 42, 0.06);
     border-top: none;
-    box-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.1), 0 4px 16px -4px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 -2px 12px -4px rgba(15, 23, 42, 0.06);
     max-height: none;
   }
 }
@@ -1004,7 +1002,7 @@ function onSave() {
   justify-content: flex-end;
   gap: 16px;
   padding: 20px 32px 24px;
-  margin-top: 24px;
+  /* margin-top: 24px; */
   background: #fff;
   border-top: 1px solid #e2e8f0;
   position: sticky;
