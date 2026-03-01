@@ -15,7 +15,7 @@ export const PUSH_PRESETS: PresetOption[] = [
       message: {
         title: 'Heads up',
         body: 'Your update is ready.',
-        variables_used: [],
+        variables: [],
       },
     },
   },
@@ -27,7 +27,7 @@ export const PUSH_PRESETS: PresetOption[] = [
         title: 'Special offer inside',
         body: 'Tap to see your exclusive deal.',
         image_url: 'https://example.com/promo.png',
-        variables_used: [],
+        variables: [],
       },
     },
   },
@@ -38,7 +38,24 @@ export const PUSH_PRESETS: PresetOption[] = [
       message: {
         title: 'Order {{ order_id }} update',
         body: 'Hi {{ first_name }}, your order has shipped.',
-        variables_used: ['first_name', 'order_id'],
+        variables: ['first_name', 'order_id'],
+      },
+    },
+  },
+  {
+    id: 'location-alert',
+    label: 'Location / Store nearby',
+    campaign: {
+      message: {
+        title: "We're nearby",
+        body: 'Visit our store - tap to open in maps.',
+        variables: [],
+        location: {
+          lat: 6.5244,
+          lon: 3.3792,
+          name: 'Flagship Store',
+          address: '12 Marina Rd, Lagos',
+        },
       },
     },
   },
@@ -51,11 +68,10 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: [],
-        whatsapp_template_type: 'text',
-        whatsapp_template_name: 'otp_verification',
-        whatsapp_body: 'Your code is {{ otp_code }}. Valid for 10 minutes.',
+        body: 'Your code is {{ otp_code }}. Valid for 10 minutes.',
+        variables: [],
+        template_type: 'text',
+        template_name: 'otp_verification',
       } as any,
     },
   },
@@ -65,11 +81,10 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name', 'order_id'],
-        whatsapp_template_type: 'text',
-        whatsapp_template_name: 'order_update',
-        whatsapp_body: 'Hi {{ first_name }}, your order {{ order_id }} is on its way.',
+        body: 'Hi {{ first_name }}, your order {{ order_id }} is on its way.',
+        variables: ['first_name', 'order_id'],
+        template_type: 'text',
+        template_name: 'order_update',
       } as any,
     },
   },
@@ -79,11 +94,10 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'text',
-        whatsapp_template_name: 'promo_alert',
-        whatsapp_body: 'Hi {{ first_name }}, we have a special offer for you.',
+        body: 'Hi {{ first_name }}, we have a special offer for you.',
+        variables: ['first_name'],
+        template_type: 'text',
+        template_name: 'promo_alert',
       } as any,
     },
   },
@@ -93,11 +107,10 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'text',
-        whatsapp_template_name: 'support_reply',
-        whatsapp_body: 'Hi {{ first_name }}, we have responded to your request.',
+        body: 'Hi {{ first_name }}, we have responded to your request.',
+        variables: ['first_name'],
+        template_type: 'text',
+        template_name: 'support_reply',
       } as any,
     },
   },
@@ -107,13 +120,12 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'image',
-        whatsapp_template_name: 'image_promo',
-        whatsapp_header: 'New collection just dropped',
-        whatsapp_media_url: 'https://via.placeholder.com/600x400.png?text=Promo',
-        whatsapp_body: 'Hi {{ first_name }}, tap to see the latest arrivals.',
+        body: 'Hi {{ first_name }}, tap to see the latest arrivals.',
+        variables: ['first_name'],
+        template_type: 'image',
+        template_name: 'image_promo',
+        header: 'New collection just dropped',
+        media_url: 'https://via.placeholder.com/600x400.png?text=Promo',
       } as any,
     },
   },
@@ -123,13 +135,12 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'video',
-        whatsapp_template_name: 'video_launch',
-        whatsapp_header: 'Watch our new product demo',
-        whatsapp_media_url: 'https://example.com/video.mp4',
-        whatsapp_body: 'Hi {{ first_name }}, watch this short video to see what is new.',
+        body: 'Hi {{ first_name }}, watch this short video to see what is new.',
+        variables: ['first_name'],
+        template_type: 'video',
+        template_name: 'video_launch',
+        header: 'Watch our new product demo',
+        media_url: 'https://example.com/video.mp4',
       } as any,
     },
   },
@@ -139,13 +150,12 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name', 'order_id'],
-        whatsapp_template_type: 'document',
-        whatsapp_template_name: 'order_receipt',
-        whatsapp_document_filename: 'receipt-{{ order_id }}.pdf',
-        whatsapp_media_url: 'https://example.com/receipt.pdf',
-        whatsapp_body: 'Hi {{ first_name }}, here is your receipt for order {{ order_id }}.',
+        body: 'Hi {{ first_name }}, here is your receipt for order {{ order_id }}.',
+        variables: ['first_name', 'order_id'],
+        template_type: 'document',
+        template_name: 'order_receipt',
+        document_filename: 'receipt-{{ order_id }}.pdf',
+        media_url: 'https://example.com/receipt.pdf',
       } as any,
     },
   },
@@ -155,12 +165,11 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'location',
-        whatsapp_template_name: 'store_location',
-        whatsapp_body: 'Hi {{ first_name }}, here is the location of our nearest store.',
-        whatsapp_location: {
+        body: 'Hi {{ first_name }}, here is the location of our nearest store.',
+        variables: ['first_name'],
+        template_type: 'location',
+        template_name: 'store_location',
+        location: {
           lat: 6.5244,
           lon: 3.3792,
           name: 'Lagos Flagship Store',
@@ -175,12 +184,11 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'coupon',
-        whatsapp_template_name: 'coupon_offer',
-        whatsapp_body: 'Hi {{ first_name }}, use this code at checkout for a discount.',
-        whatsapp_coupon_code: 'SAVE20',
+        body: 'Hi {{ first_name }}, use this code at checkout for a discount.',
+        variables: ['first_name'],
+        template_type: 'coupon',
+        template_name: 'coupon_offer',
+        coupon_code: 'SAVE20',
       } as any,
     },
   },
@@ -190,12 +198,11 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'lto',
-        whatsapp_template_name: 'limited_time_offer',
-        whatsapp_body: 'Hi {{ first_name }}, this offer expires soon. Don’t miss out.',
-        whatsapp_lto_expiry: 'Today, 11:59 PM',
+        body: 'Hi {{ first_name }}, this offer expires soon. Don’t miss out.',
+        variables: ['first_name'],
+        template_type: 'lto',
+        template_name: 'limited_time_offer',
+        lto_expiry: 'Today, 11:59 PM',
       } as any,
     },
   },
@@ -205,12 +212,11 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: ['first_name'],
-        whatsapp_template_type: 'mpm',
-        whatsapp_template_name: 'multi_product',
-        whatsapp_body: 'Hi {{ first_name }}, pick one of these products below.',
-        whatsapp_products: [
+        body: 'Hi {{ first_name }}, pick one of these products below.',
+        variables: ['first_name'],
+        template_type: 'mpm',
+        template_name: 'multi_product',
+        products: [
           {
             image: 'https://via.placeholder.com/80?text=P1',
             sectionTitle: 'Sneakers',
@@ -231,12 +237,11 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: [],
-        whatsapp_template_type: 'catalog',
-        whatsapp_template_name: 'catalog_showcase',
-        whatsapp_body: 'Browse our latest catalog items below.',
-        whatsapp_products: [
+        body: 'Browse our latest catalog items below.',
+        variables: [],
+        template_type: 'catalog',
+        template_name: 'catalog_showcase',
+        products: [
           {
             image: 'https://via.placeholder.com/80?text=C1',
             sectionTitle: 'Jackets',
@@ -257,12 +262,11 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: '',
-        variables_used: [],
-        whatsapp_template_type: 'auth',
-        whatsapp_template_name: 'auth_code',
-        whatsapp_body: 'Use this code to securely sign in to your account.',
-        whatsapp_auth_code: '123 456',
+        body: 'Use this code to securely sign in to your account.',
+        variables: [],
+        template_type: 'auth',
+        template_name: 'auth_code',
+        auth_code: '123 456',
       } as any,
     },
   },
@@ -276,9 +280,8 @@ export const SMS_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: 'Your appointment is confirmed for tomorrow at 10am.',
-        variables_used: [],
-        sms_sender_id: 'YourBrand',
-        sms_body: 'Your appointment is confirmed for tomorrow at 10am.',
+        variables: [],
+        sender_id: 'YourBrand',
       } as any,
     },
   },
@@ -289,9 +292,8 @@ export const SMS_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: 'Your code: {{ otp_code }}',
-        variables_used: ['otp_code'],
-        sms_sender_id: 'YourBrand',
-        sms_body: 'Your code: {{ otp_code }}',
+        variables: ['otp_code'],
+        sender_id: 'YourBrand',
       } as any,
     },
   },
@@ -302,9 +304,8 @@ export const SMS_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: 'Hi {{ first_name }}, your order {{ order_id }} has shipped.',
-        variables_used: ['first_name', 'order_id'],
-        sms_sender_id: 'YourBrand',
-        sms_body: 'Hi {{ first_name }}, your order {{ order_id }} has shipped.',
+        variables: ['first_name', 'order_id'],
+        sender_id: 'YourBrand',
       } as any,
     },
   },
@@ -315,9 +316,8 @@ export const SMS_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: 'Flash sale today! Use SAVE20 at checkout. {{ link }}',
-        variables_used: ['link'],
-        sms_sender_id: 'YourBrand',
-        sms_body: 'Flash sale today! Use SAVE20 at checkout. {{ link }}',
+        variables: ['link'],
+        sender_id: 'YourBrand',
       } as any,
     },
   },
@@ -331,12 +331,12 @@ export const EMAIL_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: '',
-        variables_used: [],
-        email_subject: 'Important update',
-        email_preview_text: 'We have news for you.',
-        email_from_name: 'Your Brand',
-        email_from_address: 'hello@example.com',
-        email_blocks: [
+        variables: [],
+        subject: 'Important update',
+        preview_text: 'We have news for you.',
+        from_name: 'Your Brand',
+        from_address: 'hello@example.com',
+        blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Important update' },
           { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, here is what\'s new.' },
         ],
@@ -350,12 +350,12 @@ export const EMAIL_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: '',
-        variables_used: ['first_name'],
-        email_subject: 'Your weekly digest',
-        email_preview_text: 'Top stories and updates',
-        email_from_name: 'Your Brand',
-        email_from_address: 'news@example.com',
-        email_blocks: [
+        variables: ['first_name'],
+        subject: 'Your weekly digest',
+        preview_text: 'Top stories and updates',
+        from_name: 'Your Brand',
+        from_address: 'news@example.com',
+        blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Weekly digest' },
           { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, here are this week\'s highlights.' },
           { id: 'btn1', type: 'button', text: 'Read more', url: 'https://example.com' },
@@ -370,12 +370,12 @@ export const EMAIL_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: '',
-        variables_used: ['first_name'],
-        email_subject: 'Special offer for you, {{ first_name }}',
-        email_preview_text: 'Limited time only',
-        email_from_name: 'Your Brand',
-        email_from_address: 'offers@example.com',
-        email_blocks: [
+        variables: ['first_name'],
+        subject: 'Special offer for you, {{ first_name }}',
+        preview_text: 'Limited time only',
+        from_name: 'Your Brand',
+        from_address: 'offers@example.com',
+        blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Exclusive offer' },
           { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, enjoy 20% off your next order.' },
           { id: 'btn1', type: 'button', text: 'Claim offer', url: 'https://example.com/offer' },
@@ -390,12 +390,12 @@ export const EMAIL_PRESETS: PresetOption[] = [
       message: {
         title: '',
         body: '',
-        variables_used: ['first_name', 'order_id'],
-        email_subject: 'Receipt for order {{ order_id }}',
-        email_preview_text: 'Thank you for your order',
-        email_from_name: 'Your Brand',
-        email_from_address: 'orders@example.com',
-        email_blocks: [
+        variables: ['first_name', 'order_id'],
+        subject: 'Receipt for order {{ order_id }}',
+        preview_text: 'Thank you for your order',
+        from_name: 'Your Brand',
+        from_address: 'orders@example.com',
+        blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Thank you for your order' },
           { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, we received your order {{ order_id }}.' },
         ],

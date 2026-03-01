@@ -127,6 +127,71 @@ defineEmits<{
 
     <div class="kb-field">
       <label class="kb-label">
+        Location (optional)
+        <span class="kb-helper">Coordinates and label for rich notifications or open-in-maps.</span>
+      </label>
+      <div class="kb-location-row">
+        <input
+          type="number"
+          step="0.000001"
+          class="kb-input"
+          placeholder="Latitude"
+          :value="(message as any).location?.lat ?? ''"
+          @input="
+            (e) => {
+              const loc = { ...((message as any).location ?? {}) };
+              const v = (e.target as HTMLInputElement).value;
+              loc.lat = v === '' ? undefined : Number(v);
+              $emit('update', { location: loc });
+            }
+          "
+        />
+        <input
+          type="number"
+          step="0.000001"
+          class="kb-input"
+          placeholder="Longitude"
+          :value="(message as any).location?.lon ?? ''"
+          @input="
+            (e) => {
+              const loc = { ...((message as any).location ?? {}) };
+              const v = (e.target as HTMLInputElement).value;
+              loc.lon = v === '' ? undefined : Number(v);
+              $emit('update', { location: loc });
+            }
+          "
+        />
+      </div>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Location name (e.g. Store name)"
+        :value="(message as any).location?.name ?? ''"
+        @input="
+          (e) => {
+            const loc = { ...((message as any).location ?? {}) };
+            loc.name = (e.target as HTMLInputElement).value || undefined;
+            $emit('update', { location: loc });
+          }
+        "
+      />
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Address (optional)"
+        :value="(message as any).location?.address ?? ''"
+        @input="
+          (e) => {
+            const loc = { ...((message as any).location ?? {}) };
+            loc.address = (e.target as HTMLInputElement).value || undefined;
+            $emit('update', { location: loc });
+          }
+        "
+      />
+    </div>
+
+    <div class="kb-field">
+      <label class="kb-label">
         Actions (optional)
         <span class="kb-helper">
           Add buttons shown on the notification (where supported). Most platforms support up to 2 actions.
@@ -342,6 +407,12 @@ defineEmits<{
 .kb-textarea {
   resize: vertical;
   min-height: 64px;
+}
+.kb-location-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .kb-actions-list {
   display: flex;

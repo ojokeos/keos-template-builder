@@ -25,9 +25,9 @@ function extractPlaceholders(text: string): string[] {
 }
 
 const templateFields = computed(() => {
-  const header = (props.message as any).whatsapp_header ?? '';
-  const body = (props.message as any).whatsapp_body ?? props.message.body ?? '';
-  const vars = new Set((props.message.variables_used ?? []) as string[]);
+  const header = (props.message as any).header ?? '';
+  const body = (props.message as any).body ?? props.message.body ?? '';
+  const vars = new Set((props.message.variables ?? []) as string[]);
   const placeholders = [...extractPlaceholders(header), ...extractPlaceholders(body)];
   const uniq = Array.from(new Set(placeholders));
   return uniq.map((name) => ({ name, configured: vars.has(name) }));
@@ -58,11 +58,11 @@ const templateFields = computed(() => {
       </label>
       <select
         class="kb-select"
-        :value="(props.message as any).whatsapp_template_type ?? 'text'"
+        :value="(props.message as any).template_type ?? 'text'"
         @change="
           (e) =>
             emit('update', {
-              whatsapp_template_type: (e.target as HTMLSelectElement).value,
+              template_type: (e.target as HTMLSelectElement).value,
             })
         "
       >
@@ -88,11 +88,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. order_update_1"
-        :value="(props.message as any).whatsapp_template_name ?? ''"
+        :value="(props.message as any).template_name ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_template_name: (e.target as HTMLInputElement).value || undefined,
+              template_name: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -100,7 +100,7 @@ const templateFields = computed(() => {
 
     <!-- Media configuration -->
     <div
-      v-if="['image', 'video', 'document'].includes(((props.message as any).whatsapp_template_type ?? 'text'))"
+      v-if="['image', 'video', 'document'].includes(((props.message as any).template_type ?? 'text'))"
       class="kb-field"
     >
       <label class="kb-label">
@@ -111,17 +111,17 @@ const templateFields = computed(() => {
         type="url"
         class="kb-input"
         placeholder="https://..."
-        :value="(props.message as any).whatsapp_media_url ?? ''"
+        :value="(props.message as any).media_url ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_media_url: (e.target as HTMLInputElement).value || undefined,
+              media_url: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
     </div>
     <div
-      v-if="['image', 'video', 'document'].includes(((props.message as any).whatsapp_template_type ?? 'text'))"
+      v-if="['image', 'video', 'document'].includes(((props.message as any).template_type ?? 'text'))"
       class="kb-field"
     >
       <label class="kb-label">
@@ -132,11 +132,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. Your order is on the way"
-        :value="(props.message as any).whatsapp_media_caption ?? ''"
+        :value="(props.message as any).media_caption ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_media_caption: (e.target as HTMLInputElement).value || undefined,
+              media_caption: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -144,7 +144,7 @@ const templateFields = computed(() => {
 
     <!-- Location configuration -->
     <div
-      v-if="(props.message as any).whatsapp_template_type === 'location'"
+      v-if="(props.message as any).template_type === 'location'"
       class="kb-field kb-field--inline"
     >
       <label class="kb-label">
@@ -157,12 +157,12 @@ const templateFields = computed(() => {
           step="0.000001"
           class="kb-input"
           placeholder="Latitude"
-          :value="(props.message as any).whatsapp_location?.lat ?? ''"
+          :value="(props.message as any).location?.lat ?? ''"
           @input="
             (e) => {
-              const loc = { ...( (props.message as any).whatsapp_location ?? {} ) };
+              const loc = { ...( (props.message as any).location ?? {} ) };
               loc.lat = Number((e.target as HTMLInputElement).value);
-              emit('update', { whatsapp_location: loc });
+              emit('update', { location: loc });
             }
           "
         />
@@ -171,12 +171,12 @@ const templateFields = computed(() => {
           step="0.000001"
           class="kb-input"
           placeholder="Longitude"
-          :value="(props.message as any).whatsapp_location?.lon ?? ''"
+          :value="(props.message as any).location?.lon ?? ''"
           @input="
             (e) => {
-              const loc = { ...( (props.message as any).whatsapp_location ?? {} ) };
+              const loc = { ...( (props.message as any).location ?? {} ) };
               loc.lon = Number((e.target as HTMLInputElement).value);
-              emit('update', { whatsapp_location: loc });
+              emit('update', { location: loc });
             }
           "
         />
@@ -185,12 +185,12 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="Location name"
-        :value="(props.message as any).whatsapp_location?.name ?? ''"
+        :value="(props.message as any).location?.name ?? ''"
         @input="
           (e) => {
-            const loc = { ...( (props.message as any).whatsapp_location ?? {} ) };
+            const loc = { ...( (props.message as any).location ?? {} ) };
             loc.name = (e.target as HTMLInputElement).value || undefined;
-            emit('update', { whatsapp_location: loc });
+            emit('update', { location: loc });
           }
         "
       />
@@ -198,12 +198,12 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="Address (optional)"
-        :value="(props.message as any).whatsapp_location?.address ?? ''"
+        :value="(props.message as any).location?.address ?? ''"
         @input="
           (e) => {
-            const loc = { ...( (props.message as any).whatsapp_location ?? {} ) };
+            const loc = { ...( (props.message as any).location ?? {} ) };
             loc.address = (e.target as HTMLInputElement).value || undefined;
-            emit('update', { whatsapp_location: loc });
+            emit('update', { location: loc });
           }
         "
       />
@@ -211,7 +211,7 @@ const templateFields = computed(() => {
 
     <!-- Coupon configuration -->
     <div
-      v-if="(props.message as any).whatsapp_template_type === 'coupon'"
+      v-if="(props.message as any).template_type === 'coupon'"
       class="kb-field"
     >
       <label class="kb-label">
@@ -222,11 +222,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. SAVE20"
-        :value="(props.message as any).whatsapp_coupon_code ?? ''"
+        :value="(props.message as any).coupon_code ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_coupon_code: (e.target as HTMLInputElement).value || undefined,
+              coupon_code: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -234,7 +234,7 @@ const templateFields = computed(() => {
 
     <!-- LTO configuration -->
     <div
-      v-if="(props.message as any).whatsapp_template_type === 'lto'"
+      v-if="(props.message as any).template_type === 'lto'"
       class="kb-field"
     >
       <label class="kb-label">
@@ -244,11 +244,11 @@ const templateFields = computed(() => {
       <input
         type="datetime-local"
         class="kb-input"
-        :value="(props.message as any).whatsapp_lto_expiry ?? ''"
+        :value="(props.message as any).lto_expiry ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_lto_expiry: (e.target as HTMLInputElement).value || undefined,
+              lto_expiry: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -256,7 +256,7 @@ const templateFields = computed(() => {
 
     <!-- MPM / Catalog configuration -->
     <div
-      v-if="['mpm', 'catalog'].includes((props.message as any).whatsapp_template_type)"
+      v-if="['mpm', 'catalog'].includes((props.message as any).template_type)"
       class="kb-field"
     >
       <label class="kb-label">
@@ -267,7 +267,7 @@ const templateFields = computed(() => {
       </label>
       <div class="kb-wa-buttons">
         <div
-          v-for="(item, index) in ((props.message as any).whatsapp_products ?? [])"
+          v-for="(item, index) in ((props.message as any).products ?? [])"
           :key="item.id || index"
           class="kb-wa-button-row"
         >
@@ -278,14 +278,14 @@ const templateFields = computed(() => {
             :value="item.productId"
             @input="
               (e) => {
-                const next = [...(((props.message as any).whatsapp_products as any[]) ?? [])];
+                const next = [...(((props.message as any).products as any[]) ?? [])];
                 const i = Number(index);
                 next[i] = {
                   ...next[i],
                   id: next[i]?.id || `prod_${i + 1}`,
                   productId: (e.target as HTMLInputElement).value,
                 };
-                emit('update', { whatsapp_products: next });
+                emit('update', { products: next });
               }
             "
           />
@@ -296,14 +296,14 @@ const templateFields = computed(() => {
             :value="item.sectionTitle"
             @input="
               (e) => {
-                const next = [...(((props.message as any).whatsapp_products as any[]) ?? [])];
+                const next = [...(((props.message as any).products as any[]) ?? [])];
                 const i = Number(index);
                 next[i] = {
                   ...next[i],
                   id: next[i]?.id || `prod_${i + 1}`,
                   sectionTitle: (e.target as HTMLInputElement).value || undefined,
                 };
-                emit('update', { whatsapp_products: next });
+                emit('update', { products: next });
               }
             "
           />
@@ -312,9 +312,9 @@ const templateFields = computed(() => {
             class="kb-wa-btn-remove"
             @click="
               () => {
-                const next = [...(((props.message as any).whatsapp_products as any[]) ?? [])];
+                const next = [...(((props.message as any).products as any[]) ?? [])];
                 next.splice(Number(index), 1);
-                emit('update', { whatsapp_products: next });
+                emit('update', { products: next });
               }
             "
           >
@@ -326,13 +326,13 @@ const templateFields = computed(() => {
           class="kb-wa-btn-add"
           @click="
             () => {
-              const current = (((props.message as any).whatsapp_products as any[]) ?? []);
+              const current = (((props.message as any).products as any[]) ?? []);
               const next = [...current];
               next.push({
                 id: `prod_${next.length + 1}`,
                 productId: '',
               });
-              emit('update', { whatsapp_products: next });
+              emit('update', { products: next });
             }
           "
         >
@@ -343,7 +343,7 @@ const templateFields = computed(() => {
 
     <!-- Authentication configuration -->
     <div
-      v-if="(props.message as any).whatsapp_template_type === 'auth'"
+      v-if="(props.message as any).template_type === 'auth'"
       class="kb-field"
     >
       <label class="kb-label">
@@ -352,11 +352,11 @@ const templateFields = computed(() => {
       </label>
       <select
         class="kb-select"
-        :value="(props.message as any).whatsapp_auth_type ?? 'otp'"
+        :value="(props.message as any).auth_type ?? 'otp'"
         @change="
           (e) =>
             emit('update', {
-              whatsapp_auth_type: (e.target as HTMLSelectElement).value,
+              auth_type: (e.target as HTMLSelectElement).value,
             })
         "
       >
@@ -367,11 +367,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="Code label (e.g. Your code is {{1}})"
-        :value="(props.message as any).whatsapp_auth_label ?? ''"
+        :value="(props.message as any).auth_label ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_auth_label: (e.target as HTMLInputElement).value || undefined,
+              auth_label: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -386,11 +386,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. Order update"
-        :value="(props.message as any).whatsapp_header ?? ''"
+        :value="(props.message as any).header ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_header: (e.target as HTMLInputElement).value || undefined,
+              header: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -407,11 +407,11 @@ const templateFields = computed(() => {
         class="kb-textarea"
         rows="4"
         placeholder="Hi {{1}}, your order {{2}} has been shipped..."
-        :value="(props.message as any).whatsapp_body ?? ''"
+        :value="(props.message as any).body ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_body: (e.target as HTMLTextAreaElement).value || undefined,
+              body: (e.target as HTMLTextAreaElement).value || undefined,
             })
         "
       />
@@ -437,11 +437,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. Reply STOP to unsubscribe"
-        :value="(props.message as any).whatsapp_footer ?? ''"
+        :value="(props.message as any).footer ?? ''"
         @input="
           (e) =>
             emit('update', {
-              whatsapp_footer: (e.target as HTMLInputElement).value || undefined,
+              footer: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -456,7 +456,7 @@ const templateFields = computed(() => {
       </label>
       <div class="kb-wa-buttons">
         <div
-          v-for="(btn, index) in ((props.message as any).whatsapp_buttons ?? [])"
+          v-for="(btn, index) in ((props.message as any).buttons ?? [])"
           :key="btn.id || index"
           class="kb-wa-button-row"
         >
@@ -467,14 +467,14 @@ const templateFields = computed(() => {
             :value="btn.label"
             @input="
               (e) => {
-                const next = [...(((props.message as any).whatsapp_buttons as any[]) ?? [])];
+                const next = [...(((props.message as any).buttons as any[]) ?? [])];
                 const i = Number(index);
                 next[i] = {
                   ...next[i],
                   id: next[i]?.id || `btn_${i + 1}`,
                   label: (e.target as HTMLInputElement).value,
                 };
-                emit('update', { whatsapp_buttons: next });
+                emit('update', { buttons: next });
               }
             "
           />
@@ -483,14 +483,14 @@ const templateFields = computed(() => {
             :value="btn.type ?? 'quick_reply'"
             @change="
               (e) => {
-                const next = [...(((props.message as any).whatsapp_buttons as any[]) ?? [])];
+                const next = [...(((props.message as any).buttons as any[]) ?? [])];
                 const i = Number(index);
                 next[i] = {
                   ...next[i],
                   id: next[i]?.id || `btn_${i + 1}`,
                   type: (e.target as HTMLSelectElement).value,
                 };
-                emit('update', { whatsapp_buttons: next });
+                emit('update', { buttons: next });
               }
             "
           >
@@ -506,14 +506,14 @@ const templateFields = computed(() => {
             :value="btn.url"
             @input="
               (e) => {
-                const next = [...(((props.message as any).whatsapp_buttons as any[]) ?? [])];
+                const next = [...(((props.message as any).buttons as any[]) ?? [])];
                 const i = Number(index);
                 next[i] = {
                   ...next[i],
                   id: next[i]?.id || `btn_${i + 1}`,
                   url: (e.target as HTMLInputElement).value || undefined,
                 };
-                emit('update', { whatsapp_buttons: next });
+                emit('update', { buttons: next });
               }
             "
           />
@@ -525,14 +525,14 @@ const templateFields = computed(() => {
             :value="btn.phone"
             @input="
               (e) => {
-                const next = [...(((props.message as any).whatsapp_buttons as any[]) ?? [])];
+                const next = [...(((props.message as any).buttons as any[]) ?? [])];
                 const i = Number(index);
                 next[i] = {
                   ...next[i],
                   id: next[i]?.id || `btn_${i + 1}`,
                   phone: (e.target as HTMLInputElement).value || undefined,
                 };
-                emit('update', { whatsapp_buttons: next });
+                emit('update', { buttons: next });
               }
             "
           />
@@ -541,9 +541,9 @@ const templateFields = computed(() => {
             class="kb-wa-btn-remove"
             @click="
               () => {
-                const next = [...(((props.message as any).whatsapp_buttons as any[]) ?? [])];
+                const next = [...(((props.message as any).buttons as any[]) ?? [])];
                 next.splice(Number(index), 1);
-                emit('update', { whatsapp_buttons: next });
+                emit('update', { buttons: next });
               }
             "
           >
@@ -553,17 +553,17 @@ const templateFields = computed(() => {
         <button
           type="button"
           class="kb-wa-btn-add"
-          :disabled="(((props.message as any).whatsapp_buttons as any[]) ?? []).length >= 3"
+          :disabled="(((props.message as any).buttons as any[]) ?? []).length >= 3"
           @click="
             () => {
-              const current = (((props.message as any).whatsapp_buttons as any[]) ?? []);
+              const current = (((props.message as any).buttons as any[]) ?? []);
               const next = [...current];
               next.push({
                 id: `btn_${next.length + 1}`,
                 label: '',
                 type: 'quick_reply',
               });
-              emit('update', { whatsapp_buttons: next });
+              emit('update', { buttons: next });
             }
           "
         >

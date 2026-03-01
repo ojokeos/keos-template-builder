@@ -16,9 +16,10 @@ export function toWebPush(campaign: Campaign): ProviderMappingResult {
     ...(message.deep_link && { url: message.deep_link }),
     ...(delivery.collapse_key && { tag: delivery.collapse_key }),
     data: {
-      ttl: delivery.ttl_seconds,
+      ttl: delivery.ttl,
       ...(message.deep_link && { deep_link: message.deep_link }),
       ...(campaign.tracking?.campaign_name && { campaign_name: campaign.tracking.campaign_name }),
+      ...(message.location && (message.location.lat != null || message.location.lon != null || message.location.name || message.location.address) && { location: message.location }),
     },
   };
 

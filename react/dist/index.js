@@ -1,4 +1,4 @@
-import Xe, { useState as M, useCallback as $, useMemo as ee, useEffect as Lt } from "react";
+import Xe, { useState as M, useCallback as $, useMemo as ee, useEffect as Mt } from "react";
 var Se = { exports: {} }, Z = {};
 /**
  * @license React
@@ -10,7 +10,7 @@ var Se = { exports: {} }, Z = {};
  * LICENSE file in the root directory of this source tree.
  */
 var Ye;
-function Mt() {
+function Bt() {
   if (Ye) return Z;
   Ye = 1;
   var r = Xe, n = Symbol.for("react.element"), l = Symbol.for("react.fragment"), s = Object.prototype.hasOwnProperty, u = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, c = { key: !0, ref: !0, __self: !0, __source: !0 };
@@ -34,7 +34,7 @@ var Q = {};
  * LICENSE file in the root directory of this source tree.
  */
 var qe;
-function Bt() {
+function zt() {
   return qe || (qe = 1, process.env.NODE_ENV !== "production" && function() {
     var r = Xe, n = Symbol.for("react.element"), l = Symbol.for("react.portal"), s = Symbol.for("react.fragment"), u = Symbol.for("react.strict_mode"), c = Symbol.for("react.profiler"), x = Symbol.for("react.provider"), S = Symbol.for("react.context"), _ = Symbol.for("react.forward_ref"), P = Symbol.for("react.suspense"), T = Symbol.for("react.suspense_list"), k = Symbol.for("react.memo"), D = Symbol.for("react.lazy"), B = Symbol.for("react.offscreen"), V = Symbol.iterator, G = "@@iterator";
     function J(e) {
@@ -129,7 +129,7 @@ function Bt() {
     function Ce() {
     }
     Ce.__reactDisabledLog = !0;
-    function dt() {
+    function ut() {
       {
         if (N === 0) {
           ae = console.log, w = console.info, K = console.warn, Ee = console.error, Te = console.group, ke = console.groupCollapsed, we = console.groupEnd;
@@ -152,7 +152,7 @@ function Bt() {
         N++;
       }
     }
-    function ut() {
+    function ft() {
       {
         if (N--, N === 0) {
           var e = {
@@ -203,8 +203,8 @@ function Bt() {
     }
     var xe = !1, le;
     {
-      var ft = typeof WeakMap == "function" ? WeakMap : Map;
-      le = new ft();
+      var pt = typeof WeakMap == "function" ? WeakMap : Map;
+      le = new pt();
     }
     function Oe(e, a) {
       if (!e || xe)
@@ -219,7 +219,7 @@ function Bt() {
       var y = Error.prepareStackTrace;
       Error.prepareStackTrace = void 0;
       var v;
-      v = he.current, he.current = null, dt();
+      v = he.current, he.current = null, ut();
       try {
         if (a) {
           var g = function() {
@@ -272,15 +272,15 @@ function Bt() {
             }
         }
       } finally {
-        xe = !1, he.current = v, ut(), Error.prepareStackTrace = y;
+        xe = !1, he.current = v, ft(), Error.prepareStackTrace = y;
       }
       var q = e ? e.displayName || e.name : "", U = q ? se(q) : "";
       return typeof e == "function" && le.set(e, U), U;
     }
-    function pt(e, a, o) {
+    function mt(e, a, o) {
       return Oe(e, !1);
     }
-    function mt(e) {
+    function gt(e) {
       var a = e.prototype;
       return !!(a && a.isReactComponent);
     }
@@ -288,7 +288,7 @@ function Bt() {
       if (e == null)
         return "";
       if (typeof e == "function")
-        return Oe(e, mt(e));
+        return Oe(e, gt(e));
       if (typeof e == "string")
         return se(e);
       switch (e) {
@@ -300,7 +300,7 @@ function Bt() {
       if (typeof e == "object")
         switch (e.$$typeof) {
           case _:
-            return pt(e.render);
+            return mt(e.render);
           case k:
             return oe(e.type, a, o);
           case D: {
@@ -321,7 +321,7 @@ function Bt() {
       } else
         De.setExtraStackFrame(null);
     }
-    function gt(e, a, o, f, y) {
+    function ht(e, a, o, f, y) {
       {
         var v = Function.call.bind(X);
         for (var g in e)
@@ -340,17 +340,17 @@ function Bt() {
           }
       }
     }
-    var ht = Array.isArray;
+    var yt = Array.isArray;
     function ve(e) {
-      return ht(e);
+      return yt(e);
     }
-    function yt(e) {
+    function xt(e) {
       {
         var a = typeof Symbol == "function" && Symbol.toStringTag, o = a && e[Symbol.toStringTag] || e.constructor.name || "Object";
         return o;
       }
     }
-    function xt(e) {
+    function vt(e) {
       try {
         return We(e), !1;
       } catch {
@@ -361,16 +361,16 @@ function Bt() {
       return "" + e;
     }
     function Ae(e) {
-      if (xt(e))
-        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", yt(e)), We(e);
+      if (vt(e))
+        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", xt(e)), We(e);
     }
-    var $e = d.ReactCurrentOwner, vt = {
+    var $e = d.ReactCurrentOwner, bt = {
       key: !0,
       ref: !0,
       __self: !0,
       __source: !0
     }, Ie, Le;
-    function bt(e) {
+    function jt(e) {
       if (X.call(e, "ref")) {
         var a = Object.getOwnPropertyDescriptor(e, "ref").get;
         if (a && a.isReactWarning)
@@ -378,7 +378,7 @@ function Bt() {
       }
       return e.ref !== void 0;
     }
-    function jt(e) {
+    function _t(e) {
       if (X.call(e, "key")) {
         var a = Object.getOwnPropertyDescriptor(e, "key").get;
         if (a && a.isReactWarning)
@@ -386,10 +386,10 @@ function Bt() {
       }
       return e.key !== void 0;
     }
-    function _t(e, a) {
+    function Rt(e, a) {
       typeof e.ref == "string" && $e.current;
     }
-    function Rt(e, a) {
+    function St(e, a) {
       {
         var o = function() {
           Ie || (Ie = !0, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
@@ -400,7 +400,7 @@ function Bt() {
         });
       }
     }
-    function St(e, a) {
+    function Et(e, a) {
       {
         var o = function() {
           Le || (Le = !0, p("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", a));
@@ -411,7 +411,7 @@ function Bt() {
         });
       }
     }
-    var Et = function(e, a, o, f, y, v, g) {
+    var Tt = function(e, a, o, f, y, v, g) {
       var m = {
         // This tag allows us to uniquely identify this as a React Element
         $$typeof: n,
@@ -440,12 +440,12 @@ function Bt() {
         value: y
       }), Object.freeze && (Object.freeze(m.props), Object.freeze(m)), m;
     };
-    function Tt(e, a, o, f, y) {
+    function kt(e, a, o, f, y) {
       {
         var v, g = {}, m = null, C = null;
-        o !== void 0 && (Ae(o), m = "" + o), jt(a) && (Ae(a.key), m = "" + a.key), bt(a) && (C = a.ref, _t(a, y));
+        o !== void 0 && (Ae(o), m = "" + o), _t(a) && (Ae(a.key), m = "" + a.key), jt(a) && (C = a.ref, Rt(a, y));
         for (v in a)
-          X.call(a, v) && !vt.hasOwnProperty(v) && (g[v] = a[v]);
+          X.call(a, v) && !bt.hasOwnProperty(v) && (g[v] = a[v]);
         if (e && e.defaultProps) {
           var R = e.defaultProps;
           for (v in R)
@@ -453,9 +453,9 @@ function Bt() {
         }
         if (m || C) {
           var E = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
-          m && Rt(g, E), C && St(g, E);
+          m && St(g, E), C && Et(g, E);
         }
-        return Et(e, m, C, y, f, $e.current, g);
+        return Tt(e, m, C, y, f, $e.current, g);
       }
     }
     var be = d.ReactCurrentOwner, Me = d.ReactDebugCurrentFrame;
@@ -483,11 +483,11 @@ Check the render method of \`` + e + "`.";
         return "";
       }
     }
-    function kt(e) {
+    function wt(e) {
       return "";
     }
     var ze = {};
-    function wt(e) {
+    function Ct(e) {
       {
         var a = Be();
         if (!a) {
@@ -504,7 +504,7 @@ Check the top-level render call using <` + o + ">.");
         if (!e._store || e._store.validated || e.key != null)
           return;
         e._store.validated = !0;
-        var o = wt(a);
+        var o = Ct(a);
         if (ze[o])
           return;
         ze[o] = !0;
@@ -531,7 +531,7 @@ Check the top-level render call using <` + o + ">.");
         }
       }
     }
-    function Ct(e) {
+    function Ot(e) {
       {
         var a = e.type;
         if (a == null || typeof a == "string")
@@ -547,7 +547,7 @@ Check the top-level render call using <` + o + ">.");
           return;
         if (o) {
           var f = A(a);
-          gt(o, e.props, "prop", f, e);
+          ht(o, e.props, "prop", f, e);
         } else if (a.PropTypes !== void 0 && !je) {
           je = !0;
           var y = A(a);
@@ -556,7 +556,7 @@ Check the top-level render call using <` + o + ">.");
         typeof a.getDefaultProps == "function" && !a.getDefaultProps.isReactClassApproved && p("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
       }
     }
-    function Ot(e) {
+    function Pt(e) {
       {
         for (var a = Object.keys(e.props), o = 0; o < a.length; o++) {
           var f = a[o];
@@ -575,12 +575,12 @@ Check the top-level render call using <` + o + ">.");
         if (!g) {
           var m = "";
           (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (m += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
-          var C = kt();
+          var C = wt();
           C ? m += C : m += Be();
           var R;
           e === null ? R = "null" : ve(e) ? R = "array" : e !== void 0 && e.$$typeof === n ? (R = "<" + (A(e.type) || "Unknown") + " />", m = " Did you accidentally export a JSX literal instead of a component?") : R = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", R, m);
         }
-        var E = Tt(e, a, o, y, v);
+        var E = kt(e, a, o, y, v);
         if (E == null)
           return E;
         if (g) {
@@ -597,33 +597,33 @@ Check the top-level render call using <` + o + ">.");
               Ne(W, e);
         }
         if (X.call(a, "key")) {
-          var U = A(e), O = Object.keys(a).filter(function(It) {
-            return It !== "key";
+          var U = A(e), O = Object.keys(a).filter(function(Lt) {
+            return Lt !== "key";
           }), Re = O.length > 0 ? "{key: someKey, " + O.join(": ..., ") + ": ...}" : "{key: someKey}";
           if (!Ue[U + Re]) {
-            var $t = O.length > 0 ? "{" + O.join(": ..., ") + ": ...}" : "{}";
+            var It = O.length > 0 ? "{" + O.join(": ..., ") + ": ...}" : "{}";
             p(`A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
 React keys must be passed directly to JSX without using spread:
   let props = %s;
-  <%s key={someKey} {...props} />`, Re, U, $t, U), Ue[U + Re] = !0;
+  <%s key={someKey} {...props} />`, Re, U, It, U), Ue[U + Re] = !0;
           }
         }
-        return e === s ? Ot(E) : Ct(E), E;
+        return e === s ? Pt(E) : Ot(E), E;
       }
     }
-    function Pt(e, a, o) {
+    function Dt(e, a, o) {
       return Ve(e, a, o, !0);
     }
-    function Dt(e, a, o) {
+    function Wt(e, a, o) {
       return Ve(e, a, o, !1);
     }
-    var Wt = Dt, At = Pt;
-    Q.Fragment = s, Q.jsx = Wt, Q.jsxs = At;
+    var At = Wt, $t = Dt;
+    Q.Fragment = s, Q.jsx = At, Q.jsxs = $t;
   }()), Q;
 }
-process.env.NODE_ENV === "production" ? Se.exports = Mt() : Se.exports = Bt();
+process.env.NODE_ENV === "production" ? Se.exports = Bt() : Se.exports = zt();
 var t = Se.exports;
 const ue = {
   android: {
@@ -638,8 +638,8 @@ const ue = {
     title: 60,
     body: 240
   }
-}, Ze = ["android", "ios", "web"], Qe = "normal", et = ["low", "normal", "high"], zt = 86400, Ft = [3600, 7200, 86400, 172800], tt = "1.0", rt = ["topic", "segment", "user_list"];
-function nt() {
+}, Ze = ["android", "ios", "web"], Qe = "normal", et = ["low", "normal", "high"], tt = 86400, Ft = [3600, 7200, 86400, 172800], rt = "1.0", nt = ["topic", "segment", "user_list"];
+function it() {
   return {
     type: "topic",
     topic_name: "default",
@@ -647,27 +647,27 @@ function nt() {
     test_mode: !1
   };
 }
-function it() {
+function at() {
   return {
     title: "",
     body: "",
-    variables_used: [],
+    variables: [],
     // No actions by default; UI can add up to provider-supported count.
     // When omitted, mappers simply won't include actions.
     // @ts-expect-error actions is optional on CampaignMessage but we initialize as empty.
     actions: []
   };
 }
-function at() {
+function st() {
   return {
     priority: Qe,
-    ttl_seconds: zt,
-    quiet_hours_respected: !1,
-    send_local_time: !1,
+    ttl: tt,
+    quiet_hours: !1,
+    local_time: !1,
     silent_push: !1
   };
 }
-function st() {
+function lt() {
   return {
     campaign_name: "",
     tags: [],
@@ -676,19 +676,19 @@ function st() {
 }
 function Nt(r) {
   return {
-    schema_version: tt,
+    schema_version: rt,
     name: "",
     status: "draft",
-    audience: nt(),
-    message: it(),
-    delivery: at(),
-    tracking: st(),
+    audience: it(),
+    message: at(),
+    delivery: st(),
+    tracking: lt(),
     ...r
   };
 }
 function Ut(r) {
   const n = r;
-  return n.schema_version || (n.schema_version = tt), n.audience || (n.audience = nt()), n.message || (n.message = it()), n.delivery || (n.delivery = at()), n.tracking || (n.tracking = st()), et.includes(n.delivery.priority) || (n.delivery.priority = Qe), rt.includes(n.audience.type) || (n.audience.type = "topic"), n.audience.type === "topic" && !n.audience.topic_name && (n.audience.topic_name = "default"), n;
+  return n.schema_version || (n.schema_version = rt), n.audience || (n.audience = it()), n.message || (n.message = at()), n.delivery || (n.delivery = st()), n.tracking || (n.tracking = lt()), et.includes(n.delivery.priority) || (n.delivery.priority = Qe), n.delivery.ttl === void 0 && (n.delivery.ttl = tt), nt.includes(n.audience.type) || (n.audience.type = "topic"), n.audience.type === "topic" && !n.audience.topic_name && (n.audience.topic_name = "default"), n;
 }
 const Vt = {
   3600: "1 hour",
@@ -710,7 +710,7 @@ function Yt(r) {
   }
 }
 function qt(r, n) {
-  const { audience: l, delivery: s } = r, u = n ?? l.estimated_reach, c = Vt[s.ttl_seconds] ?? `${s.ttl_seconds}s`;
+  const { audience: l, delivery: s } = r, u = n ?? l.estimated_reach, c = Vt[s.ttl] ?? `${s.ttl}s`;
   return {
     sendTime: Yt(s.scheduled_at),
     audienceType: l.type,
@@ -735,23 +735,23 @@ function Gt(r, n) {
     severity: "info"
   }), l;
 }
-function lt(r, n = "error") {
+function ot(r, n = "error") {
   return { message: r, severity: n };
 }
-function ot(r) {
+function ct(r) {
   const n = [];
-  return r.schema_version || n.push(lt("Missing schema_version")), {
+  return r.schema_version || n.push(ot("Missing schema_version")), {
     valid: n.length === 0,
     errors: n
   };
 }
 function Jt(r, n) {
-  const l = ot(r), s = Gt(r, n);
+  const l = ct(r), s = Gt(r, n);
   return {
     valid: l.valid,
     errors: [
       ...l.errors,
-      ...s.map((u) => lt(u.message, u.severity))
+      ...s.map((u) => ot(u.message, u.severity))
     ]
   };
 }
@@ -792,7 +792,7 @@ function er(r, n = {}) {
   return n.darkMode !== void 0 && (l.darkMode = n.darkMode), l;
 }
 const He = ue.ios;
-function ct(r) {
+function dt(r) {
   const { title: n, body: l } = r, s = z(n || "", He.title), u = z(l || "", He.body);
   return {
     title: s.text,
@@ -804,10 +804,10 @@ function ct(r) {
   };
 }
 function tr(r) {
-  return ct(r);
+  return dt(r);
 }
 function rr(r, n = {}) {
-  const l = n.variant === "lockscreen" ? tr(r) : ct(r);
+  const l = n.variant === "lockscreen" ? tr(r) : dt(r);
   return n.darkMode !== void 0 && (l.darkMode = n.darkMode), l;
 }
 const Ge = ue.web;
@@ -888,7 +888,7 @@ function ir(r = {}) {
       })), c(!0), (p = r.onDirty) == null || p.call(r);
     },
     [r]
-  ), k = ee(() => ot(n), [n]), D = $(
+  ), k = ee(() => ct(n), [n]), D = $(
     (d) => {
       const p = Jt(n, d);
       return {
@@ -1138,7 +1138,7 @@ function lr({
     /* @__PURE__ */ t.jsx("p", { style: i.sectionDesc, children: "Who receives this push?" }),
     /* @__PURE__ */ t.jsxs("div", { style: i.field, children: [
       /* @__PURE__ */ t.jsx("label", { style: i.label, children: "Delivery type" }),
-      /* @__PURE__ */ t.jsx("div", { style: i.radioGroup, children: rt.map((c) => /* @__PURE__ */ t.jsxs("label", { style: i.radio, children: [
+      /* @__PURE__ */ t.jsx("div", { style: i.radioGroup, children: nt.map((c) => /* @__PURE__ */ t.jsxs("label", { style: i.radio, children: [
         /* @__PURE__ */ t.jsx(
           "input",
           {
@@ -1172,8 +1172,8 @@ function lr({
           style: { ...i.input, ...i.textarea },
           rows: 3,
           placeholder: '{"property": "country", "op": "eq", "value": "US"}',
-          value: r.segment_query_json ?? "",
-          onChange: (c) => s({ segment_query_json: c.target.value })
+          value: r.segment_query ?? "",
+          onChange: (c) => s({ segment_query: c.target.value })
         }
       )
     ] }),
@@ -1429,8 +1429,8 @@ function fr({
         "select",
         {
           style: i.select,
-          value: r.ttl_seconds,
-          onChange: (s) => n({ ttl_seconds: Number(s.target.value) }),
+          value: r.ttl,
+          onChange: (s) => n({ ttl: Number(s.target.value) }),
           children: Ft.map((s) => /* @__PURE__ */ t.jsx("option", { value: s, children: ur[s] ?? s + "s" }, s))
         }
       )
@@ -1455,8 +1455,8 @@ function fr({
         "input",
         {
           type: "checkbox",
-          checked: r.quiet_hours_respected ?? !1,
-          onChange: () => n({ quiet_hours_respected: !r.quiet_hours_respected })
+          checked: r.quiet_hours ?? !1,
+          onChange: () => n({ quiet_hours: !r.quiet_hours })
         }
       ),
       /* @__PURE__ */ t.jsx("span", { children: "Respect quiet hours" })
@@ -1621,7 +1621,7 @@ function yr({
       }
     n != null && n.canSend && V(await Promise.resolve(n.canSend())), n != null && n.canSchedule && J(await Promise.resolve(n.canSchedule()));
   }, [n, d.campaign.audience]);
-  Lt(() => {
+  Mt(() => {
     p();
   }, [p]);
   const j = ee(

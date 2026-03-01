@@ -29,6 +29,22 @@ const displayPreview = computed(() => {
     body: renderTemplatePreview(p?.body ?? '', props.previewProfile!.data),
   };
 });
+
+/** OpenStreetMap embed URL for preview when message has location (lat/lon). */
+const mapEmbedUrl = computed(() => {
+  const loc = displayPreview.value?.location;
+  if (!loc || (loc.lat == null && loc.lon == null)) return null;
+  const lat = Number(loc.lat) || 0;
+  const lon = Number(loc.lon) || 0;
+  const delta = 0.008;
+  const bbox = [lon - delta, lat - delta, lon + delta, lat + delta].join(',');
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat},${lon}`;
+});
+
+const hasLocation = computed(() => {
+  const loc = displayPreview.value?.location;
+  return loc && (loc.lat != null || loc.lon != null || loc.name || loc.address);
+});
 </script>
 
 <template>
@@ -61,15 +77,38 @@ const displayPreview = computed(() => {
           </div>
           <div class="kb-android-more">⋮</div>
         </div>
-        <div class="kb-android-body">
-          <div v-if="displayPreview.title" class="kb-android-title">
-            {{ displayPreview.title }}
-          </div>
-          <div v-if="displayPreview.body" class="kb-android-text">
-            {{ displayPreview.body }}
-          </div>
-          <div v-if="displayPreview.imageUrl" class="kb-android-image">
+        <div class="kb-android-body" :class="{ 'kb-android-body--expanded': expanded }">
+          <!-- Collapsed: title + body on left, large icon (image) on right. Expanded: image full-width at top (BigPictureStyle). -->
+          <div v-if="expanded && displayPreview.imageUrl" class="kb-android-image kb-android-image--expanded">
             <img :src="displayPreview.imageUrl" alt="" />
+          </div>
+          <div class="kb-android-body-row">
+            <div class="kb-android-body-content">
+              <div v-if="displayPreview.title" class="kb-android-title">
+                {{ displayPreview.title }}
+              </div>
+              <div v-if="displayPreview.body" class="kb-android-text">
+                {{ displayPreview.body }}
+              </div>
+              <!-- Collapsed: location as one line (no map); expanded: map strip below -->
+              <div v-if="hasLocation && !expanded && (displayPreview.location?.name || displayPreview.location?.address)" class="kb-android-location-line">
+                <span aria-hidden="true">📍</span> {{ displayPreview.location?.name || displayPreview.location?.address }}
+              </div>
+            </div>
+            <div v-if="!expanded && displayPreview.imageUrl" class="kb-android-thumb">
+              <img :src="displayPreview.imageUrl" alt="" />
+            </div>
+          </div>
+          <!-- Expanded only: map strip (like rich content) -->
+          <div v-if="hasLocation && mapEmbedUrl && expanded" class="kb-preview-map kb-preview-map--android">
+            <iframe
+              :src="mapEmbedUrl"
+              title="Location map"
+              class="kb-preview-map__iframe"
+            />
+            <div v-if="displayPreview.location?.name || displayPreview.location?.address" class="kb-preview-map__caption">
+              {{ displayPreview.location?.name || displayPreview.location?.address }}
+            </div>
           </div>
           <div v-if="displayPreview.actions && displayPreview.actions.length" class="kb-android-actions">
             <button
@@ -109,6 +148,17 @@ const displayPreview = computed(() => {
           </div>
           <div v-if="displayPreview.body" class="kb-ios-text">
             {{ displayPreview.body }}
+          </div>
+          <!-- iOS: location as attachment-style strip below text (like rich notification attachment) -->
+          <div v-if="hasLocation && mapEmbedUrl" class="kb-preview-map kb-preview-map--ios">
+            <iframe
+              :src="mapEmbedUrl"
+              title="Location map"
+              class="kb-preview-map__iframe"
+            />
+            <div v-if="displayPreview.location?.name || displayPreview.location?.address" class="kb-preview-map__caption">
+              {{ displayPreview.location?.name || displayPreview.location?.address }}
+            </div>
           </div>
           <div v-if="displayPreview.actions && displayPreview.actions.length" class="kb-ios-actions">
             <button
@@ -163,6 +213,16 @@ const displayPreview = computed(() => {
           </div>
           <div v-if="displayPreview.imageUrl" class="kb-web-image">
             <img :src="displayPreview.imageUrl" alt="" />
+          </div>
+          <div v-if="hasLocation && mapEmbedUrl" class="kb-preview-map kb-preview-map--web">
+            <iframe
+              :src="mapEmbedUrl"
+              title="Location map"
+              class="kb-preview-map__iframe"
+            />
+            <div v-if="displayPreview.location?.name || displayPreview.location?.address" class="kb-preview-map__caption">
+              {{ displayPreview.location?.name || displayPreview.location?.address }}
+            </div>
           </div>
         </div>
         <div v-if="displayPreview.actions && displayPreview.actions.length" class="kb-web-actions">
@@ -272,6 +332,15 @@ const displayPreview = computed(() => {
 .kb-android-body {
   margin-top: 4px;
 }
+.kb-android-body-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.kb-android-body-content {
+  flex: 1;
+  min-width: 0;
+}
 .kb-android-title {
   font-weight: 600;
   font-size: 0.8125rem;
@@ -281,13 +350,70 @@ const displayPreview = computed(() => {
   font-size: 0.78rem;
   color: #d1d5db;
 }
-.kb-android-image {
-  margin-top: 6px;
+/* Collapsed: large icon on right (Android Material) */
+.kb-android-thumb {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  overflow: hidden;
 }
-.kb-android-image img {
+.kb-android-thumb img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.kb-android-location-line {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Expanded: BigPictureStyle — image full width at top */
+.kb-android-image--expanded {
+  margin-top: 0;
+  margin-bottom: 6px;
   border-radius: 8px;
+  overflow: hidden;
+}
+.kb-android-image--expanded img {
+  width: 100%;
   display: block;
+  vertical-align: top;
+}
+.kb-android-body--expanded .kb-android-body-row {
+  display: block;
+}
+.kb-preview-map {
+  margin-top: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f172a;
+}
+.kb-preview-map__iframe {
+  display: block;
+  width: 100%;
+  height: 100px;
+  border: none;
+}
+.kb-preview-map--android .kb-preview-map__iframe {
+  height: 120px;
+}
+.kb-preview-map--ios .kb-preview-map__iframe {
+  height: 100px;
+}
+.kb-preview-map--web .kb-preview-map__iframe {
+  height: 100px;
+}
+.kb-preview-map__caption {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .kb-android-actions {
   margin-top: 6px;

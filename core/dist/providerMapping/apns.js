@@ -5,7 +5,7 @@
 export function toAPNs(campaign) {
     const warnings = [];
     const { message, delivery } = campaign;
-    const ttlSeconds = delivery.ttl_seconds;
+    const ttlSeconds = delivery.ttl;
     const expirationTimestamp = Math.floor(Date.now() / 1000) + ttlSeconds;
     const aps = {
         alert: {
@@ -29,6 +29,9 @@ export function toAPNs(campaign) {
     };
     if (message.deep_link) {
         payload.deep_link = message.deep_link;
+    }
+    if (message.location && (message.location.lat != null || message.location.lon != null || message.location.name || message.location.address)) {
+        payload.location = message.location;
     }
     if (campaign.tracking?.campaign_name) {
         payload.campaign_name = campaign.tracking.campaign_name;

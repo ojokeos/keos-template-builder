@@ -10,7 +10,7 @@ import SectionEmail from './sections/SectionEmail.vue';
 import { EMAIL_PRESETS } from './config/presets';
 import { DEFAULT_SAMPLE_PROFILES, renderTemplatePreview } from './utils/renderTemplatePreview';
 
-/** Compile email_blocks to HTML for preview (and optional send). */
+/** Compile blocks to HTML for preview (and optional send). */
 function emailBlocksToHtml(blocks: any[]): string {
   if (!Array.isArray(blocks) || blocks.length === 0) {
     return '<p style="margin:0 0 12px;color:#64748b;font-size:14px;">Add content blocks to design your email.</p>';
@@ -379,8 +379,8 @@ const {
     customValidators: async (c) => {
       const errors: string[] = [];
       if (!c.name?.trim()) errors.push('Template name is required');
-      const msg = c.message as { email_subject?: string; email_html?: string; email_blocks?: unknown[] };
-      if (!msg?.email_subject?.trim()) errors.push('Subject is required');
+      const msg = c.message as { subject?: string; html?: string; blocks?: unknown[] };
+      if (!msg?.subject?.trim()) errors.push('Subject is required');
       const fromHost = props.hooks?.customValidators ? await props.hooks.customValidators(c) : [];
       return [...errors, ...fromHost];
     },
@@ -486,24 +486,24 @@ function updateName(name: string) {
 }
 
 const emailSubject = computed(
-  () => ((campaign.value.message as any).email_subject as string | undefined) ?? ''
+  () => ((campaign.value.message as any).subject as string | undefined) ?? ''
 );
 const emailPreviewText = computed(
-  () => ((campaign.value.message as any).email_preview_text as string | undefined) ?? ''
+  () => ((campaign.value.message as any).preview_text as string | undefined) ?? ''
 );
 const emailHtml = computed(
-  () => ((campaign.value.message as any).email_html as string | undefined) ?? ''
+  () => ((campaign.value.message as any).html as string | undefined) ?? ''
 );
 const emailFromName = computed(
-  () => ((campaign.value.message as any).email_from_name as string | undefined) ?? 'Your App'
+  () => ((campaign.value.message as any).from_name as string | undefined) ?? 'Your App'
 );
 const emailFromAddress = computed(
   () =>
-    ((campaign.value.message as any).email_from_address as string | undefined) ??
+    ((campaign.value.message as any).from_address as string | undefined) ??
     'notifications@example.com'
 );
 
-const emailBlocks = computed(() => (campaign.value.message as any).email_blocks ?? []);
+const emailBlocks = computed(() => (campaign.value.message as any).blocks ?? []);
 
 const emailBodyHtml = computed(() => {
   const blocks = emailBlocks.value;
@@ -620,7 +620,7 @@ function onSave() {
             :variable-options="variableOptions"
             :show-reset="true"
             @update="updateMessage"
-            @reset="resetMessage({ email_blocks: [] } as any)"
+            @reset="resetMessage({ blocks: [] } as any)"
           />
         </div>
       </aside>

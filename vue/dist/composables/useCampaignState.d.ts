@@ -18,7 +18,7 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
         audience: {
             type: import('@keos/notification-builder-core').AudienceType;
             topic_name?: string | undefined;
-            segment_query_json?: string | undefined;
+            segment_query?: string | undefined;
             user_list?: string[] | undefined;
             platforms: Platform[];
             estimated_reach?: number | undefined;
@@ -30,16 +30,47 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
             body: string;
             image_url?: string | undefined;
             deep_link?: string | undefined;
-            variables_used?: string[] | undefined;
+            variables?: string[] | undefined;
             title_by_locale?: Record<string, string> | undefined;
             body_by_locale?: Record<string, string> | undefined;
+            location?: {
+                lat?: number | undefined;
+                lon?: number | undefined;
+                name?: string | undefined;
+                address?: string | undefined;
+            } | undefined;
+            subject?: string | undefined;
+            preview_text?: string | undefined;
+            from_name?: string | undefined;
+            from_address?: string | undefined;
+            reply_to?: string | undefined;
+            blocks?: unknown[] | undefined;
+            html?: string | undefined;
+            header?: string | undefined;
+            footer?: string | undefined;
+            template_type?: string | undefined;
+            template_name?: string | undefined;
+            media_url?: string | undefined;
+            document_filename?: string | undefined;
+            media_caption?: string | undefined;
+            coupon_code?: string | undefined;
+            lto_expiry?: string | undefined;
+            products?: unknown[] | undefined;
+            buttons?: {
+                label?: string | undefined;
+                url?: string | undefined;
+            }[] | undefined;
+            auth_type?: string | undefined;
+            auth_label?: string | undefined;
+            auth_code?: string | undefined;
+            sender_id?: string | undefined;
         };
         delivery: {
             priority: import('@keos/notification-builder-core').Priority;
-            ttl_seconds: number;
+            ttl: number;
             collapse_key?: string | undefined;
-            send_local_time?: boolean | undefined;
-            quiet_hours_respected?: boolean | undefined;
+            local_time?: boolean | undefined;
+            quiet_hours?: boolean | undefined;
             silent_push?: boolean | undefined;
             scheduled_at?: string | undefined;
             timezone?: string | undefined;
@@ -62,7 +93,7 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
         audience: {
             type: import('@keos/notification-builder-core').AudienceType;
             topic_name?: string | undefined;
-            segment_query_json?: string | undefined;
+            segment_query?: string | undefined;
             user_list?: string[] | undefined;
             platforms: Platform[];
             estimated_reach?: number | undefined;
@@ -74,16 +105,47 @@ export declare function useCampaignState(options?: UseCampaignStateOptions): {
             body: string;
             image_url?: string | undefined;
             deep_link?: string | undefined;
-            variables_used?: string[] | undefined;
+            variables?: string[] | undefined;
             title_by_locale?: Record<string, string> | undefined;
             body_by_locale?: Record<string, string> | undefined;
+            location?: {
+                lat?: number | undefined;
+                lon?: number | undefined;
+                name?: string | undefined;
+                address?: string | undefined;
+            } | undefined;
+            subject?: string | undefined;
+            preview_text?: string | undefined;
+            from_name?: string | undefined;
+            from_address?: string | undefined;
+            reply_to?: string | undefined;
+            blocks?: unknown[] | undefined;
+            html?: string | undefined;
+            header?: string | undefined;
+            footer?: string | undefined;
+            template_type?: string | undefined;
+            template_name?: string | undefined;
+            media_url?: string | undefined;
+            document_filename?: string | undefined;
+            media_caption?: string | undefined;
+            coupon_code?: string | undefined;
+            lto_expiry?: string | undefined;
+            products?: unknown[] | undefined;
+            buttons?: {
+                label?: string | undefined;
+                url?: string | undefined;
+            }[] | undefined;
+            auth_type?: string | undefined;
+            auth_label?: string | undefined;
+            auth_code?: string | undefined;
+            sender_id?: string | undefined;
         };
         delivery: {
             priority: import('@keos/notification-builder-core').Priority;
-            ttl_seconds: number;
+            ttl: number;
             collapse_key?: string | undefined;
-            send_local_time?: boolean | undefined;
-            quiet_hours_respected?: boolean | undefined;
+            local_time?: boolean | undefined;
+            quiet_hours?: boolean | undefined;
             silent_push?: boolean | undefined;
             scheduled_at?: string | undefined;
             timezone?: string | undefined;

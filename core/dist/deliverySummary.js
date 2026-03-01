@@ -23,7 +23,7 @@ function formatSendTime(scheduledAt) {
 export function computeDeliverySummary(campaign, estimatedReach) {
     const { audience, delivery } = campaign;
     const reach = estimatedReach ?? audience.estimated_reach;
-    const ttlLabel = TTL_LABELS[delivery.ttl_seconds] ?? `${delivery.ttl_seconds}s`;
+    const ttlLabel = TTL_LABELS[delivery.ttl] ?? `${delivery.ttl}s`;
     return {
         sendTime: formatSendTime(delivery.scheduled_at),
         audienceType: audience.type,

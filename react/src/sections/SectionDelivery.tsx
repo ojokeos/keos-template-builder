@@ -67,8 +67,8 @@ export function SectionDelivery({
         <label style={styles.label}>Expiration (TTL)</label>
         <select
           style={styles.select}
-          value={delivery.ttl_seconds}
-          onChange={(e) => onUpdate({ ttl_seconds: Number(e.target.value) })}
+          value={delivery.ttl}
+          onChange={(e) => onUpdate({ ttl: Number(e.target.value) })}
         >
           {TTL_PRESETS.map((s) => (
             <option key={s} value={s}>
@@ -100,8 +100,8 @@ export function SectionDelivery({
         <label style={styles.checkbox}>
           <input
             type="checkbox"
-            checked={delivery.quiet_hours_respected ?? false}
-            onChange={() => onUpdate({ quiet_hours_respected: !delivery.quiet_hours_respected })}
+            checked={delivery.quiet_hours ?? false}
+            onChange={() => onUpdate({ quiet_hours: !delivery.quiet_hours })}
           />
           <span>Respect quiet hours</span>
         </label>

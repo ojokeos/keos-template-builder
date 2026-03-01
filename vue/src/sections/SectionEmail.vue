@@ -405,52 +405,52 @@ watch(
   }
 );
 
-const subject = computed(() => ((props.message as any).email_subject ?? '') as string);
-const previewText = computed(() => ((props.message as any).email_preview_text ?? '') as string);
+const subject = computed(() => ((props.message as any).subject ?? '') as string);
+const previewText = computed(() => ((props.message as any).preview_text ?? '') as string);
 
 const subjectBucket = computed(() => subjectLengthBucketFn(subject.value));
 const previewBucket = computed(() => preheaderLengthBucketFn(previewText.value));
 const subjectSpammy = computed(() => getSpammyWordsFn(subject.value));
 const previewSpammy = computed(() => getSpammyWordsFn(previewText.value));
 const blocks = computed(() => {
-  const raw = (props.message as any).email_blocks;
+  const raw = (props.message as any).blocks;
   if (Array.isArray(raw) && raw.length > 0) return raw as EmailBlock[];
   return [createBlock('paragraph')] as EmailBlock[];
 });
 
 watch(
-  () => (props.message as any).email_blocks,
+  () => (props.message as any).blocks,
   (raw) => {
     if (!Array.isArray(raw) || raw.length === 0) {
-      emit('update', { email_blocks: [createBlock('paragraph')] } as any);
+      emit('update', { blocks: [createBlock('paragraph')] } as any);
     }
   },
   { immediate: true }
 );
 
 function updateBlocks(next: EmailBlock[]) {
-  emit('update', { email_blocks: next } as any);
+  emit('update', { blocks: next } as any);
 }
 
 function updateSubject(e: Event) {
-  emit('update', { email_subject: (e.target as HTMLInputElement).value } as any);
+  emit('update', { subject: (e.target as HTMLInputElement).value } as any);
 }
 
 function updatePreviewText(e: Event) {
   const v = (e.target as HTMLInputElement).value;
-  emit('update', { email_preview_text: v || undefined } as any);
+  emit('update', { preview_text: v || undefined } as any);
 }
 
 function updateFromName(e: Event) {
-  emit('update', { email_from_name: (e.target as HTMLInputElement).value || undefined } as any);
+  emit('update', { from_name: (e.target as HTMLInputElement).value || undefined } as any);
 }
 
 function updateFromAddress(e: Event) {
-  emit('update', { email_from_address: (e.target as HTMLInputElement).value || undefined } as any);
+  emit('update', { from_address: (e.target as HTMLInputElement).value || undefined } as any);
 }
 
 function updateReplyTo(e: Event) {
-  emit('update', { email_reply_to: (e.target as HTMLInputElement).value || undefined } as any);
+  emit('update', { reply_to: (e.target as HTMLInputElement).value || undefined } as any);
 }
 
 const LIBRARY_PRESETS: { id: string; label: string; blocks: () => EmailBlock[] }[] = [
@@ -580,13 +580,13 @@ function insertVariableIntoColumns(blockId: string, column: 'left' | 'right') {
   const block = blocks.value.find((b) => b.id === blockId) as EmailBlockColumns | undefined;
   if (!block || block.type !== 'columns') return;
   const token = ` {{ ${selectedVariable.value} }}`;
-  const existingVars = ((props.message as any).variables_used ?? []) as string[];
+  const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
   const key = column === 'left' ? 'leftContent' : 'rightContent';
   const current = (block as any)[key] ?? '';
   const next = current + token;
   updateBlock(blockId, { [key]: next });
-  emit('update', { variables_used: nextVars } as any);
+  emit('update', { variables: nextVars } as any);
 }
 
 function updateRowBlock(blockId: string, patch: Partial<EmailBlockRow>) {
@@ -667,18 +667,18 @@ function removeCarouselSlide(blockId: string, index: number) {
 
 function insertVariableInto(field: 'subject' | 'preview') {
   const token = ` {{ ${selectedVariable.value} }}`;
-  const existingVars = ((props.message as any).variables_used ?? []) as string[];
+  const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
 
   if (field === 'subject') {
     emit('update', {
-      email_subject: (subject.value || '') + token,
-      variables_used: nextVars,
+      subject: (subject.value || '') + token,
+      variables: nextVars,
     } as any);
   } else {
     emit('update', {
-      email_preview_text: (previewText.value || '') + token,
-      variables_used: nextVars,
+      preview_text: (previewText.value || '') + token,
+      variables: nextVars,
     } as any);
   }
 }
@@ -687,7 +687,7 @@ function insertVariableIntoBlock(blockId: string) {
   const block = blocks.value.find((b) => b.id === blockId);
   if (!block || (block.type !== 'paragraph' && block.type !== 'heading' && block.type !== 'footer' && block.type !== 'quote' && block.type !== 'liquid' && block.type !== 'code_block')) return;
   const token = ` {{ ${selectedVariable.value} }}`;
-  const existingVars = ((props.message as any).variables_used ?? []) as string[];
+  const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
   const contentKey = block.type === 'footer' ? 'content' : 'content';
   const current = (block as any)[contentKey] ?? '';
@@ -695,19 +695,19 @@ function insertVariableIntoBlock(blockId: string) {
   const nextBlocks = blocks.value.map((b) =>
     b.id === blockId ? { ...b, [contentKey]: next } : b
   ) as EmailBlock[];
-  emit('update', { email_blocks: nextBlocks, variables_used: nextVars } as any);
+  emit('update', { blocks: nextBlocks, variables: nextVars } as any);
 }
 
 function insertVariableIntoRow(blockId: string, cellIndex: number) {
   const block = blocks.value.find((b) => b.id === blockId) as EmailBlockRow | undefined;
   if (!block || block.type !== 'row') return;
   const token = ` {{ ${selectedVariable.value} }}`;
-  const existingVars = ((props.message as any).variables_used ?? []) as string[];
+  const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
   const cells = [...(block.cells || [])];
   cells[cellIndex] = (cells[cellIndex] || '') + token;
   updateBlock(blockId, { cells });
-  emit('update', { variables_used: nextVars } as any);
+  emit('update', { variables: nextVars } as any);
 }
 
 function addVariable() {
@@ -742,7 +742,7 @@ const varChipLabel = '{{ var }}';
           type="text"
           class="em-input"
           placeholder="e.g. Your Brand"
-          :value="(message as any).email_from_name ?? ''"
+          :value="(message as any).from_name ?? ''"
           @input="updateFromName"
         />
       </div>
@@ -752,7 +752,7 @@ const varChipLabel = '{{ var }}';
           type="email"
           class="em-input"
           placeholder="notifications@yourdomain.com"
-          :value="(message as any).email_from_address ?? ''"
+          :value="(message as any).from_address ?? ''"
           @input="updateFromAddress"
         />
       </div>
@@ -762,7 +762,7 @@ const varChipLabel = '{{ var }}';
           type="email"
           class="em-input"
           placeholder="support@yourdomain.com"
-          :value="(message as any).email_reply_to ?? ''"
+          :value="(message as any).reply_to ?? ''"
           @input="updateReplyTo"
         />
       </div>

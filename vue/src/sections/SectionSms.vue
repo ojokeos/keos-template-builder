@@ -34,7 +34,7 @@ watch(
   }
 );
 
-const bodyText = computed(() => ((props.message as any).sms_body ?? '') as string);
+const bodyText = computed(() => ((props.message as any).body ?? '') as string);
 const charCount = computed(() => bodyText.value.length);
 const segmentCount = computed(() => {
   if (!charCount.value) return 0;
@@ -51,14 +51,14 @@ const truncationHint = computed(() => {
 function updateSenderId(e: Event) {
   const value = (e.target as HTMLInputElement).value;
   emit('update', {
-    sms_sender_id: value || undefined,
+    sender_id: value || undefined,
   } as any);
 }
 
 function updateBody(e: Event) {
   const value = (e.target as HTMLTextAreaElement).value;
   emit('update', {
-    sms_body: value,
+    body: value,
   } as any);
 }
 
@@ -67,11 +67,11 @@ function insertVariable() {
   if (!variable) return;
   const token = ` {{ ${variable} }}`;
   const currentBody = bodyText.value || '';
-  const existingVars = ((props.message as any).variables_used ?? []) as string[];
+  const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, variable]));
   emit('update', {
-    sms_body: currentBody + token,
-    variables_used: nextVars,
+    body: currentBody + token,
+    variables: nextVars,
   } as any);
 }
 
@@ -114,7 +114,7 @@ function addVariable() {
         type="text"
         class="kb-input"
         placeholder="e.g. KEOS, +12025550123"
-        :value="(props.message as any).sms_sender_id ?? ''"
+        :value="(props.message as any).sender_id ?? ''"
         @input="updateSenderId"
       />
     </div>

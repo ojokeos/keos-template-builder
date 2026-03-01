@@ -136,12 +136,12 @@ const previewProfile = computed(() => {
 });
 
 const waBodyDisplay = computed(() => {
-  const body = (campaign.value.message as any).whatsapp_body ?? campaign.value.message.body ?? '';
+  const body = (campaign.value.message as any).body ?? '';
   if (!previewProfile.value) return body;
   return renderTemplatePreview(body, previewProfile.value.data);
 });
 const waHeaderDisplay = computed(() => {
-  const header = (campaign.value.message as any).whatsapp_header ?? '';
+  const header = (campaign.value.message as any).header ?? '';
   if (!previewProfile.value) return header;
   return renderTemplatePreview(header, previewProfile.value.data);
 });
@@ -149,7 +149,7 @@ const waHeaderDisplay = computed(() => {
 /** Map campaign.message to the WhatsAppTemplatePreview template shape (cream phone + green bubble). */
 const waPreviewTemplate = computed((): WaPreviewTemplate => {
   const msg = campaign.value.message as any;
-  const templateType = msg.whatsapp_template_type ?? 'text';
+  const templateType = msg.template_type ?? 'text';
   let header: WaPreviewTemplate['header'] | undefined;
   let location: WaPreviewTemplate['location'] | undefined;
   let catalog: WaPreviewTemplate['catalog'] | undefined;
@@ -158,19 +158,19 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
   let limitedOffer: WaPreviewTemplate['limitedOffer'] | undefined;
   let auth: WaPreviewTemplate['auth'] | undefined;
 
-  if (templateType === 'image' && msg.whatsapp_media_url) {
-    header = { type: 'image', url: msg.whatsapp_media_url };
-  } else if (templateType === 'video' && msg.whatsapp_media_url) {
-    header = { type: 'video', url: msg.whatsapp_media_url };
-  } else if (templateType === 'document' && msg.whatsapp_document_filename) {
-    header = { type: 'document', filename: msg.whatsapp_document_filename };
-  } else if (msg.whatsapp_header) {
+  if (templateType === 'image' && msg.media_url) {
+    header = { type: 'image', url: msg.media_url };
+  } else if (templateType === 'video' && msg.media_url) {
+    header = { type: 'video', url: msg.media_url };
+  } else if (templateType === 'document' && msg.document_filename) {
+    header = { type: 'document', filename: msg.document_filename };
+  } else if (msg.header) {
     header = { type: 'text', text: waHeaderDisplay.value };
   }
   const body = waBodyDisplay.value || 'Start adding content to see a live preview here.';
 
-  if (templateType === 'location' && msg.whatsapp_location) {
-    const rawLoc = msg.whatsapp_location as any;
+  if (templateType === 'location' && msg.location) {
+    const rawLoc = msg.location as any;
     const lat = rawLoc.lat ?? rawLoc.latitude;
     const lng = rawLoc.lng ?? rawLoc.lon ?? rawLoc.longitude;
     if (lat != null && lng != null) {
@@ -183,33 +183,33 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
     }
   }
 
-  if ((templateType === 'catalog' || templateType === 'mpm') && Array.isArray(msg.whatsapp_products) && msg.whatsapp_products.length) {
+  if ((templateType === 'catalog' || templateType === 'mpm') && Array.isArray(msg.products) && msg.products.length) {
     catalog = true;
-    multiProduct = (msg.whatsapp_products as any[]).map((p) => ({
+    multiProduct = (msg.products as any[]).map((p) => ({
       image: p.image ?? p.imageUrl,
       name: p.name ?? p.sectionTitle ?? p.title ?? 'Product',
       price: p.price ?? p.productId ?? '',
     }));
   }
 
-  if (templateType === 'coupon' && msg.whatsapp_coupon_code) {
-    coupon = { code: msg.whatsapp_coupon_code };
+  if (templateType === 'coupon' && msg.coupon_code) {
+    coupon = { code: msg.coupon_code };
   }
 
-  if (templateType === 'lto' && msg.whatsapp_lto_expiry) {
-    limitedOffer = msg.whatsapp_lto_expiry;
+  if (templateType === 'lto' && msg.lto_expiry) {
+    limitedOffer = msg.lto_expiry;
   }
 
   if (templateType === 'auth') {
-    const code = msg.whatsapp_auth_code ?? msg.whatsapp_otp_code ?? '123 456';
+    const code = msg.auth_code ?? (msg as any).otp_code ?? '123 456';
     auth = { code };
   }
 
-  const buttonsRaw = (msg.whatsapp_buttons as { label?: string }[] | undefined) ?? [];
+  const buttonsRaw = (msg.buttons as { label?: string }[] | undefined) ?? [];
   return {
     header,
     body,
-    footer: msg.whatsapp_footer || undefined,
+    footer: msg.footer || undefined,
     buttons: buttonsRaw.map((b) => ({ text: b.label || 'Button' })),
     location,
     catalog,
@@ -262,25 +262,25 @@ function updateName(name: string) {
 
 function onInsertVariable(payload: { variable: string; field: 'title' | 'body' }) {
   const token = ` {{ ${payload.variable} }}`;
-  const existingVars = campaign.value.message.variables_used ?? [];
+  const existingVars = campaign.value.message.variables ?? [];
   const nextVars = Array.from(new Set([...existingVars, payload.variable]));
   // For WhatsApp we primarily personalize the WhatsApp header/body fields.
   if (payload.field === 'title') {
-    const currentHeader = (campaign.value.message as any).whatsapp_header ?? '';
+    const currentHeader = (campaign.value.message as any).header ?? '';
     updateMessage(
       {
-        variables_used: nextVars,
+        variables: nextVars,
       } as any
     );
-    (campaign.value.message as any).whatsapp_header = currentHeader + token;
+    (campaign.value.message as any).header = currentHeader + token;
   } else {
-    const currentBody = (campaign.value.message as any).whatsapp_body ?? '';
+    const currentBody = (campaign.value.message as any).body ?? '';
     updateMessage(
       {
-        variables_used: nextVars,
+        variables: nextVars,
       } as any
     );
-    (campaign.value.message as any).whatsapp_body = currentBody + token;
+    (campaign.value.message as any).body = currentBody + token;
   }
 }
 
