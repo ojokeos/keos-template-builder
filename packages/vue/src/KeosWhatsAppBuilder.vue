@@ -468,6 +468,15 @@ function onSave() {
   min-height: 100vh;
   /* padding: 0 0 32px 0; */
 }
+
+.keos-whatsapp-builder button,
+.keos-whatsapp-builder input,
+.keos-whatsapp-builder textarea,
+.keos-whatsapp-builder select {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
 .kb-builder-top {
   margin-left: 24px;
   margin-right: 24px;

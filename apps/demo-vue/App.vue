@@ -156,3 +156,21 @@ function onChange(c: Campaign) {
     </div>
   </div>
 </template>
+
+<style>
+/* Simulate aggressive host app styles to verify builder isolation */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+button {
+  border-radius: 0;
+  text-transform: uppercase;
+}
+
+input,
+textarea,
+select {
+  border-radius: 0;
+}
+</style>
