@@ -2175,7 +2175,7 @@ const Ee = [
       }, null, 8, ["open", "versions"])
     ]));
   }
-}), kt = /* @__PURE__ */ be(Gn, [["__scopeId", "data-v-70606278"]]), Qn = { class: "kb-section" }, Xn = { class: "kb-section__head" }, Zn = { class: "kb-field" }, el = ["value"], tl = { class: "kb-field" }, sl = ["value"], al = {
+}), kt = /* @__PURE__ */ be(Gn, [["__scopeId", "data-v-64f25140"]]), Qn = { class: "kb-section" }, Xn = { class: "kb-section__head" }, Zn = { class: "kb-field" }, el = ["value"], tl = { class: "kb-field" }, sl = ["value"], al = {
   key: 0,
   class: "kb-field"
 }, nl = ["value"], ll = {
@@ -3159,7 +3159,7 @@ const Ee = [
       ])) : h("", !0)
     ]));
   }
-}), ht = /* @__PURE__ */ be(Ho, [["__scopeId", "data-v-e5aefa53"]]), Fo = { class: "kb-section" }, jo = { class: "kb-section__head" }, qo = { class: "kb-field" }, Ko = ["value"], Yo = { class: "kb-field" }, Jo = { class: "kb-label" }, Go = { key: 0 }, Qo = { key: 1 }, Xo = { key: 2 }, Zo = ["value"], ei = {
+}), ht = /* @__PURE__ */ be(Ho, [["__scopeId", "data-v-2389ca7c"]]), Fo = { class: "kb-section" }, jo = { class: "kb-section__head" }, qo = { class: "kb-field" }, Ko = ["value"], Yo = { class: "kb-field" }, Jo = { class: "kb-label" }, Go = { key: 0 }, Qo = { key: 1 }, Xo = { key: 2 }, Zo = ["value"], ei = {
   key: 0,
   class: "kb-truncation-hint"
 }, ti = { class: "kb-field" }, si = { class: "kb-insert-row" }, ai = ["value"], ni = { class: "kb-field" }, li = { class: "kb-insert-row" }, oi = /* @__PURE__ */ re({
@@ -3617,7 +3617,7 @@ const Ee = [
       ])) : h("", !0)
     ]));
   }
-}), _t = /* @__PURE__ */ be(Fi, [["__scopeId", "data-v-c5de9b67"]]), ji = 30, qi = 60, Ki = 130;
+}), _t = /* @__PURE__ */ be(Fi, [["__scopeId", "data-v-8cc0cf01"]]), ji = 30, qi = 60, Ki = 130;
 function Yi(t) {
   const r = (t ?? "").trim().length;
   return r < ji ? "too_short" : r <= qi ? "good" : "too_long";
@@ -5811,7 +5811,7 @@ const example = {{ order_id }};`,
       ])) : h("", !0)
     ]));
   }
-}), $t = /* @__PURE__ */ be(_c, [["__scopeId", "data-v-bf43d0c3"]]), $c = { class: "kb-shell" }, wc = {
+}), $t = /* @__PURE__ */ be(_c, [["__scopeId", "data-v-9b188271"]]), $c = { class: "kb-shell" }, wc = {
   class: "kb-shell__nav",
   role: "tablist",
   "aria-label": "Channel"
