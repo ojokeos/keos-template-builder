@@ -62,6 +62,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
         showHistory: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -119,6 +123,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
         showHistory: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -146,6 +154,7 @@ declare const _default: {
         showDuplicate: boolean;
         actionsNote: string;
         designOnly: boolean;
+        enforceSlugName: boolean;
         showHistory: boolean;
         showSaveVersion: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
@@ -184,6 +193,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
         change: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         "update:modelValue": (campaign: import('@keos/notification-builder-core').Campaign) => void;
@@ -228,6 +241,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>> & Readonly<{
         onChange?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         "onUpdate:modelValue"?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
@@ -245,6 +262,7 @@ declare const _default: {
         showDuplicate: boolean;
         actionsNote: string;
         designOnly: boolean;
+        enforceSlugName: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosSmsBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
         variableOptions: {
@@ -281,6 +299,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
         costPerSegment: {
             type: import('vue').PropType<number>;
             default: number;
@@ -329,6 +351,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
         costPerSegment: {
             type: import('vue').PropType<number>;
             default: number;
@@ -350,6 +376,7 @@ declare const _default: {
         showDuplicate: boolean;
         actionsNote: string;
         designOnly: boolean;
+        enforceSlugName: boolean;
         costPerSegment: number;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosEmailBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
@@ -387,6 +414,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
         change: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         "update:modelValue": (campaign: import('@keos/notification-builder-core').Campaign) => void;
@@ -431,6 +462,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        enforceSlugName: {
+            type: import('vue').PropType<boolean>;
+            default: boolean;
+        };
     }>> & Readonly<{
         onChange?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         "onUpdate:modelValue"?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
@@ -448,6 +483,7 @@ declare const _default: {
         showDuplicate: boolean;
         actionsNote: string;
         designOnly: boolean;
+        enforceSlugName: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 };
 export default _default;

@@ -1,31 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { KeosNotificationBuilder, KeosWhatsAppBuilder } from '@keos/notification-builder-vue';
-import KeosSmsBuilder from '../../packages/vue/src/KeosSmsBuilder.vue';
-import KeosEmailBuilder from '../../packages/vue/src/KeosEmailBuilder.vue';
-import type { Campaign } from '@keos/notification-builder-core';
+import { ref } from "vue";
+import {
+  KeosNotificationBuilder,
+  KeosWhatsAppBuilder,
+} from "@keos/notification-builder-vue";
+import KeosSmsBuilder from "../../packages/vue/src/KeosSmsBuilder.vue";
+import KeosEmailBuilder from "../../packages/vue/src/KeosEmailBuilder.vue";
+import type { Campaign } from "@keos/notification-builder-core";
 
 const campaign = ref<Partial<Campaign>>({});
-const activeTab = ref<'push' | 'whatsapp' | 'sms' | 'email'>('push');
+const activeTab = ref<"push" | "whatsapp" | "sms" | "email">("push");
 
 function onSave(c: Campaign) {
-  console.log('Save', c);
-  alert('Saved (see console)');
+  console.log("Save", c);
+  alert("Saved (see console)");
 }
 
 function onSendTest(c: Campaign) {
-  console.log('Send test', c);
-  alert('Send test (see console)');
+  console.log("Send test", c);
+  alert("Send test (see console)");
 }
 
 function onSchedule(c: Campaign) {
-  console.log('Schedule', c);
-  alert('Scheduled (see console)');
+  console.log("Schedule", c);
+  alert("Scheduled (see console)");
 }
 
 function onSend(c: Campaign) {
-  console.log('Send', c);
-  alert('Send (see console)');
+  console.log("Send", c);
+  alert("Send (see console)");
 }
 
 function onChange(c: Campaign) {
@@ -34,8 +37,8 @@ function onChange(c: Campaign) {
 </script>
 
 <template>
-  <div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
-    <h1 style="margin-bottom: 1.5rem;">Keos Template Builder</h1>
+  <div style="padding: 2rem; max-width: 900px; margin: 0 auto">
+    <h1 style="margin-bottom: 1.5rem">Keos Template Builder</h1>
 
     <div
       style="
@@ -51,11 +54,14 @@ function onChange(c: Campaign) {
         :style="{
           padding: '0.5rem 1rem',
           border: 'none',
-          borderBottom: activeTab === 'push' ? '2px solid #2563eb' : '2px solid transparent',
+          borderBottom:
+            activeTab === 'push'
+              ? '2px solid #2563eb'
+              : '2px solid transparent',
           backgroundColor: 'transparent',
           cursor: 'pointer',
           fontWeight: activeTab === 'push' ? '600' : '400',
-          color: activeTab === 'push' ? '#111827' : '#6b7280'
+          color: activeTab === 'push' ? '#111827' : '#6b7280',
         }"
       >
         Push Builder
@@ -66,11 +72,14 @@ function onChange(c: Campaign) {
         :style="{
           padding: '0.5rem 1rem',
           border: 'none',
-          borderBottom: activeTab === 'whatsapp' ? '2px solid #2563eb' : '2px solid transparent',
+          borderBottom:
+            activeTab === 'whatsapp'
+              ? '2px solid #2563eb'
+              : '2px solid transparent',
           backgroundColor: 'transparent',
           cursor: 'pointer',
           fontWeight: activeTab === 'whatsapp' ? '600' : '400',
-          color: activeTab === 'whatsapp' ? '#111827' : '#6b7280'
+          color: activeTab === 'whatsapp' ? '#111827' : '#6b7280',
         }"
       >
         WhatsApp Builder
@@ -81,11 +90,12 @@ function onChange(c: Campaign) {
         :style="{
           padding: '0.5rem 1rem',
           border: 'none',
-          borderBottom: activeTab === 'sms' ? '2px solid #2563eb' : '2px solid transparent',
+          borderBottom:
+            activeTab === 'sms' ? '2px solid #2563eb' : '2px solid transparent',
           backgroundColor: 'transparent',
           cursor: 'pointer',
           fontWeight: activeTab === 'sms' ? '600' : '400',
-          color: activeTab === 'sms' ? '#111827' : '#6b7280'
+          color: activeTab === 'sms' ? '#111827' : '#6b7280',
         }"
       >
         SMS Builder
@@ -96,11 +106,14 @@ function onChange(c: Campaign) {
         :style="{
           padding: '0.5rem 1rem',
           border: 'none',
-          borderBottom: activeTab === 'email' ? '2px solid #2563eb' : '2px solid transparent',
+          borderBottom:
+            activeTab === 'email'
+              ? '2px solid #2563eb'
+              : '2px solid transparent',
           backgroundColor: 'transparent',
           cursor: 'pointer',
           fontWeight: activeTab === 'email' ? '600' : '400',
-          color: activeTab === 'email' ? '#111827' : '#6b7280'
+          color: activeTab === 'email' ? '#111827' : '#6b7280',
         }"
       >
         Email Builder
@@ -117,7 +130,7 @@ function onChange(c: Campaign) {
         @send-test="onSendTest"
         @schedule="onSchedule"
         @send="onSend"
-
+        :enforce-slug-name="true"
       />
 
       <KeosWhatsAppBuilder
@@ -130,6 +143,7 @@ function onChange(c: Campaign) {
         @schedule="onSchedule"
         @send="onSend"
         :actions-note="'Changes auto-saved'"
+        :enforce-slug-name="true"
       />
 
       <KeosSmsBuilder
@@ -141,6 +155,7 @@ function onChange(c: Campaign) {
         @send-test="onSendTest"
         @schedule="onSchedule"
         @send="onSend"
+        :enforce-slug-name="true"
       />
 
       <KeosEmailBuilder
@@ -152,6 +167,7 @@ function onChange(c: Campaign) {
         @send-test="onSendTest"
         @schedule="onSchedule"
         @send="onSend"
+        :enforce-slug-name="true"
       />
     </div>
   </div>
@@ -160,7 +176,12 @@ function onChange(c: Campaign) {
 <style>
 /* Simulate aggressive host app styles to verify builder isolation */
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 button {

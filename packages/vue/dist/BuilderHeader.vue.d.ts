@@ -8,9 +8,15 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     canRedo?: boolean;
     /** When set, show workflow status dropdown (Draft → Ready for review → Approved → Archived) */
     workflowStatus?: string;
+    /**
+     * When true, normalize the name by replacing consecutive whitespace
+     * characters with a single hyphen (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    slugifyName?: boolean;
 }>, {
     canUndo: boolean;
     canRedo: boolean;
+    slugifyName: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     "update:campaignName": (value: string) => void;
     "update:workflowStatus": (value: string) => void;
@@ -26,9 +32,15 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     canRedo?: boolean;
     /** When set, show workflow status dropdown (Draft → Ready for review → Approved → Archived) */
     workflowStatus?: string;
+    /**
+     * When true, normalize the name by replacing consecutive whitespace
+     * characters with a single hyphen (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    slugifyName?: boolean;
 }>, {
     canUndo: boolean;
     canRedo: boolean;
+    slugifyName: boolean;
 }>>> & Readonly<{
     "onUpdate:campaignName"?: ((value: string) => any) | undefined;
     "onUpdate:workflowStatus"?: ((value: string) => any) | undefined;
@@ -37,6 +49,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
 }>, {
     canUndo: boolean;
     canRedo: boolean;
+    slugifyName: boolean;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;
