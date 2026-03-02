@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 export interface WaPreviewTemplate {
+  format?: string;
+  templateName?: string;
+  templateLanguage?: string;
+  templateCategory?: string;
   header?: {
     type: 'text' | 'image' | 'video' | 'document';
     text?: string;
@@ -9,6 +13,7 @@ export interface WaPreviewTemplate {
     filename?: string;
   };
   body: string;
+  mediaCaption?: string;
   footer?: string;
   buttons?: { text: string }[];
   location?: {
@@ -22,14 +27,12 @@ export interface WaPreviewTemplate {
   coupon?: { code: string };
   limitedOffer?: string;
   auth?: { code: string };
+  flow?: { id?: string; ctaLabel?: string };
 }
 
 const props = defineProps<{
   template: WaPreviewTemplate;
 }>();
-
-const theme = ref<'light' | 'dark'>('light');
-const isDark = computed(() => theme.value === 'dark');
 
 function escapeHtml(s: string): string {
   return String(s)
@@ -48,190 +51,138 @@ const formattedBody = computed(() => {
     .replace(/_(.*?)_/g, '<i>$1</i>');
 });
 
-const googleMapImage = computed(() => {
-  const loc = props.template.location;
-  if (!loc) return '';
-  const { lat, lng } = loc;
-  if (lat == null || lng == null) return '';
-  // NOTE: In a real app you would inject an API key or use a proxy.
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x300&markers=${lat},${lng}`;
+const previewTitle = computed(() => props.template?.templateName || 'Business Account');
+const previewCategory = computed(() => {
+  const c = props.template?.templateCategory;
+  if (!c) return '';
+  return c.charAt(0).toUpperCase() + c.slice(1);
 });
+const previewFormat = computed(() => props.template?.format || 'text');
 </script>
 
 <template>
-  <div class="wa-wrapper" :class="{ 'wa-wrapper--dark': isDark }">
-    <div class="phone" :class="{ 'phone--dark': isDark }">
-      <div class="phone-theme-toggle">
-        <button
-          type="button"
-          class="phone-theme-btn"
-          :class="{ 'phone-theme-btn--active': !isDark }"
-          @click="theme = 'light'"
-        >
-          Light
-        </button>
-        <button
-          type="button"
-          class="phone-theme-btn"
-          :class="{ 'phone-theme-btn--active': isDark }"
-          @click="theme = 'dark'"
-        >
-          Dark
-        </button>
-      </div>
-      <div class="phone-header">
-        <div class="phone-header-left">
-          <div class="avatar"></div>
-          <div class="meta">
-            <div class="name">Customer</div>
-            <div class="status">online</div>
+  <div class="wa-preview-root">
+    <div class="wa-device">
+      <div class="wa-notch"></div>
+      <div class="wa-app">
+        <div class="wa-topbar">
+          <div class="wa-left">
+            <span class="wa-back">&#x2039;</span>
+            <div class="wa-avatar"><span class="wa-avatar-icon">B</span></div>
+          </div>
+          <div class="wa-chat-meta">
+            <div class="wa-chat-title">{{ previewTitle }}</div>
+            <div class="wa-chat-status">Business account</div>
+          </div>
+          <div class="wa-actions" aria-hidden="true">
+            <span>📹</span>
+            <span>📞</span>
+            <span>⋮</span>
           </div>
         </div>
-        <div class="phone-header-actions" aria-hidden="true">
-          <!-- Video call icon -->
-          <button type="button" class="icon-btn">
-            <svg viewBox="0 0 24 24" class="icon-svg" focusable="false">
-              <path
-                d="M4 7.75A1.75 1.75 0 0 1 5.75 6h7.5A1.75 1.75 0 0 1 15 7.75v1.69l3.02-2.01A.75.75 0 0 1 19.25 8v8a.75.75 0 0 1-1.23.59L15 14.58v1.67A1.75 1.75 0 0 1 13.25 18h-7.5A1.75 1.75 0 0 1 4 16.25z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-          <!-- Voice call icon -->
-          <button type="button" class="icon-btn">
-            <svg viewBox="0 0 24 24" class="icon-svg" focusable="false">
-              <path
-                d="M6.54 4.23 8.4 4.5a1.25 1.25 0 0 1 1.06.99l.42 2.11a1.25 1.25 0 0 1-.36 1.16l-1.03 1.02a8.46 8.46 0 0 0 4.23 4.23l1.02-1.03a1.25 1.25 0 0 1 1.16-.36l2.11.42a1.25 1.25 0 0 1 .99 1.06l.27 1.86a1.25 1.25 0 0 1-1.07 1.39C16.78 17.8 14 17 11.5 15.5S6.2 11.22 5.02 8.4A1.25 1.25 0 0 1 6.4 7.33l.14-.95a1.25 1.25 0 0 1 0-.28z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-          <!-- Menu (three dots) -->
-          <button type="button" class="icon-btn">
-            <span class="dots"></span>
-          </button>
-        </div>
-      </div>
-      <div class="chat-area">
-        <div class="bubble">
-          <!-- HEADER -->
-          <div v-if="template.header" class="header">
-            <div v-if="template.header.type === 'text'" class="header-text">
-              {{ template.header.text }}
-            </div>
-            <img
-              v-else-if="template.header.type === 'image'"
-              :src="template.header.url"
-              class="media"
-              alt=""
-            />
-            <video
-              v-else-if="template.header.type === 'video'"
-              :src="template.header.url"
-              controls
-              class="media"
-            />
-            <div v-else-if="template.header.type === 'document'" class="document">
-              📄 {{ template.header.filename }}
+
+        <div class="wa-thread">
+          <div class="wa-encryption-banner">
+            Messages and calls are end-to-end encrypted. No one outside this chat can read or listen.
+          </div>
+          <div class="wa-date-chip">Today</div>
+
+          <div class="wa-row wa-row--in">
+            <div class="wa-bubble wa-bubble--in">
+              <div class="wa-bubble-text">Hello, I just placed an order. Any update?</div>
+              <div class="wa-meta">12:29</div>
             </div>
           </div>
 
-          <!-- BODY -->
-          <div class="body" v-html="formattedBody"></div>
-
-          <!-- LOCATION -->
-          <div v-if="template.location" class="location-card">
-            <img
-              v-if="googleMapImage"
-              :src="googleMapImage"
-              class="map"
-              alt=""
-            />
-            <div class="location-info">
-              <strong>{{ template.location.name }}</strong>
-              <div>{{ template.location.address }}</div>
-            </div>
-          </div>
-
-          <!-- CATALOG -->
-          <div v-if="template.catalog" class="catalog-card">
-            <div class="catalog-header">
-              🛍
-              <span class="catalog-title">
-                {{
-                  typeof template.catalog === 'object' && template.catalog.label
-                    ? template.catalog.label
-                    : 'Full catalog'
-                }}
-              </span>
-            </div>
-            <div class="catalog-sub">Browse all items</div>
-            <div class="catalog-cta">VIEW CATALOG</div>
-          </div>
-
-          <!-- MULTI PRODUCT -->
-          <div v-if="template.multiProduct?.length" class="multi-products">
-            <div
-              v-for="(product, i) in template.multiProduct"
-              :key="i"
-              class="product"
-            >
-              <img
-                v-if="product.image"
-                :src="product.image"
-                alt=""
-              />
-              <div class="product-info">
-                <div class="title">{{ product.name }}</div>
-                <div class="price">{{ product.price }}</div>
+          <div class="wa-row wa-row--out">
+            <div class="wa-bubble wa-bubble--out wa-template">
+              <div class="wa-template-meta">
+                <span>{{ previewCategory || 'utility' }}</span>
+                <span>{{ previewFormat }}</span>
+                <span v-if="template.templateLanguage">{{ template.templateLanguage }}</span>
               </div>
+
+              <div v-if="template.header && template.header.type !== 'text'" class="wa-media">
+                <strong>{{ template.header.type.toUpperCase() }}</strong>
+                <span v-if="template.header.url" class="wa-media-meta">{{ template.header.url }}</span>
+                <span v-else-if="template.header.filename" class="wa-media-meta">{{ template.header.filename }}</span>
+              </div>
+
+              <div v-if="template.header && template.header.type === 'text'" class="wa-header">
+                {{ template.header.text }}
+              </div>
+
+              <div class="wa-body" v-html="formattedBody"></div>
+              <div v-if="template.mediaCaption" class="wa-media-caption">{{ template.mediaCaption }}</div>
+
+              <div v-if="template.location" class="wa-location-inline">
+                <span class="wa-pin">📍</span>
+                <span>
+                  {{
+                    template.location.name ||
+                    template.location.address ||
+                    `${template.location.lat}, ${template.location.lng}`
+                  }}
+                </span>
+              </div>
+
+              <div v-if="template.footer" class="wa-footer">{{ template.footer }}</div>
+
+              <div v-if="template.coupon?.code" class="wa-coupon">
+                Coupon: <strong>{{ template.coupon.code }}</strong>
+              </div>
+
+              <div v-if="template.limitedOffer" class="wa-lto">
+                Limited-time offer ends: {{ template.limitedOffer }}
+              </div>
+
+              <div v-if="template.auth?.code" class="wa-auth">
+                <span class="wa-auth-label">Verification code</span>
+                <strong class="wa-auth-code">{{ template.auth.code }}</strong>
+              </div>
+
+              <div v-if="template.flow" class="wa-flow">
+                <span class="wa-flow-label">WhatsApp Flow</span>
+                <span v-if="template.flow.id" class="wa-flow-id">ID: {{ template.flow.id }}</span>
+                <span class="wa-flow-cta">{{ template.flow.ctaLabel || 'Open flow' }}</span>
+              </div>
+
+              <div v-if="template.multiProduct?.length" class="wa-products">
+                <div
+                  v-for="(p, i) in template.multiProduct.slice(0, 3)"
+                  :key="i"
+                  class="wa-product"
+                >
+                  <div class="wa-product-name">{{ p.name || 'Product' }}</div>
+                  <div class="wa-product-price">{{ p.price || '-' }}</div>
+                </div>
+                <div v-if="template.multiProduct.length > 3" class="wa-product-more">
+                  +{{ template.multiProduct.length - 3 }} more
+                </div>
+              </div>
+
+              <div v-if="template.buttons?.length" class="wa-buttons">
+                <div v-for="(btn, i) in template.buttons" :key="i" class="wa-btn">{{ btn.text }}</div>
+              </div>
+
+              <div class="wa-meta">12:34 <span class="wa-ticks">✓✓</span></div>
             </div>
           </div>
 
-          <!-- COUPON -->
-          <div v-if="template.coupon" class="coupon">
-            <div class="coupon-discount">Special offer</div>
-            <div class="coupon-code">
-              Code:
-              <span>{{ template.coupon.code }}</span>
+          <div class="wa-row wa-row--in">
+            <div class="wa-bubble wa-bubble--in">
+              <div class="wa-bubble-text">Perfect, thank you.</div>
+              <div class="wa-meta">12:35</div>
             </div>
-            <div class="coupon-cta">COPY CODE</div>
           </div>
+        </div>
 
-          <!-- LIMITED TIME OFFER -->
-          <div v-if="template.limitedOffer" class="offer">
-            ⏳ Offer expires {{ template.limitedOffer }}
-          </div>
-
-          <!-- AUTHENTICATION -->
-          <div v-if="template.auth" class="auth">
-            <div class="auth-icon">🔐</div>
-            <div class="auth-title">Confirm your phone number</div>
-            <div class="auth-code">{{ template.auth.code }}</div>
-            <button type="button" class="auth-btn">CONTINUE</button>
-          </div>
-
-          <!-- FOOTER -->
-          <div v-if="template.footer" class="footer">
-            {{ template.footer }}
-          </div>
-
-          <!-- BUTTONS -->
-          <div v-if="template.buttons?.length" class="buttons">
-            <button
-              v-for="(btn, i) in template.buttons"
-              :key="i"
-              type="button"
-              class="button"
-            >
-              {{ btn.text }}
-            </button>
-          </div>
-
-          <!-- TIME -->
-          <div class="time">
-            12:45 ✓✓
-          </div>
+        <div class="wa-inputbar">
+          <span>😊</span>
+          <span class="wa-placeholder">Message</span>
+          <span>📎</span>
+          <span>📷</span>
+          <button class="wa-mic" type="button" aria-label="voice">🎤</button>
         </div>
       </div>
     </div>
@@ -239,403 +190,453 @@ const googleMapImage = computed(() => {
 </template>
 
 <style scoped>
-.wa-wrapper {
-  background: #e5ddd5;
-  padding: 40px;
+.wa-preview-root {
+  background: radial-gradient(circle at 30% 20%, #dae6ea 0%, #d3dde1 40%, #cfd8dc 100%);
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 20px 16px;
 }
 
-.phone {
-  width: 360px;
-  max-width: 100%;
-  background: #efeae2;
-  padding: 16px 12px 20px 12px;
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-}
-
-.phone-theme-toggle {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-bottom: 4px;
-}
-.phone-theme-btn {
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  background: rgba(255, 255, 255, 0.85);
-  padding: 2px 8px;
-  font-size: 10px;
-  line-height: 1.4;
-  color: #475569;
-  cursor: pointer;
-}
-.phone-theme-btn--active {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-}
-
-.phone-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 6px 10px 6px;
-}
-.phone-header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 30%, #38bdf8, #0f766e);
-}
-.meta {
-  display: flex;
-  flex-direction: column;
-}
-.meta .name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #020617;
-}
-.meta .status {
-  font-size: 11px;
-  color: #22c55e;
-}
-.phone-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #0f172a;
-  opacity: 0.85;
-  font-size: 16px;
-}
-.icon-btn {
-  border: none;
-  background: transparent;
-  padding: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  cursor: default;
-}
-.icon-svg {
-  width: 18px;
-  height: 18px;
-}
-.dots {
-  width: 3px;
-  height: 3px;
-  border-radius: 999px;
-  background: currentColor;
+.wa-device {
+  width: clamp(300px, 86vw, 360px);
+  aspect-ratio: 9 / 19.5;
+  height: auto;
+  max-height: 700px;
+  border-radius: 34px;
+  padding: 8px;
+  background: linear-gradient(160deg, #1f2933 0%, #111827 100%);
+  box-shadow:
+    0 32px 70px rgba(0, 0, 0, 0.35),
+    0 8px 18px rgba(0, 0, 0, 0.25);
   position: relative;
 }
-.dots::before,
-.dots::after {
-  content: '';
+
+.wa-notch {
   position: absolute;
-  width: 3px;
-  height: 3px;
-  border-radius: 999px;
-  background: currentColor;
-  left: 0;
-}
-.dots::before {
-  top: -5px;
-}
-.dots::after {
-  top: 5px;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 22px;
+  border-radius: 0 0 14px 14px;
+  background: #111827;
+  z-index: 2;
 }
 
-.chat-area {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  min-height: 260px;
-}
-
-.bubble {
-  background: #d9fdd3;
-  border-radius: 18px;
-  padding: 12px 14px 18px 14px;
-  max-width: 85%;
-  font-size: 14px;
-  position: relative;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+.wa-app {
+  width: 100%;
+  height: 100%;
+  border-radius: 26px;
+  overflow: hidden;
+  background: #efeae2;
+  background-image: url('https://static.whatsapp.net/rsrc.php/v3/yA/r/3XjvM8yK5Q0.png');
+  background-size: 420px auto;
+  background-position: center;
   display: flex;
   flex-direction: column;
+}
+
+.wa-topbar {
+  background: #1f2c33;
+  color: #e9edef;
+  padding: 13px 12px 11px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wa-left {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.header {
-  margin-bottom: 4px;
-}
-.header-text {
-  font-weight: 600;
-  margin-bottom: 4px;
+.wa-back {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #d1d7db;
 }
 
-.media {
-  width: 100%;
+.wa-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #54656f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.wa-chat-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wa-chat-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #f8f9fa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wa-chat-status {
+  font-size: 0.73rem;
+  color: #b1bcc4;
+}
+
+.wa-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #d1d7db;
+  font-size: 1rem;
+}
+
+.wa-thread {
+  flex: 1;
+  padding: 10px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.wa-encryption-banner {
+  align-self: center;
+  max-width: 92%;
+  background: #fff8cc;
+  color: #5c5b53;
   border-radius: 8px;
+  border: 1px solid #f4e6a1;
+  font-size: 0.67rem;
+  line-height: 1.35;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.wa-date-chip {
+  align-self: center;
+  background: #d8efff;
+  color: #54656f;
+  font-size: 0.68rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.wa-row {
+  display: flex;
+  align-items: flex-end;
+}
+
+.wa-row--in {
+  justify-content: flex-start;
+}
+
+.wa-row--out {
+  justify-content: flex-end;
+}
+
+.wa-bubble {
+  max-width: 88%;
+  position: relative;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.09);
+  font-size: 0.88rem;
+  color: #111b21;
+  padding: 7px 9px 4px;
+}
+
+.wa-bubble--in {
+  background: #ffffff;
+  border-radius: 8px 8px 8px 2px;
+}
+
+.wa-bubble--out {
+  background: #d9fdd3;
+  border-radius: 8px 8px 2px 8px;
+}
+
+.wa-bubble-text {
+  font-size: 0.88rem;
+  line-height: 1.38;
+}
+
+.wa-template {
+  min-width: 240px;
+}
+
+.wa-template-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
   margin-bottom: 6px;
 }
 
-.body {
-  white-space: normal;
-  line-height: 1.4;
-  color: #111827;
+.wa-template-meta span {
+  font-size: 0.63rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(17, 27, 33, 0.08);
+  color: #3b4a54;
+  border-radius: 999px;
+  padding: 2px 6px;
 }
 
-.body :deep(b) {
+.wa-media {
+  background: rgba(31, 44, 51, 0.08);
+  border-radius: 6px;
+  padding: 8px 9px;
+  text-align: left;
+  margin-bottom: 6px;
+  color: #3b4a54;
+  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wa-media-meta {
+  font-size: 0.67rem;
+  color: #4a5963;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wa-header {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  color: #111b21;
+}
+
+.wa-body {
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: #111b21;
+  white-space: pre-wrap;
+}
+
+.wa-body :deep(b) {
   font-weight: 700;
 }
 
-.body :deep(i) {
+.wa-body :deep(i) {
   font-style: italic;
 }
 
-.location-card {
-  margin-top: 6px;
-  background: #ffffff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-}
-.map {
-  width: 100%;
-  display: block;
-}
-.location-info {
-  padding: 6px 8px 8px;
-  font-size: 12px;
-  color: #111827;
-}
-.location-info strong {
-  display: block;
-  margin-bottom: 2px;
+.wa-location-inline {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  color: #54656f;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.catalog-card {
-  margin-top: 6px;
-  border-radius: 10px;
-  background: #ffffff;
-  font-size: 13px;
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
+.wa-media-caption {
+  margin-top: 4px;
+  font-size: 0.71rem;
+  color: #54656f;
 }
-.catalog-header {
+
+.wa-footer {
+  font-size: 0.67rem;
+  color: #667781;
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.wa-coupon {
+  margin-top: 6px;
+  font-size: 0.73rem;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px dashed #fdba74;
+  border-radius: 6px;
+  padding: 5px 7px;
+}
+
+.wa-lto {
+  margin-top: 6px;
+  font-size: 0.7rem;
+  color: #9f1239;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 6px;
+  padding: 5px 7px;
+}
+
+.wa-auth {
+  margin-top: 6px;
+  border: 1px solid #d1fae5;
+  background: #ecfdf5;
+  border-radius: 6px;
+  padding: 5px 7px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px 4px 10px;
-  font-weight: 600;
-  color: #111827;
-}
-.catalog-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.catalog-sub {
-  padding: 0 10px 8px 28px;
-  font-size: 12px;
-  color: #6b7280;
-}
-.catalog-cta {
-  border-top: 1px solid #e5e7eb;
-  padding: 8px 10px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: #00a884;
-}
-
-.multi-products {
-  margin-top: 6px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #ffffff;
-}
-.product {
-  display: flex;
+  justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-}
-.product:last-child {
-  border-bottom: 0;
-}
-.product img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-.product-info {
-  flex: 1;
-}
-.product-info .title {
-  font-size: 13px;
-  color: #111827;
-}
-.price {
-  font-size: 12px;
-  color: #16a34a;
-  margin-top: 2px;
 }
 
-.coupon,
-.offer,
-.auth {
+.wa-auth-label {
+  font-size: 0.68rem;
+  color: #065f46;
+}
+
+.wa-auth-code {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: #064e3b;
+}
+
+.wa-flow {
   margin-top: 6px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  background: #ffffff;
-  font-size: 13px;
-}
-.coupon {
-  border: 2px dashed #00a884;
-  background: #f0fff4;
-  text-align: center;
-}
-.coupon-discount {
-  font-weight: 700;
-  color: #00a884;
-  margin-bottom: 2px;
-}
-.coupon-code {
-  font-size: 12px;
-  color: #111827;
-}
-.coupon-code span {
-  font-weight: 600;
-}
-.coupon-cta {
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #00a884;
-}
-.offer {
-  color: #b91c1c;
-  font-weight: 600;
-}
-.auth {
-  text-align: center;
-}
-.auth-icon {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-.auth-title {
-  font-size: 14px;
-  margin-bottom: 4px;
-  color: #111827;
-}
-.auth-code {
-  font-size: 13px;
-  margin-bottom: 8px;
-  color: #4b5563;
-}
-.auth-btn {
-  border: none;
-  background: #00a884;
-  color: #ffffff;
-  padding: 6px 18px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: default;
-}
-
-.footer {
-  font-size: 11px;
-  color: #667781;
-  margin-top: 8px;
-}
-
-.buttons {
-  margin-top: 10px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 6px;
+  padding: 5px 7px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 
-.button {
-  background: #ffffff;
-  border: none;
-  border-top: 1px solid #e5e7eb;
-  padding: 10px;
-  font-size: 13px;
-  cursor: default;
+.wa-flow-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.wa-flow-id {
+  font-size: 0.66rem;
+  color: #1e40af;
+}
+
+.wa-flow-cta {
+  font-size: 0.7rem;
+  color: #1e3a8a;
+}
+
+.wa-products {
+  margin-top: 6px;
+  display: grid;
+  gap: 4px;
+}
+
+.wa-product {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 5px 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wa-product-name {
+  font-size: 0.72rem;
+  color: #111b21;
+}
+
+.wa-product-price {
+  font-size: 0.69rem;
+  color: #0f766e;
+}
+
+.wa-product-more {
+  font-size: 0.66rem;
+  color: #64748b;
+}
+
+.wa-buttons {
+  border-top: 1px solid rgba(17, 27, 33, 0.12);
+  margin-top: 6px;
+}
+
+.wa-btn {
+  text-align: center;
+  padding: 10px 8px;
+  border-top: 1px solid rgba(17, 27, 33, 0.12);
   color: #00a884;
   font-weight: 500;
-  text-align: center;
+  font-size: 0.79rem;
 }
 
-.time {
-  font-size: 10px;
+.wa-meta {
+  margin-top: 2px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 0.64rem;
   color: #667781;
-  position: absolute;
-  bottom: 4px;
-  right: 8px;
+  line-height: 1;
 }
 
-.wa-wrapper.wa-wrapper--dark {
-  background: #111b21;
+.wa-ticks {
+  color: #53bdeb;
+  letter-spacing: -0.06em;
+  font-weight: 700;
 }
-.wa-wrapper.wa-wrapper--dark .phone {
-  background: #111b21;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+
+.wa-pin {
+  font-size: 0.8rem;
 }
-.wa-wrapper.wa-wrapper--dark .meta .name {
-  color: #e9edef;
+
+.wa-inputbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: #f0f2f5;
+  border-top: 1px solid #dfe5e7;
+  color: #54656f;
 }
-.wa-wrapper.wa-wrapper--dark .meta .status {
-  color: #25d366;
+
+.wa-placeholder {
+  background: #ffffff;
+  border: 1px solid #d1d7db;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.84rem;
+  color: #8696a0;
 }
-.wa-wrapper.wa-wrapper--dark .bubble {
-  background: #005e54;
-  color: #e9edef;
+
+.wa-mic {
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  background: #00a884;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
-.wa-wrapper.wa-wrapper--dark .body {
-  color: #e9edef;
-}
-.wa-wrapper.wa-wrapper--dark .location-card,
-.wa-wrapper.wa-wrapper--dark .catalog-card,
-.wa-wrapper.wa-wrapper--dark .multi-products,
-.wa-wrapper.wa-wrapper--dark .coupon,
-.wa-wrapper.wa-wrapper--dark .offer,
-.wa-wrapper.wa-wrapper--dark .auth {
-  background: #202c33;
-  border-color: #2f3e4d;
-}
-.wa-wrapper.wa-wrapper--dark .catalog-sub,
-.wa-wrapper.wa-wrapper--dark .coupon-code,
-.wa-wrapper.wa-wrapper--dark .auth-code,
-.wa-wrapper.wa-wrapper--dark .footer,
-.wa-wrapper.wa-wrapper--dark .time {
-  color: #9ca3af;
-}
-.wa-wrapper.wa-wrapper--dark .button {
-  border-top-color: #374151;
-  color: #25d366;
-}
-.wa-wrapper.wa-wrapper--dark .phone-theme-btn {
-  background: rgba(15, 23, 42, 0.9);
-  color: #e5e7eb;
-  border-color: rgba(148, 163, 184, 0.6);
-}
-.wa-wrapper.wa-wrapper--dark .phone-theme-btn--active {
-  background: #e9edef;
-  color: #111827;
-  border-color: #e9edef;
+
+@media (max-width: 720px) {
+  .wa-device {
+    width: min(100%, 340px);
+    max-height: 640px;
+    border-radius: 28px;
+    padding: 7px;
+  }
+  .wa-app {
+    border-radius: 22px;
+  }
+  .wa-notch {
+    width: 110px;
+    height: 18px;
+  }
 }
 </style>

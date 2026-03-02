@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp template builder · media, catalog, variables</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .builder-container { max-width: 1400px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
+    .header-bar { background: #075E54; color: white; padding: 18px 28px; font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+    .main-panel { display: flex; flex-direction: row; flex-wrap: wrap; }
+    .control-panel { flex: 1 1 420px; background: #f6f6f6; padding: 28px 24px; border-right: 1px solid #d1d7db; overflow-y: auto; max-height: 800px; }
+    .preview-panel { flex: 1 1 420px; background: #e5ddd5; background-image: radial-gradient(circle at 25px 25px, #cfbeb0 1.5px, transparent 1.5px); background-size: 30px 30px; padding: 28px 24px; display: flex; flex-direction: column; }
+    .control-panel h2 { font-size: 1.3rem; margin-bottom: 20px; color: #1f2a33; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #25D366; padding-bottom: 8px; }
+    .field-group { background: white; padding: 18px 20px; border-radius: 20px; border: 1px solid #e9edef; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+    .field-group label { font-weight: 600; font-size: 0.95rem; color: #2a3942; display: block; margin-bottom: 12px; }
+    input, textarea, select { width: 100%; padding: 12px 14px; border: 1px solid #d1d7db; border-radius: 14px; font-size: 0.95rem; background: white; margin-bottom: 12px; }
+    input:focus, textarea:focus, select:focus { border-color: #25D366; outline: none; box-shadow: 0 0 0 3px rgba(37,211,102,0.2); }
+    .inline-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .inline-row .btn-text { flex: 2 1 140px; }
+    .inline-row .btn-type { flex: 1 1 100px; }
+    .action-input { background: #e9edf0; padding: 10px 12px; border-radius: 14px; display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+    .checkbox-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .checkbox-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: #25D366; margin: 0; }
+    .button-group { background: #f0f5fa; border-radius: 16px; padding: 16px; margin-top: 10px; }
+    .button-entry { padding: 16px 0 8px 0; border-bottom: 1px dashed #bdc5cb; }
+    .button-entry:first-child { padding-top: 0; }
+    .button-entry:last-child { border-bottom: none; }
+    .preview-header { display: flex; align-items: center; gap: 16px; background: #f0f2f4; padding: 12px 20px; border-radius: 40px; margin-bottom: 28px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .avatar { width: 48px; height: 48px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.6rem; }
+    .message-bubble { background: white; max-width: 400px; width: fit-content; border-radius: 22px 22px 22px 6px; padding: 12px 20px 14px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 10px; }
+    .bubble-header { font-weight: 600; color: #075E54; margin-bottom: 6px; font-size: 1rem; }
+    .media-placeholder { background: #f0f2f4; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: #3b4a54; border: 1px dashed #a0b3c2; }
+    .media-placeholder i { font-size: 2rem; color: #128C7E; }
+    .bubble-body { font-size: 1rem; line-height: 1.5; color: #111b21; white-space: pre-wrap; word-break: break-word; }
+    .bubble-footer { font-size: 0.85rem; color: #667781; margin-top: 8px; border-top: 1px solid #e9edef; padding-top: 8px; }
+    .buttons-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .preview-button { background: #e7f8ee; border: 1px solid #25D366; border-radius: 30px; padding: 10px 22px; font-size: 0.9rem; font-weight: 500; color: #075E54; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: default; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+    .catalog-preview { background: #e9eef2; border-radius: 18px; padding: 16px; margin-top: 16px; border: 1px solid #cfdee9; }
+    .product-item { display: flex; gap: 12px; background: white; border-radius: 14px; padding: 12px; margin-bottom: 8px; align-items: center; }
+    .product-item:last-child { margin-bottom: 0; }
+    .product-img { width: 50px; height: 50px; background: #b3bfc9; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; }
+    .product-details { flex:1; }
+    .product-title { font-weight: 600; font-size: 1rem; }
+    .product-price { color: #075E54; font-weight: 500; }
+    .timestamp { font-size: 0.7rem; color: #8696a0; margin-left: 6px; display: inline-block; }
+    .variables-container { background: #f4f7f9; border-radius: 16px; padding: 16px; margin: 16px 0; }
+    .var-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+    .var-row label { min-width: 70px; font-weight: 500; }
+    hr { border: 0.5px solid #d1d7db; margin: 16px 0; }
+  </style>
+</head>
+<body>
+<div class="builder-container">
+  <div class="header-bar"><i class="fab fa-whatsapp"></i> WhatsApp Template Builder · Media, Catalog, Variables</div>
+  <div class="main-panel">
+    <!-- LEFT: CONTROLS -->
+    <div class="control-panel">
+      <h2><i class="fas fa-sliders-h" style="color:#25D366;"></i> Template components</h2>
+
+      <!-- HEADER with type -->
+      <div class="field-group">
+        <label><i class="fas fa-heading"></i> Header type</label>
+        <select id="headerType">
+          <option value="none">None</option>
+          <option value="text" selected>Text</option>
+          <option value="image">Image</option>
+          <option value="video">Video</option>
+          <option value="document">Document</option>
+        </select>
+        <div id="headerTextGroup">
+          <input type="text" id="headerText" placeholder="Header text (e.g. Special offer)" value="🔥 Flash sale 24h">
+        </div>
+        <div id="headerMediaGroup" style="display: none;">
+          <input type="text" id="headerMediaUrl" placeholder="Media URL (https://...)" value="https://picsum.photos/400/200">
+          <div style="font-size:0.85rem; color:#5e6f7e;"><i class="fas fa-info-circle"></i> For preview only</div>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="field-group">
+        <label><i class="fas fa-align-left"></i> Body text *</label>
+        <textarea id="bodyText" rows="3" placeholder="Message body, use {{1}}, {{2}} for variables">Hello {{1}}! Use code {{2}} for 20% off. Visit our store.</textarea>
+      </div>
+
+      <!-- VARIABLES (dynamic) -->
+      <div class="field-group" id="variablesSection" style="display: none;">
+        <label><i class="fas fa-tag"></i> Sample variable values</label>
+        <div id="variablesContainer" class="variables-container"></div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="field-group">
+        <label><i class="fas fa-clock"></i> Footer</label>
+        <div class="checkbox-row"><input type="checkbox" id="enableFooter"> <span>Include footer</span></div>
+        <input type="text" id="footerText" placeholder="e.g. reply STOP" disabled>
+      </div>
+
+      <!-- BUTTONS (max 2, with catalog type) -->
+      <div class="field-group">
+        <label><i class="fas fa-regular fa-rectangle-ad"></i> Buttons (max 2)</label>
+
+        <!-- BUTTON 1 -->
+        <div class="button-group">
+          <div class="checkbox-row"><input type="checkbox" id="btn1Enable" checked> <label style="margin:0;">Button 1</label></div>
+          <div id="btn1Controls">
+            <div class="inline-row">
+              <input type="text" id="btn1Text" class="btn-text" placeholder="Button text" value="Shop now">
+              <select id="btn1Type" class="btn-type">
+                <option value="quick_reply">Quick reply</option>
+                <option value="url" selected>URL</option>
+                <option value="phone">Phone</option>
+                <option value="catalog">Catalog</option>
+              </select>
+            </div>
+            <div id="btn1ActionContainer" class="action-input">
+              <i class="fas fa-link"></i>
+              <input type="text" id="btn1Action" placeholder="https://example.com" value="https://myshop.com/sale">
+            </div>
+          </div>
+        </div>
+
+        <!-- BUTTON 2 -->
+        <div class="button-group" style="margin-top:16px;">
+          <div class="checkbox-row"><input type="checkbox" id="btn2Enable"> <label style="margin:0;">Button 2</label></div>
+          <div id="btn2Controls">
+            <div class="inline-row">
+              <input type="text" id="btn2Text" class="btn-text" placeholder="Button text" value="Call support" disabled>
+              <select id="btn2Type" class="btn-type" disabled>
+                <option value="quick_reply">Quick reply</option>
+                <option value="url">URL</option>
+                <option value="phone" selected>Phone</option>
+                <option value="catalog">Catalog</option>
+              </select>
+            </div>
+            <div id="btn2ActionContainer" class="action-input">
+              <i class="fas fa-phone-alt"></i>
+              <input type="text" id="btn2Action" placeholder="+1234567" value="+15551234" disabled>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.8rem; margin-top:12px;"><i class="fas fa-info-circle"></i> Catalog button shows mock product list.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: PREVIEW LAYER -->
+    <div class="preview-panel">
+      <div class="preview-header">
+        <div class="avatar"><i class="fab fa-whatsapp"></i></div>
+        <div class="contact-info"><h3>Business Account</h3><p>typically replies instantly</p></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: flex-end;">
+          <div class="message-bubble" id="previewBubble">
+            <!-- media header placeholder (if any) -->
+            <div id="previewMedia" class="media-placeholder" style="display: none;"></div>
+            <!-- text header -->
+            <div id="previewHeader" class="bubble-header">🔥 Flash sale 24h</div>
+            <!-- body -->
+            <div id="previewBody" class="bubble-body">Hello {{1}}! Use code {{2}} for 20% off. Visit our store.</div>
+            <!-- footer -->
+            <div id="previewFooter" class="bubble-footer" style="display: none;"></div>
+            <!-- buttons -->
+            <div id="previewButtons" class="buttons-container"></div>
+            <!-- catalog preview (if catalog button present) -->
+            <div id="catalogPreview" class="catalog-preview" style="display: none;">
+              <div style="font-weight:600; margin-bottom:8px;"><i class="fas fa-box-open"></i> Featured products</div>
+              <div class="product-item">
+                <div class="product-img"><i class="fas fa-tshirt"></i></div>
+                <div class="product-details"><div class="product-title">Classic Tee</div><div class="product-price">$19.99</div></div>
+              </div>
+              <div class="product-item">
+                <div class="product-img"><i class="fas fa-mug-hot"></i></div>
+                <div class="product-details"><div class="product-title">Ceramic Mug</div><div class="product-price">$9.99</div></div>
+              </div>
+              <div class="product-item">
+                <div class="product-img"><i class="fas fa-headphones"></i></div>
+                <div class="product-details"><div class="product-title">Wireless Buds</div><div class="product-price">$49.99</div></div>
+              </div>
+              <div style="font-size:0.85rem; color:#128C7E; margin-top:6px;"><i class="fas fa-shopping-bag"></i> View catalog</div>
+            </div>
+          </div>
+          <span class="timestamp">12:34</span>
+        </div>
+      </div>
+      <div style="margin-top:auto; color:#667781; font-size:0.8rem; padding:12px; text-align:center;">
+        <i class="fas fa-lock"></i> interactive preview (mock)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // DOM elements
+    const headerType = document.getElementById('headerType');
+    const headerTextGroup = document.getElementById('headerTextGroup');
+    const headerMediaGroup = document.getElementById('headerMediaGroup');
+    const headerText = document.getElementById('headerText');
+    const headerMediaUrl = document.getElementById('headerMediaUrl');
+    const bodyText = document.getElementById('bodyText');
+    const enableFooter = document.getElementById('enableFooter');
+    const footerText = document.getElementById('footerText');
+    const variablesSection = document.getElementById('variablesSection');
+    const variablesContainer = document.getElementById('variablesContainer');
+
+    // Button 1
+    const btn1Enable = document.getElementById('btn1Enable');
+    const btn1Text = document.getElementById('btn1Text');
+    const btn1Type = document.getElementById('btn1Type');
+    const btn1Action = document.getElementById('btn1Action');
+    const btn1ActionContainer = document.getElementById('btn1ActionContainer');
+    // Button 2
+    const btn2Enable = document.getElementById('btn2Enable');
+    const btn2Text = document.getElementById('btn2Text');
+    const btn2Type = document.getElementById('btn2Type');
+    const btn2Action = document.getElementById('btn2Action');
+    const btn2ActionContainer = document.getElementById('btn2ActionContainer');
+
+    // Preview elements
+    const previewMedia = document.getElementById('previewMedia');
+    const previewHeader = document.getElementById('previewHeader');
+    const previewBody = document.getElementById('previewBody');
+    const previewFooter = document.getElementById('previewFooter');
+    const previewButtons = document.getElementById('previewButtons');
+    const catalogPreview = document.getElementById('catalogPreview');
+
+    // Variable storage
+    let varValues = {};
+
+    // Helper: toggle footer enabled/disabled
+    function toggleFooter() {
+      const checked = enableFooter.checked;
+      footerText.disabled = !checked;
+      if (!checked) footerText.value = '';
+    }
+
+    // Helper: toggle button fields
+    function toggleBtn1() {
+      const checked = btn1Enable.checked;
+      btn1Text.disabled = !checked;
+      btn1Type.disabled = !checked;
+      btn1Action.disabled = !checked;
+    }
+    function toggleBtn2() {
+      const checked = btn2Enable.checked;
+      btn2Text.disabled = !checked;
+      btn2Type.disabled = !checked;
+      btn2Action.disabled = !checked;
+    }
+
+    // Update icon and placeholder based on type
+    function updateButtonActionIcon(btnNum) {
+      const typeEl = btnNum === 1 ? btn1Type : btn2Type;
+      const iconEl = btnNum === 1 ? btn1ActionContainer.querySelector('i') : btn2ActionContainer.querySelector('i');
+      const actionInput = btnNum === 1 ? btn1Action : btn2Action;
+      if (!typeEl || !iconEl || !actionInput) return;
+      const type = typeEl.value;
+      if (type === 'url') {
+        iconEl.className = 'fas fa-link';
+        actionInput.placeholder = 'https://example.com';
+      } else if (type === 'phone') {
+        iconEl.className = 'fas fa-phone-alt';
+        actionInput.placeholder = '+123456789';
+      } else if (type === 'catalog') {
+        iconEl.className = 'fas fa-shopping-bag';
+        actionInput.placeholder = 'catalog ID (mock)';
+      } else {
+        iconEl.className = 'fas fa-reply';
+        actionInput.placeholder = 'optional (not shown)';
+      }
+    }
+
+    // Extract variable numbers from body text ({{n}})
+    function extractVariables(text) {
+      const regex = /{{(\d+)}}/g;
+      let matches = new Set();
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        matches.add(match[1]);
+      }
+      return Array.from(matches).sort((a,b)=>a-b);
+    }
+
+    // Build variable input fields
+    function rebuildVariableInputs() {
+      const body = bodyText.value;
+      const varNumbers = extractVariables(body);
+      if (varNumbers.length === 0) {
+        variablesSection.style.display = 'none';
+        varValues = {};
+        return;
+      }
+      variablesSection.style.display = 'block';
+      variablesContainer.innerHTML = '';
+      varNumbers.forEach(num => {
+        const row = document.createElement('div');
+        row.className = 'var-row';
+        row.innerHTML = `
+          <label>Variable {{${num}}}</label>
+          <input type="text" class="var-input" data-var="${num}" placeholder="Sample value" value="sample${num}">
+        `;
+        variablesContainer.appendChild(row);
+      });
+      // Attach event listeners
+      document.querySelectorAll('.var-input').forEach(inp => {
+        inp.addEventListener('input', updatePreview);
+        // store initial
+        varValues[inp.dataset.var] = inp.value;
+      });
+    }
+
+    // Replace variables in text
+    function replaceVariables(text) {
+      let result = text;
+      for (let [num, val] of Object.entries(varValues)) {
+        result = result.replace(new RegExp(`\\{\\{${num}\\}\\}`, 'g'), val || `{{${num}}}`);
+      }
+      return result;
+    }
+
+    // Main preview update
+    function updatePreview() {
+      // gather variable values from inputs if present
+      document.querySelectorAll('.var-input').forEach(inp => {
+        varValues[inp.dataset.var] = inp.value;
+      });
+
+      // ----- HEADER (media or text) -----
+      const hType = headerType.value;
+      // hide both groups initially
+      headerTextGroup.style.display = 'none';
+      headerMediaGroup.style.display = 'none';
+
+      if (hType === 'text') {
+        headerTextGroup.style.display = 'block';
+        previewMedia.style.display = 'none';
+        if (headerText.value.trim() !== '') {
+          previewHeader.textContent = headerText.value;
+          previewHeader.style.display = 'block';
+        } else {
+          previewHeader.style.display = 'none';
+        }
+      } else if (hType === 'image' || hType === 'video' || hType === 'document') {
+        headerMediaGroup.style.display = 'block';
+        previewHeader.style.display = 'none'; // text header hidden
+        // show media placeholder
+        previewMedia.style.display = 'flex';
+        let icon = 'fa-image';
+        let typeLabel = 'Image';
+        if (hType === 'video') { icon = 'fa-video'; typeLabel = 'Video'; }
+        if (hType === 'document') { icon = 'fa-file-alt'; typeLabel = 'Document'; }
+        const mediaUrl = headerMediaUrl.value.trim() || '(no URL)';
+        previewMedia.innerHTML = `<i class="fas ${icon}"></i><span><strong>${typeLabel}:</strong> ${mediaUrl.substring(0,30)}${mediaUrl.length>30?'…':''}</span>`;
+      } else { // none
+        previewMedia.style.display = 'none';
+        previewHeader.style.display = 'none';
+      }
+
+      // ----- BODY with variables -----
+      let rawBody = bodyText.value || ' ';
+      previewBody.textContent = replaceVariables(rawBody);
+
+      // ----- FOOTER -----
+      if (enableFooter.checked && footerText.value.trim() !== '') {
+        previewFooter.textContent = footerText.value;
+        previewFooter.style.display = 'block';
+      } else {
+        previewFooter.style.display = 'none';
+      }
+
+      // ----- BUTTONS and CATALOG -----
+      previewButtons.innerHTML = '';
+      let hasCatalog = false;
+
+      function addButton(enable, textEl, typeEl, actionEl) {
+        if (!enable.checked) return false;
+        const text = textEl.value.trim();
+        if (text === '') return false;
+        const type = typeEl.value;
+        if (type === 'catalog') hasCatalog = true;
+
+        const btnDiv = document.createElement('div');
+        btnDiv.className = 'preview-button';
+        let icon = 'fa-reply';
+        if (type === 'url') icon = 'fa-link';
+        else if (type === 'phone') icon = 'fa-phone-alt';
+        else if (type === 'catalog') icon = 'fa-shopping-bag';
+        btnDiv.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
+        previewButtons.appendChild(btnDiv);
+        return true;
+      }
+
+      if (btn1Enable.checked) addButton(btn1Enable, btn1Text, btn1Type, btn1Action);
+      if (btn2Enable.checked) addButton(btn2Enable, btn2Text, btn2Type, btn2Action);
+
+      // Show/hide catalog preview
+      if (hasCatalog) {
+        catalogPreview.style.display = 'block';
+      } else {
+        catalogPreview.style.display = 'none';
+      }
+    }
+
+    // Event listeners
+    headerType.addEventListener('change', () => {
+      updateButtonActionIcon(1); // refresh anyway, but keep
+      updatePreview();
+    });
+    headerText.addEventListener('input', updatePreview);
+    headerMediaUrl.addEventListener('input', updatePreview);
+    bodyText.addEventListener('input', () => {
+      rebuildVariableInputs();
+      updatePreview();
+    });
+    enableFooter.addEventListener('change', () => { toggleFooter(); updatePreview(); });
+    footerText.addEventListener('input', updatePreview);
+
+    btn1Enable.addEventListener('change', () => { toggleBtn1(); updateButtonActionIcon(1); updatePreview(); });
+    btn1Text.addEventListener('input', updatePreview);
+    btn1Type.addEventListener('change', () => { updateButtonActionIcon(1); updatePreview(); });
+    btn1Action.addEventListener('input', updatePreview);
+
+    btn2Enable.addEventListener('change', () => { toggleBtn2(); updateButtonActionIcon(2); updatePreview(); });
+    btn2Text.addEventListener('input', updatePreview);
+    btn2Type.addEventListener('change', () => { updateButtonActionIcon(2); updatePreview(); });
+    btn2Action.addEventListener('input', updatePreview);
+
+    // initial setup
+    toggleFooter();
+    toggleBtn1();
+    toggleBtn2();
+    updateButtonActionIcon(1);
+    updateButtonActionIcon(2);
+    rebuildVariableInputs();  // parse initial body
+    updatePreview();
+
+    // also update variables when body changes via input (already)
+  })();
+</script>
+</body>
+</html>

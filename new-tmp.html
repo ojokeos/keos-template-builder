@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp template builder · live preview</title>
+  <!-- Font Awesome for icons (optional, adds nice touch) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .builder-container {
+      max-width: 1300px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header-bar {
+      background: #075E54;
+      color: white;
+      padding: 18px 28px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-bar i {
+      font-size: 1.8rem;
+    }
+
+    .main-panel {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    /* left: builder controls */
+    .control-panel {
+      flex: 1 1 400px;
+      background: #f6f6f6;
+      padding: 28px 24px;
+      border-right: 1px solid #d1d7db;
+      overflow-y: auto;
+      max-height: 800px;
+    }
+
+    .control-panel h2 {
+      font-size: 1.3rem;
+      margin-bottom: 24px;
+      color: #1f2a33;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #25D366;
+      padding-bottom: 8px;
+    }
+
+    .field-group {
+      margin-bottom: 28px;
+      background: white;
+      padding: 18px 20px;
+      border-radius: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      border: 1px solid #e9edef;
+    }
+
+    .field-group label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #2a3942;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #25D366;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d7db;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      background: white;
+      transition: 0.15s;
+      margin-bottom: 12px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #25D366;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.2);
+    }
+
+    input:disabled, textarea:disabled, select:disabled {
+      background: #f0f2f4;
+      color: #6a7c8b;
+    }
+
+    .button-group {
+      background: #f0f5fa;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    .button-entry {
+      padding: 16px 0 8px 0;
+      border-bottom: 1px dashed #bdc5cb;
+    }
+    .button-entry:first-child {
+      padding-top: 0;
+    }
+    .button-entry:last-child {
+      border-bottom: none;
+    }
+
+    .inline-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .inline-row .btn-text {
+      flex: 2 1 140px;
+    }
+    .inline-row .btn-type {
+      flex: 1 1 100px;
+    }
+
+    .action-input {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #e9edf0;
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+    .action-input i {
+      color: #4b5963;
+    }
+
+    /* right: preview layer */
+    .preview-panel {
+      flex: 1 1 400px;
+      background: #e5ddd5;
+      background-image: radial-gradient(circle at 25px 25px, #cfbeb0 1.5px, transparent 1.5px);
+      background-size: 30px 30px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #f0f2f4;
+      padding: 12px 20px;
+      border-radius: 40px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .preview-header .avatar {
+      width: 48px;
+      height: 48px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.6rem;
+    }
+
+    .preview-header .contact-info h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .preview-header .contact-info p {
+      font-size: 0.85rem;
+      color: #3b4a54;
+    }
+
+    /* WhatsApp bubble */
+    .message-bubble {
+      background: white;
+      max-width: 400px;
+      width: fit-content;
+      border-radius: 22px 22px 22px 6px;
+      padding: 12px 20px 14px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 10px;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .bubble-header {
+      font-weight: 600;
+      color: #075E54;
+      margin-bottom: 6px;
+      font-size: 1rem;
+      letter-spacing: -0.2px;
+    }
+
+    .bubble-body {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #111b21;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .bubble-footer {
+      font-size: 0.85rem;
+      color: #667781;
+      margin-top: 8px;
+      border-top: 1px solid #e9edef;
+      padding-top: 8px;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: flex-start;
+    }
+
+    .preview-button {
+      background: #e7f8ee;
+      border: 1px solid #25D366;
+      border-radius: 30px;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #075E54;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      cursor: default;
+      transition: none;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .preview-button i {
+      font-size: 0.9rem;
+      color: #128C7E;
+    }
+
+    .phone-icon {
+      color: #0f6655;
+    }
+
+    .timestamp {
+      font-size: 0.7rem;
+      color: #8696a0;
+      margin-left: 6px;
+      display: inline-block;
+    }
+
+    .empty-state {
+      color: #8696a0;
+      font-style: italic;
+      padding: 12px 0;
+    }
+
+    hr {
+      border: 0.5px solid #d1d7db;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="builder-container">
+  <div class="header-bar">
+    <i class="fab fa-whatsapp"></i> WhatsApp Template Builder · live preview
+  </div>
+  <div class="main-panel">
+    <!-- LEFT: BUILDER CONTROLS -->
+    <div class="control-panel">
+      <h2><i class="fas fa-pen" style="color:#25D366;"></i> Edit template components</h2>
+
+      <!-- Header -->
+      <div class="field-group">
+        <label><i class="fas fa-heading" style="margin-right:6px;"></i>Header (optional)</label>
+        <div class="checkbox-row">
+          <input type="checkbox" id="enableHeader" checked>
+          <span>Include header</span>
+        </div>
+        <input type="text" id="headerText" placeholder="e.g. Special offer just for you" value="🔥 Flash sale 24h">
+      </div>
+
+      <!-- Body (required) -->
+      <div class="field-group">
+        <label><i class="fas fa-align-left" style="margin-right:6px;"></i>Body text *</label>
+        <textarea id="bodyText" rows="4" placeholder="Message content">Hello! Use code WA2025 for 20% off. Visit our store or website.</textarea>
+      </div>
+
+      <!-- Footer -->
+      <div class="field-group">
+        <label><i class="fas fa-clock" style="margin-right:6px;"></i>Footer (optional)</label>
+        <div class="checkbox-row">
+          <input type="checkbox" id="enableFooter">
+          <span>Include footer</span>
+        </div>
+        <input type="text" id="footerText" placeholder="e.g. reply STOP to opt out" disabled>
+      </div>
+
+      <!-- Buttons (up to 2 for simplicity, but expandable) -->
+      <div class="field-group">
+        <label><i class="fas fa-regular fa-rectangle-ad"></i> Buttons (max 2)</label>
+
+        <!-- Button 1 -->
+        <div class="button-group">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <input type="checkbox" id="btn1Enable" checked>
+            <label for="btn1Enable" style="font-weight: 500; margin:0;">Button 1</label>
+          </div>
+          <div id="btn1Controls">
+            <div class="inline-row">
+              <input type="text" id="btn1Text" class="btn-text" placeholder="Button text" value="Shop now">
+              <select id="btn1Type" class="btn-type">
+                <option value="quick_reply">Quick reply</option>
+                <option value="url" selected>URL</option>
+                <option value="phone">Phone</option>
+              </select>
+            </div>
+            <div id="btn1ActionContainer" class="action-input">
+              <i class="fas fa-link"></i>
+              <input type="text" id="btn1Action" placeholder="https://example.com" value="https://myshop.com/sale">
+            </div>
+          </div>
+        </div>
+
+        <!-- Button 2 -->
+        <div class="button-group" style="margin-top: 16px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <input type="checkbox" id="btn2Enable">
+            <label for="btn2Enable" style="font-weight: 500; margin:0;">Button 2</label>
+          </div>
+          <div id="btn2Controls">
+            <div class="inline-row">
+              <input type="text" id="btn2Text" class="btn-text" placeholder="Button text" value="Call support" disabled>
+              <select id="btn2Type" class="btn-type" disabled>
+                <option value="quick_reply">Quick reply</option>
+                <option value="url">URL</option>
+                <option value="phone" selected>Phone</option>
+              </select>
+            </div>
+            <div id="btn2ActionContainer" class="action-input" style="display: flex;">
+              <i class="fas fa-phone-alt"></i>
+              <input type="text" id="btn2Action" placeholder="+1234567" value="+15551234" disabled>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.8rem; color:#5d6f7d; margin-top:10px;"><i class="fas fa-info-circle"></i> URL and phone buttons show an extra field (for preview only)</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: PREVIEW LAYER (WhatsApp chat) -->
+    <div class="preview-panel">
+      <div class="preview-header">
+        <div class="avatar">
+          <i class="fab fa-whatsapp"></i>
+        </div>
+        <div class="contact-info">
+          <h3>Business Account</h3>
+          <p>typically replies instantly</p>
+        </div>
+      </div>
+
+      <!-- chat preview area -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: flex-end;">
+          <div class="message-bubble" id="previewBubble">
+            <!-- Header (dynamic) -->
+            <div id="previewHeader" class="bubble-header">🔥 Flash sale 24h</div>
+            <!-- Body -->
+            <div id="previewBody" class="bubble-body">Hello! Use code WA2025 for 20% off. Visit our store or website.</div>
+            <!-- Footer -->
+            <div id="previewFooter" class="bubble-footer" style="display: none;">footer placeholder</div>
+            <!-- Buttons container -->
+            <div id="previewButtons" class="buttons-container">
+              <!-- filled by js -->
+            </div>
+          </div>
+          <span class="timestamp">12:34</span>
+        </div>
+        <!-- subtle tail (no tail needed) -->
+      </div>
+      <div style="margin-top: auto; color:#667781; font-size:0.8rem; text-align:center; padding:12px;">
+        <i class="fas fa-lock"></i> end‑to‑end preview (mock)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // DOM elements
+    const enableHeader = document.getElementById('enableHeader');
+    const headerText = document.getElementById('headerText');
+    const bodyText = document.getElementById('bodyText');
+    const enableFooter = document.getElementById('enableFooter');
+    const footerText = document.getElementById('footerText');
+
+    // Button 1 elements
+    const btn1Enable = document.getElementById('btn1Enable');
+    const btn1Text = document.getElementById('btn1Text');
+    const btn1Type = document.getElementById('btn1Type');
+    const btn1Action = document.getElementById('btn1Action');
+    const btn1ActionContainer = document.getElementById('btn1ActionContainer');
+
+    // Button 2 elements
+    const btn2Enable = document.getElementById('btn2Enable');
+    const btn2Text = document.getElementById('btn2Text');
+    const btn2Type = document.getElementById('btn2Type');
+    const btn2Action = document.getElementById('btn2Action');
+    const btn2ActionContainer = document.getElementById('btn2ActionContainer');
+
+    // Preview elements
+    const previewHeader = document.getElementById('previewHeader');
+    const previewBody = document.getElementById('previewBody');
+    const previewFooter = document.getElementById('previewFooter');
+    const previewButtons = document.getElementById('previewButtons');
+
+    // Helper to enable/disable fields depending on checkbox
+    function toggleFooterFields() {
+      const checked = enableFooter.checked;
+      footerText.disabled = !checked;
+      if (!checked) footerText.value = '';
+    }
+
+    function toggleButton1Fields() {
+      const checked = btn1Enable.checked;
+      btn1Text.disabled = !checked;
+      btn1Type.disabled = !checked;
+      btn1Action.disabled = !checked;
+      // we keep container visible, but input disabled
+    }
+
+    function toggleButton2Fields() {
+      const checked = btn2Enable.checked;
+      btn2Text.disabled = !checked;
+      btn2Type.disabled = !checked;
+      btn2Action.disabled = !checked;
+    }
+
+    // initial set
+    toggleFooterFields();
+    toggleButton1Fields();
+    toggleButton2Fields();
+
+    // Event listeners for checkboxes
+    enableHeader.addEventListener('change', updatePreview);
+    headerText.addEventListener('input', updatePreview);
+    bodyText.addEventListener('input', updatePreview);
+    enableFooter.addEventListener('change', () => {
+      toggleFooterFields();
+      updatePreview();
+    });
+    footerText.addEventListener('input', updatePreview);
+
+    btn1Enable.addEventListener('change', () => {
+      toggleButton1Fields();
+      updatePreview();
+    });
+    btn1Text.addEventListener('input', updatePreview);
+    btn1Type.addEventListener('change', () => {
+      updateButtonActionIcon(1);
+      updatePreview();
+    });
+    btn1Action.addEventListener('input', updatePreview);
+
+    btn2Enable.addEventListener('change', () => {
+      toggleButton2Fields();
+      updatePreview();
+    });
+    btn2Text.addEventListener('input', updatePreview);
+    btn2Type.addEventListener('change', () => {
+      updateButtonActionIcon(2);
+      updatePreview();
+    });
+    btn2Action.addEventListener('input', updatePreview);
+
+    // change icon + placeholder based on type
+    function updateButtonActionIcon(btnNum) {
+      const typeEl = btnNum === 1 ? btn1Type : btn2Type;
+      const iconEl = btnNum === 1 ? btn1ActionContainer.querySelector('i') : btn2ActionContainer.querySelector('i');
+      const actionInput = btnNum === 1 ? btn1Action : btn2Action;
+      if (!typeEl || !iconEl || !actionInput) return;
+      if (typeEl.value === 'url') {
+        iconEl.className = 'fas fa-link';
+        actionInput.placeholder = 'https://example.com';
+      } else if (typeEl.value === 'phone') {
+        iconEl.className = 'fas fa-phone-alt';
+        actionInput.placeholder = '+123456789';
+      } else {
+        iconEl.className = 'fas fa-reply';
+        actionInput.placeholder = 'optional (not shown)';
+      }
+    }
+
+    // initial icons
+    updateButtonActionIcon(1);
+    updateButtonActionIcon(2);
+
+    // main render
+    function updatePreview() {
+      // ----- Header -----
+      if (enableHeader.checked && headerText.value.trim() !== '') {
+        previewHeader.textContent = headerText.value;
+        previewHeader.style.display = 'block';
+      } else {
+        previewHeader.style.display = 'none';
+      }
+
+      // ----- Body -----
+      previewBody.textContent = bodyText.value || ' '; // if completely empty keep non-collapsed
+
+      // ----- Footer -----
+      if (enableFooter.checked && footerText.value.trim() !== '') {
+        previewFooter.textContent = footerText.value;
+        previewFooter.style.display = 'block';
+      } else {
+        previewFooter.style.display = 'none';
+      }
+
+      // ----- Buttons -----
+      // Clear previous buttons
+      previewButtons.innerHTML = '';
+
+      // Collect active buttons
+      const buttons = [];
+
+      if (btn1Enable.checked && btn1Text.value.trim() !== '') {
+        buttons.push({
+          text: btn1Text.value,
+          type: btn1Type.value,
+          value: btn1Action.value,
+        });
+      }
+
+      if (btn2Enable.checked && btn2Text.value.trim() !== '') {
+        buttons.push({
+          text: btn2Text.value,
+          type: btn2Type.value,
+          value: btn2Action.value,
+        });
+      }
+
+      // Render each button as a pill
+      buttons.forEach(btn => {
+        const btnDiv = document.createElement('div');
+        btnDiv.className = 'preview-button';
+
+        let iconHtml = '';
+        if (btn.type === 'url') {
+          iconHtml = '<i class="fas fa-link"></i>';
+        } else if (btn.type === 'phone') {
+          iconHtml = '<i class="fas fa-phone-alt"></i>';
+        } else {
+          iconHtml = '<i class="fas fa-reply"></i>';
+        }
+
+        // Truncate value indicator for preview (optional)
+        let valueHint = '';
+        if ((btn.type === 'url' || btn.type === 'phone') && btn.value) {
+          // just show a tiny hint, but not necessary
+        }
+
+        btnDiv.innerHTML = `${iconHtml} ${btn.text}`;
+        previewButtons.appendChild(btnDiv);
+      });
+
+      if (buttons.length === 0) {
+        // optional empty placeholder (hide buttons area)
+        // we can leave empty, but container stays
+      }
+    }
+
+    // call once to populate
+    updatePreview();
+
+    // Extra: when type changes, also update the action field placeholder and icon
+    // already handled above
+  })();
+</script>
+</body>
+</html>

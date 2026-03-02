@@ -1,4 +1,8 @@
 export interface WaPreviewTemplate {
+    format?: string;
+    templateName?: string;
+    templateLanguage?: string;
+    templateCategory?: string;
     header?: {
         type: 'text' | 'image' | 'video' | 'document';
         text?: string;
@@ -6,6 +10,7 @@ export interface WaPreviewTemplate {
         filename?: string;
     };
     body: string;
+    mediaCaption?: string;
     footer?: string;
     buttons?: {
         text: string;
@@ -30,6 +35,10 @@ export interface WaPreviewTemplate {
     limitedOffer?: string;
     auth?: {
         code: string;
+    };
+    flow?: {
+        id?: string;
+        ctaLabel?: string;
     };
 }
 declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<__VLS_TypePropsToRuntimeProps<{

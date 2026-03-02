@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp template · exact preview match</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .builder-container { max-width: 1300px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
+    .header-bar { background: #075E54; color: white; padding: 18px 28px; font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+    .main-panel { display: flex; flex-direction: row; flex-wrap: wrap; }
+    .control-panel { flex: 1 1 380px; background: #f6f6f6; padding: 28px 24px; border-right: 1px solid #d1d7db; overflow-y: auto; max-height: 850px; }
+    .preview-panel { flex: 1 1 480px; background: #e5ddd5; background-image: radial-gradient(circle at 25px 25px, #cfbeb0 1.2px, transparent 1.2px); background-size: 30px 30px; padding: 0; display: flex; flex-direction: column; position: relative; }
+    /* chat mock */
+    .chat-mock {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: transparent;
+      padding: 16px 16px 8px 16px;
+    }
+    /* status bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 8px 12px 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #1f2a33;
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #f0f2f4;
+      padding: 12px 20px;
+      border-radius: 40px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.6rem;
+    }
+    .business-info h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .business-info p {
+      font-size: 0.85rem;
+      color: #3b4a54;
+    }
+    /* system message */
+    .system-message {
+      background: #f0f2f4;
+      border-radius: 18px;
+      padding: 12px 18px;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+      color: #3b4a54;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 85%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      align-self: flex-start;
+    }
+    .system-message i {
+      color: #667781;
+      font-size: 1rem;
+    }
+    .system-message a {
+      color: #128C7E;
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 4px;
+    }
+    .system-message a:hover {
+      text-decoration: underline;
+    }
+    /* date divider */
+    .date-divider {
+      text-align: center;
+      margin: 12px 0;
+      font-size: 0.8rem;
+      color: #667781;
+      font-weight: 500;
+      position: relative;
+    }
+    .date-divider span {
+      background: #e1e9ed;
+      padding: 5px 18px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    /* business message bubble */
+    .message-bubble {
+      background: white;
+      max-width: 85%;
+      width: fit-content;
+      border-radius: 22px 22px 22px 6px;
+      padding: 12px 20px 14px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 4px;
+      border: 1px solid rgba(0,0,0,0.03);
+      align-self: flex-start;
+    }
+    .bubble-header {
+      font-weight: 700;
+      color: #075E54;
+      margin-bottom: 6px;
+      font-size: 1.1rem;
+      letter-spacing: -0.2px;
+    }
+    .bubble-body {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #111b21;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .preview-button {
+      background: #e7f8ee;
+      border: 1px solid #25D366;
+      border-radius: 30px;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #075E54;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      cursor: default;
+      white-space: nowrap;
+    }
+    .timestamp-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+      margin-bottom: 16px;
+      font-size: 0.7rem;
+      color: #667781;
+      align-self: flex-start;
+      margin-left: 8px;
+    }
+    .field-group {
+      background: white;
+      padding: 18px 20px;
+      border-radius: 20px;
+      border: 1px solid #e9edef;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .field-group label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #2a3942;
+      display: block;
+      margin-bottom: 12px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d7db;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+    input:focus, textarea:focus {
+      border-color: #25D366;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37,211,102,0.2);
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #25D366;
+      margin: 0;
+    }
+    hr {
+      border: 0.5px solid #d1d7db;
+      margin: 16px 0;
+    }
+    .note {
+      font-size: 0.8rem;
+      color: #5e6f7e;
+      background: #f0f5fa;
+      padding: 8px 12px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="builder-container">
+  <div class="header-bar"><i class="fab fa-whatsapp"></i> WhatsApp Template Builder · exact preview match</div>
+  <div class="main-panel">
+    <!-- LEFT CONTROLS (editable fields) -->
+    <div class="control-panel">
+      <h2><i class="fas fa-pen" style="color:#25D366;"></i> Edit template content</h2>
+      
+      <div class="field-group">
+        <label><i class="fas fa-store"></i> Business name</label>
+        <input type="text" id="businessName" value="Ecoshop" placeholder="Ecoshop">
+      </div>
+
+      <div class="field-group">
+        <label><i class="fas fa-heading"></i> Message header</label>
+        <input type="text" id="msgHeader" value="Black Friday DEALS" placeholder="e.g. Black Friday DEALS">
+      </div>
+
+      <div class="field-group">
+        <label><i class="fas fa-align-left"></i> Message body</label>
+        <textarea id="msgBody" rows="4">Black Friday is around the corner and as promised we are giving you early access to our deals. Select the best deal for the products you are interested in!</textarea>
+      </div>
+
+      <div class="field-group">
+        <label><i class="fas fa-regular fa-rectangle-ad"></i> Button</label>
+        <div class="checkbox-row">
+          <input type="checkbox" id="btnEnable" checked>
+          <span>Show button</span>
+        </div>
+        <input type="text" id="btnText" value="Shop now" placeholder="Button text">
+      </div>
+
+      <div class="note">
+        <i class="fas fa-lock"></i> The system message, date divider, and timestamp are fixed to match your screenshot.
+      </div>
+    </div>
+
+    <!-- RIGHT PREVIEW (exact replica) -->
+    <div class="preview-panel">
+      <div class="chat-mock">
+        <!-- status bar -->
+        <div class="status-bar">
+          <span>11:59</span>
+          <span><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></span>
+        </div>
+
+        <!-- chat header with business name -->
+        <div class="chat-header">
+          <div class="avatar"><i class="fas fa-store-alt"></i></div>
+          <div class="business-info">
+            <h3 id="previewBusinessName">Ecoshop</h3>
+            <p>Business Account</p>
+          </div>
+        </div>
+
+        <!-- system message (fixed) -->
+        <div class="system-message">
+          <i class="fas fa-lock"></i>
+          <span>This business uses a secure service from Meta to manage this chat. <a href="#">Learn more</a></span>
+        </div>
+
+        <!-- date divider -->
+        <div class="date-divider">
+          <span>Today</span>
+        </div>
+
+        <!-- actual template bubble -->
+        <div class="message-bubble">
+          <div id="previewMsgHeader" class="bubble-header">Black Friday DEALS</div>
+          <div id="previewMsgBody" class="bubble-body">Black Friday is around the corner and as promised we are giving you early access to our deals. Select the best deal for the products you are interested in!</div>
+          <div id="previewButtonContainer" class="buttons-container">
+            <!-- button injected here -->
+          </div>
+        </div>
+
+        <!-- timestamp below bubble -->
+        <div class="timestamp-row">
+          <span>11:59</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // DOM elements
+    const businessNameInput = document.getElementById('businessName');
+    const msgHeaderInput = document.getElementById('msgHeader');
+    const msgBodyInput = document.getElementById('msgBody');
+    const btnEnable = document.getElementById('btnEnable');
+    const btnText = document.getElementById('btnText');
+
+    // Preview elements
+    const previewBusinessName = document.getElementById('previewBusinessName');
+    const previewMsgHeader = document.getElementById('previewMsgHeader');
+    const previewMsgBody = document.getElementById('previewMsgBody');
+    const previewButtonContainer = document.getElementById('previewButtonContainer');
+
+    function updatePreview() {
+      // Business name
+      previewBusinessName.textContent = businessNameInput.value.trim() || 'Ecoshop';
+
+      // Message header
+      previewMsgHeader.textContent = msgHeaderInput.value.trim() || 'Black Friday DEALS';
+
+      // Message body
+      previewMsgBody.textContent = msgBodyInput.value.trim() || 'Black Friday is around the corner and as promised we are giving you early access to our deals. Select the best deal for the products you are interested in!';
+
+      // Button
+      previewButtonContainer.innerHTML = ''; // clear
+      if (btnEnable.checked) {
+        const btnTextValue = btnText.value.trim();
+        if (btnTextValue !== '') {
+          const btn = document.createElement('div');
+          btn.className = 'preview-button';
+          btn.innerHTML = `<i class="fas fa-shopping-cart"></i> ${btnTextValue}`;
+          previewButtonContainer.appendChild(btn);
+        }
+      }
+    }
+
+    // Attach listeners
+    businessNameInput.addEventListener('input', updatePreview);
+    msgHeaderInput.addEventListener('input', updatePreview);
+    msgBodyInput.addEventListener('input', updatePreview);
+    btnEnable.addEventListener('change', updatePreview);
+    btnText.addEventListener('input', updatePreview);
+
+    // initial update
+    updatePreview();
+  })();
+</script>
+</body>
+</html>
