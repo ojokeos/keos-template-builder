@@ -688,6 +688,9 @@ function onSave() {
   background: #fff;
   border-top: 1px solid #e2e8f0;
   flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 .kb-sms-actions-right {
   display: flex;
