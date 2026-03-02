@@ -15,6 +15,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSaveVersion?: boolean;
     showDuplicate?: boolean;
     /**
+     * Optional helper text shown on the left side of the action bar.
+     * Useful for comments like “Changes auto-saved” or “Design only”.
+     */
+    actionsNote?: string;
+    /**
      * When true (default), builder is design-only: message content + preview.
      * Audience, delivery/schedule, and send options are configured on another page.
      */
@@ -28,6 +33,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showHistory: boolean;
     showSaveVersion: boolean;
     showDuplicate: boolean;
+    actionsNote: string;
     designOnly: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
@@ -53,6 +59,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSaveVersion?: boolean;
     showDuplicate?: boolean;
     /**
+     * Optional helper text shown on the left side of the action bar.
+     * Useful for comments like “Changes auto-saved” or “Design only”.
+     */
+    actionsNote?: string;
+    /**
      * When true (default), builder is design-only: message content + preview.
      * Audience, delivery/schedule, and send options are configured on another page.
      */
@@ -66,6 +77,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showHistory: boolean;
     showSaveVersion: boolean;
     showDuplicate: boolean;
+    actionsNote: string;
     designOnly: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
@@ -84,6 +96,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
+    actionsNote: string;
     designOnly: boolean;
     showHistory: boolean;
     showSaveVersion: boolean;
