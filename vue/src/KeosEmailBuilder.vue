@@ -361,6 +361,11 @@ const props = withDefaults(
      * Audience and send options are configured on another page.
      */
     designOnly?: boolean;
+    /**
+     * When true, campaign name is normalized by replacing spaces with hyphens
+     * as the user types (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    enforceSlugName?: boolean;
   }>(),
   {
     disabledSections: () => [],
@@ -370,6 +375,7 @@ const props = withDefaults(
     showDuplicate: true,
     actionsNote: '',
     designOnly: true,
+    enforceSlugName: false,
   }
 );
 
@@ -572,6 +578,7 @@ function onSave() {
         :last-saved-at="lastSavedAt"
         :can-undo="canUndo"
         :can-redo="canRedo"
+        :slugify-name="props.enforceSlugName"
         @update:campaign-name="updateName"
         @undo="undo"
         @redo="redo"

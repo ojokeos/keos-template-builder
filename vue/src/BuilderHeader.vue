@@ -8,7 +8,7 @@ const WORKFLOW_STATUS_OPTIONS = [
   { value: 'archived', label: 'Archived' },
 ];
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     campaignName: string;
     status: string;
@@ -19,8 +19,13 @@ withDefaults(
     canRedo?: boolean;
     /** When set, show workflow status dropdown (Draft → Ready for review → Approved → Archived) */
     workflowStatus?: string;
+    /**
+     * When true, normalize the name by replacing consecutive whitespace
+     * characters with a single hyphen (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    slugifyName?: boolean;
   }>(),
-  { canUndo: false, canRedo: false }
+  { canUndo: false, canRedo: false, slugifyName: false }
 );
 
 const emit = defineEmits<{
@@ -29,6 +34,11 @@ const emit = defineEmits<{
   undo: [];
   redo: [];
 }>();
+
+function normalizeName(value: string) {
+  if (!props.slugifyName) return value;
+  return value.trim().replace(/\s+/g, '-');
+}
 
 function formatTime(d: Date) {
   return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
@@ -59,9 +69,9 @@ function statusPillStyle(status: string) {
         type="text"
         class="kb-header__name"
         :value="campaignName"
-        placeholder="Name this campaign (e.g. Spring Sale Push)"
+        placeholder="Name this template (e.g. Spring Sale Push)"
         :style="{ fontSize: '1rem', fontWeight: 600 }"
-        @input="emit('update:campaignName', ($event.target as HTMLInputElement).value)"
+        @input="emit('update:campaignName', normalizeName(($event.target as HTMLInputElement).value))"
         aria-label="Campaign name"
       />
       <div class="kb-header__actions">

@@ -41,6 +41,11 @@ const props = withDefaults(
      * Audience, delivery/schedule, and send options are configured on another page.
      */
     designOnly?: boolean;
+    /**
+     * When true, campaign name is normalized by replacing spaces with hyphens
+     * as the user types (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    enforceSlugName?: boolean;
   }>(),
   {
     disabledSections: () => [],
@@ -53,6 +58,7 @@ const props = withDefaults(
     showDuplicate: true,
     actionsNote: '',
     designOnly: true,
+    enforceSlugName: false,
   }
 );
 
@@ -263,6 +269,7 @@ function onSave() {
         :can-undo="canUndo"
         :can-redo="canRedo"
         :workflow-status="workflowStatus"
+        :slugify-name="props.enforceSlugName"
         @update:campaign-name="updateName"
         @update:workflow-status="(v: string) => update({ workflow_status: v } as any)"
         @undo="undo"

@@ -18,6 +18,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
      * Audience and send options are configured on another page.
      */
     designOnly?: boolean;
+    /**
+     * When true, campaign name is normalized by replacing spaces with hyphens
+     * as the user types (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    enforceSlugName?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
@@ -26,6 +31,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showDuplicate: boolean;
     actionsNote: string;
     designOnly: boolean;
+    enforceSlugName: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
     "update:modelValue": (campaign: Campaign) => void;
@@ -53,6 +59,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
      * Audience and send options are configured on another page.
      */
     designOnly?: boolean;
+    /**
+     * When true, campaign name is normalized by replacing spaces with hyphens
+     * as the user types (e.g. "Spring Sale" → "Spring-Sale").
+     */
+    enforceSlugName?: boolean;
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
@@ -61,6 +72,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showDuplicate: boolean;
     actionsNote: string;
     designOnly: boolean;
+    enforceSlugName: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
     "onUpdate:modelValue"?: ((campaign: Campaign) => any) | undefined;
@@ -78,6 +90,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showDuplicate: boolean;
     actionsNote: string;
     designOnly: boolean;
+    enforceSlugName: boolean;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;
