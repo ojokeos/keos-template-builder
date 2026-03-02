@@ -803,6 +803,15 @@ function onSave() {
   min-height: 100vh;
   /* padding: 0 0 32px 0; */
 }
+
+.keos-email-builder button,
+.keos-email-builder input,
+.keos-email-builder textarea,
+.keos-email-builder select {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
 .kb-builder-top {
   margin-left: 24px;
   margin-right: 24px;
