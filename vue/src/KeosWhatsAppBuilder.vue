@@ -729,7 +729,7 @@ function onSave() {
 .kb-wa-layout {
   display: grid;
   background: linear-gradient(145deg, #f7fafc 0%, #eef3f8 100%);
-  grid-template-columns: minmax(390px, 430px) minmax(0, 1fr);
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
   gap: 14px;
   flex: 1;
   min-height: 0;
