@@ -54,6 +54,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -107,6 +111,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -136,6 +144,7 @@ declare const _default: {
         showSave: boolean;
         showClose: boolean;
         showDuplicate: boolean;
+        actionsNote: string;
         designOnly: boolean;
         showHistory: boolean;
         showSaveVersion: boolean;
@@ -167,6 +176,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -207,6 +220,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -226,6 +243,7 @@ declare const _default: {
         showSave: boolean;
         showClose: boolean;
         showDuplicate: boolean;
+        actionsNote: string;
         designOnly: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosSmsBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
@@ -255,6 +273,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -299,6 +321,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -322,6 +348,7 @@ declare const _default: {
         showSave: boolean;
         showClose: boolean;
         showDuplicate: boolean;
+        actionsNote: string;
         designOnly: boolean;
         costPerSegment: number;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
@@ -352,6 +379,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -392,6 +423,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        actionsNote: {
+            type: import('vue').PropType<string>;
+            default: string;
+        };
         designOnly: {
             type: import('vue').PropType<boolean>;
             default: boolean;
@@ -411,6 +446,7 @@ declare const _default: {
         showSave: boolean;
         showClose: boolean;
         showDuplicate: boolean;
+        actionsNote: string;
         designOnly: boolean;
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 };

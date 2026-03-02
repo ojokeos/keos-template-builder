@@ -11,6 +11,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave?: boolean;
     showClose?: boolean;
     showDuplicate?: boolean;
+    /** Optional helper text shown on the left side of the action bar. */
+    actionsNote?: string;
     /**
      * When true (default), builder is design-only: template content + preview.
      * Audience and send options are configured on another page.
@@ -23,6 +25,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
+    actionsNote: string;
     designOnly: boolean;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
@@ -44,6 +47,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave?: boolean;
     showClose?: boolean;
     showDuplicate?: boolean;
+    /** Optional helper text shown on the left side of the action bar. */
+    actionsNote?: string;
     /**
      * When true (default), builder is design-only: template content + preview.
      * Audience and send options are configured on another page.
@@ -56,6 +61,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
+    actionsNote: string;
     designOnly: boolean;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
@@ -72,6 +78,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
+    actionsNote: string;
     designOnly: boolean;
     costPerSegment: number;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;

@@ -129,6 +129,7 @@ function onChange(c: Campaign) {
         @send-test="onSendTest"
         @schedule="onSchedule"
         @send="onSend"
+        :actions-note="'Changes auto-saved'"
       />
 
       <KeosSmsBuilder

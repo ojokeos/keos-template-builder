@@ -22,6 +22,8 @@ const props = withDefaults(
     showSave?: boolean;
     showClose?: boolean;
     showDuplicate?: boolean;
+    /** Optional helper text shown on the left side of the action bar. */
+    actionsNote?: string;
     /**
      * When true (default), builder is design-only: template content + preview.
      * Audience and send options are configured on another page.
@@ -35,6 +37,7 @@ const props = withDefaults(
     showSave: true,
     showClose: true,
     showDuplicate: true,
+    actionsNote: '',
     designOnly: true,
   }
 );
@@ -366,30 +369,35 @@ function onSave() {
     </div>
 
     <footer class="kb-sms-actions">
-      <button
-        v-if="showDuplicate"
-        type="button"
-        class="kb-sms-action kb-sms-action--secondary"
-        @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))"
-      >
-        Duplicate
-      </button>
-      <button
-        v-if="showSave"
-        type="button"
-        class="kb-sms-action kb-sms-action--secondary"
-        @click="onSave"
-      >
-        Save
-      </button>
-      <button
-        v-if="showClose"
-        type="button"
-        class="kb-sms-action kb-sms-action--primary"
-        @click="emit('edit')"
-      >
-        Close
-      </button>
+      <div v-if="props.actionsNote" class="kb-actions-note">
+        {{ props.actionsNote }}
+      </div>
+      <div class="kb-sms-actions-right">
+        <button
+          v-if="showDuplicate"
+          type="button"
+          class="kb-sms-action kb-sms-action--secondary"
+          @click="emit('duplicate', JSON.parse(JSON.stringify(campaign)))"
+        >
+          Duplicate
+        </button>
+        <button
+          v-if="showSave"
+          type="button"
+          class="kb-sms-action kb-sms-action--secondary"
+          @click="onSave"
+        >
+          Save
+        </button>
+        <button
+          v-if="showClose"
+          type="button"
+          class="kb-sms-action kb-sms-action--primary"
+          @click="emit('edit')"
+        >
+          Close
+        </button>
+      </div>
     </footer>
 
     <div v-if="presetConfirmOpen" class="kb-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="sms-preset-confirm-title">
@@ -439,7 +447,7 @@ function onSave() {
   color: #0f172a;
   max-width: 100%;
   box-sizing: border-box;
-  background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #ffffff;
   min-height: 100vh;
   /* padding: 0 0 32px 0; */
 }
@@ -450,6 +458,7 @@ function onSave() {
 
 .kb-sms-layout {
   display: grid;
+  background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
   grid-template-columns: 380px 1fr;
   gap: 0;
   height: calc(100vh - 120px);
@@ -469,8 +478,8 @@ function onSave() {
   background: #fff;
   overflow-y: auto;
   padding: 0;
-  margin: 12px 0 0 0;
-  border-radius: 0 20px 0 0;
+  margin: 0;
+  border-radius: 0;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-left: none;
   box-shadow: 2px 0 12px -4px rgba(15, 23, 42, 0.06);
@@ -480,7 +489,7 @@ function onSave() {
   .kb-sms-sidebar {
     order: 1;
     margin: 0;
-    border-radius: 0 0 0 20px;
+    border-radius: 0;
     border: 1px solid rgba(15, 23, 42, 0.06);
     border-top: none;
     box-shadow: 0 -2px 12px -4px rgba(15, 23, 42, 0.06);
@@ -577,20 +586,23 @@ function onSave() {
 }
 .kb-sms-preview-frame {
   width: 100%;
-  max-width: 420px;
   margin: 0 auto;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
-  max-height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
 }
 
+.kb-actions-note {
+  font-size: 0.75rem;
+  color: #64748b;
+  max-width: 50%;
+}
+
 .kb-sms-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   gap: 16px;
   padding: 20px 32px 24px;
   /* margin-top: 24px; */
@@ -599,6 +611,11 @@ function onSave() {
   position: sticky;
   bottom: 0;
   z-index: 10;
+}
+.kb-sms-actions-right {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
 }
 .kb-sms-action {
   padding: 12px 24px;
@@ -787,7 +804,7 @@ function onSave() {
   font-weight: 600;
 }
 .kb-confirm-text {
-  margin: 0 0 12px 0;
+  margin: 0;
   font-size: 0.875rem;
   color: #475569;
 }
