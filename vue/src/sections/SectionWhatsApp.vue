@@ -810,36 +810,39 @@ function addCard() {
 
 <style scoped>
 .kb-section {
-  margin-bottom: 1.25rem;
-  border: 1px solid #dbe3ec;
+  --wa-surface: var(--kb-surface, #ffffff);
+  --wa-surface-muted: #f5f8fc;
+  --wa-border: var(--kb-border, #d6e0eb);
+  --wa-border-strong: #c6d4e4;
+  --wa-text: var(--kb-text-strong, #0f172a);
+  --wa-text-muted: var(--kb-text-muted, #56657a);
+  --wa-focus: var(--kb-brand, #2563eb);
+  margin-bottom: 1rem;
+  border: 1px solid var(--wa-border);
   border-radius: 16px;
   padding: 1rem;
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.09), transparent 38%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06),
-    0 8px 24px rgba(15, 23, 42, 0.04);
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
 }
 .kb-section__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
 }
 .kb-section__title {
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-size: 1.04rem;
+  font-weight: 750;
   margin: 0;
-  color: #0f172a;
+  color: var(--wa-text);
   letter-spacing: 0.01em;
 }
 .kb-section__reset {
   font-size: 0.75rem;
-  color: #475569;
-  background: #ffffff;
-  border: 1px solid #dbe3ec;
+  color: #334155;
+  background: var(--wa-surface);
+  border: 1px solid #e2e8f0;
   cursor: pointer;
   padding: 0.36rem 0.62rem;
   border-radius: 999px;
@@ -851,7 +854,7 @@ function addCard() {
 }
 .kb-section__desc {
   font-size: 0.875rem;
-  color: #5b6b80;
+  color: var(--wa-text-muted);
   margin: 0;
   line-height: 1.45;
 }
@@ -859,32 +862,32 @@ function addCard() {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 0.85rem 0 0.95rem;
+  margin: 0.8rem 0 1rem;
 }
 .kb-pill {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  padding: 0.28rem 0.62rem;
+  padding: 0.3rem 0.64rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   border: 1px solid transparent;
 }
 .kb-pill--category {
-  color: #14532d;
-  background: #dcfce7;
-  border-color: #86efac;
+  color: #166534;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
 }
 .kb-pill--format {
-  color: #1e3a8a;
-  background: #dbeafe;
-  border-color: #93c5fd;
+  color: #1e40af;
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 .kb-pill--status {
-  color: #374151;
-  background: #f3f4f6;
-  border-color: #d1d5db;
+  color: #334155;
+  background: #f3f6fa;
+  border-color: #ccd6e2;
 }
 .kb-wa-fields-list {
   list-style: none;
@@ -916,12 +919,21 @@ function addCard() {
   font-weight: 700;
 }
 .kb-field {
-  margin-bottom: 0.9rem;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+  margin-bottom: 0.88rem;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface);
   border-radius: 12px;
-  padding: 0.95rem;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+  padding: 0.82rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 0 rgba(15, 23, 42, 0.02);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.kb-field:focus-within {
+  border-color: #bad0ea;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 .kb-field:last-child {
   margin-bottom: 0;
@@ -937,16 +949,16 @@ function addCard() {
 }
 .kb-label {
   display: block;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 720;
+  color: var(--wa-text);
+  margin-bottom: 0.46rem;
   letter-spacing: 0.02em;
 }
 .kb-helper {
   display: block;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--wa-text-muted);
   margin-top: 0.38rem;
   line-height: 1.35;
 }
@@ -967,11 +979,11 @@ function addCard() {
 .kb-textarea,
 .kb-select {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0.72rem 0.8rem;
-  border: 1px solid #cfd8e3;
-  border-radius: 10px;
-  font-size: 0.92rem;
+  border: 1px solid #c6d3e2;
+  border-radius: 11px;
+  font-size: 0.9rem;
   color: #0f172a;
   background: #ffffff;
   transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
@@ -980,13 +992,13 @@ function addCard() {
 .kb-textarea:focus,
 .kb-select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+  border-color: var(--wa-focus);
+  box-shadow: 0 0 0 3px rgba(30, 90, 255, 0.16);
   background-color: #ffffff;
 }
 .kb-input::placeholder,
 .kb-textarea::placeholder {
-  color: #93a2b7;
+  color: #90a0b6;
 }
 .kb-textarea {
   resize: vertical;
@@ -996,56 +1008,52 @@ function addCard() {
 .kb-wa-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.56rem;
+  gap: 0.68rem;
 }
 .kb-card-row {
   display: grid;
-  grid-template-columns:
-    minmax(160px, 1.2fr)
-    minmax(170px, 1.3fr)
-    minmax(130px, 1fr)
-    minmax(170px, 1.3fr)
-    auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 0.56rem;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface-muted);
+  border-radius: 11px;
+  padding: 0.56rem;
   align-items: center;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 0.5rem;
 }
 .kb-wa-button-row {
   display: grid;
-  grid-template-columns:
-    minmax(150px, 1.3fr)
-    minmax(130px, 1fr)
-    minmax(160px, 1.2fr)
-    auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 170px) minmax(0, 1fr) auto;
   gap: 0.56rem;
   align-items: center;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 0.5rem;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface-muted);
+  border-radius: 11px;
+  padding: 0.56rem;
 }
 .kb-product-row {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 0.56rem;
-  align-items: stretch;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 0.5rem;
+  align-items: center;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface-muted);
+  border-radius: 11px;
+  padding: 0.56rem;
 }
 .kb-product-row .kb-wa-btn-remove {
-  align-self: flex-start;
+  justify-self: end;
+}
+.kb-card-row .kb-wa-btn-remove,
+.kb-wa-button-row .kb-wa-btn-remove {
+  justify-self: end;
+  grid-column: -1;
 }
 .kb-wa-btn-add,
 .kb-wa-btn-remove {
   font-size: 0.75rem;
   padding: 0.38rem 0.72rem;
   border-radius: 999px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--wa-border-strong);
   background: #ffffff;
   cursor: pointer;
   color: #334155;
@@ -1054,9 +1062,9 @@ function addCard() {
 }
 .kb-wa-btn-add {
   align-self: flex-start;
-  background: #eef2ff;
+  background: #edf2ff;
   border-color: #c7d2fe;
-  color: #3730a3;
+  color: #1d4ed8;
 }
 .kb-wa-btn-add:disabled {
   opacity: 0.5;
@@ -1064,7 +1072,7 @@ function addCard() {
 }
 .kb-wa-btn-add:hover:not(:disabled),
 .kb-wa-btn-remove:hover {
-  background: #e2e8f0;
+  background: #e8eef5;
 }
 .kb-opt-out-note {
   font-size: 0.75rem;
@@ -1078,9 +1086,9 @@ function addCard() {
   width: max-content;
 }
 .kb-meta-card {
-  border: 1px solid #dbe3ec;
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 10px;
   padding: 0.65rem 0.75rem;
   min-height: 100%;
 }
@@ -1099,15 +1107,30 @@ function addCard() {
   color: #475569;
   line-height: 1.5;
 }
+.kb-select {
+  appearance: auto;
+  background-image: none;
+  padding-right: 0.8rem;
+}
 @media (max-width: 1480px) {
   .kb-field--inline {
     grid-template-columns: minmax(0, 1fr);
   }
-  .kb-card-row {
-    grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 1280px) {
+  .kb-card-row,
+  .kb-wa-button-row,
+  .kb-product-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
   }
   .kb-wa-button-row {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .kb-product-row .kb-wa-btn-remove,
+  .kb-card-row .kb-wa-btn-remove,
+  .kb-wa-button-row .kb-wa-btn-remove {
+    justify-self: start;
   }
 }
 @media (max-width: 1240px) {
@@ -1122,23 +1145,24 @@ function addCard() {
 }
 @media (max-width: 720px) {
   .kb-section {
-    padding: 0.8rem;
-  }
-  .kb-card-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .kb-wa-button-row {
-    grid-template-columns: minmax(0, 1fr);
-    grid-auto-rows: auto;
+    padding: 0.75rem;
   }
   .kb-opt-out-note {
     width: 100%;
+  }
+  .kb-card-row,
+  .kb-product-row {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .kb-field--inline .kb-location-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+}
+.kb-field--inline .kb-location-row .kb-input {
+  flex: 1 1 180px;
 }
 </style>
