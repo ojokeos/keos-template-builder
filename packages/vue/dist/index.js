@@ -1831,7 +1831,9 @@ const Ee = [
   },
   emits: ["update:modelValue", "change", "save", "edit", "send-test", "schedule", "send", "duplicate", "save-version"],
   setup(t, { emit: r }) {
-    const o = t, i = r, d = Q("android"), g = Q(""), $ = Q(!1), p = Q(null), v = Q(!1), w = C(() => O.value.workflow_status ?? "draft"), S = C(() => {
+    const o = t, i = r, d = Q("android"), g = Q(""), $ = Q(!1), p = Q(null), v = Q(!1), w = C(
+      () => O.value.workflow_status ?? "draft"
+    ), S = C(() => {
       const I = g.value;
       return I ? Ee.find((m) => m.id === I) ?? null : null;
     });
@@ -1890,11 +1892,7 @@ const Ee = [
       window.addEventListener("keydown", fe);
     }), ze(() => {
       window.removeEventListener("keydown", fe);
-    }), _e(
-      O,
-      (I) => i("update:modelValue", I),
-      { deep: !0 }
-    );
+    }), _e(O, (I) => i("update:modelValue", I), { deep: !0 });
     const ke = Q(), Ae = Q(!0), Le = Q(!0);
     async function Ie() {
       if (ne.estimateReach)
@@ -1906,13 +1904,21 @@ const Ee = [
       ne.canSend && (Ae.value = await Promise.resolve(ne.canSend())), ne.canSchedule && (Le.value = await Promise.resolve(ne.canSchedule()));
     }
     Ie(), _e(() => O.value.audience, Ie, { deep: !0 });
-    const we = C(() => (R.value, E(ke.value))), he = C(() => we.value.blockingErrors), Be = C(() => we.value.warnings), A = C(() => we.value.valid), D = C(() => ae[d.value].title), K = C(() => ae[d.value].body), ue = C(() => O.value.message.title.length), z = C(() => O.value.message.body.length), H = C(() => {
-      if (ue.value > D.value) return `Title exceeds ${D.value} characters for ${d.value}.`;
+    const we = C(() => (R.value, E(ke.value))), he = C(() => we.value.blockingErrors), Be = C(() => we.value.warnings), A = C(() => we.value.valid), D = C(
+      () => ae[d.value].title
+    ), K = C(() => ae[d.value].body), ue = C(() => O.value.message.title.length), z = C(() => O.value.message.body.length), H = C(() => {
+      if (ue.value > D.value)
+        return `Title exceeds ${D.value} characters for ${d.value}.`;
     }), X = C(() => {
-      const I = he.value.find((m) => m.message === "Message body is required");
+      const I = he.value.find(
+        (m) => m.message === "Message body is required"
+      );
       if (I) return I.message;
-      if (z.value > K.value) return `Body exceeds ${K} characters for ${d.value}.`;
-    }), xe = C(() => O.value.template_type ?? "transactional");
+      if (z.value > K.value)
+        return `Body exceeds ${K} characters for ${d.value}.`;
+    }), xe = C(
+      () => O.value.template_type ?? "transactional"
+    );
     function F(I) {
       P({ template_type: I });
     }
@@ -1954,7 +1960,13 @@ const Ee = [
         he.value.length > 0 ? (a(), n("div", {
           key: 0,
           class: "kb-errors",
-          style: se({ background: c(te).dangerBg, border: `1px solid ${c(te).dangerBorder}`, borderRadius: `${c(Ce).input}px`, padding: `${c(q)[12]}px ${c(q)[16]}px`, marginBottom: `${c(q)[16]}px` })
+          style: se({
+            background: c(te).dangerBg,
+            border: `1px solid ${c(te).dangerBorder}`,
+            borderRadius: `${c(Ce).input}px`,
+            padding: `${c(q)[12]}px ${c(q)[16]}px`,
+            marginBottom: `${c(q)[16]}px`
+          })
         }, [
           e("ul", {
             style: se({ margin: 0, paddingLeft: "1.25rem", color: c(te).danger })
@@ -1967,7 +1979,15 @@ const Ee = [
         Be.value.length > 0 ? (a(), n("div", {
           key: 1,
           class: "kb-warnings",
-          style: se({ background: c(te).neutral.bg, border: `1px solid ${c(te).neutral.border}`, borderRadius: `${c(Ce).input}px`, padding: `${c(q)[12]}px ${c(q)[16]}px`, marginBottom: `${c(q)[16]}px`, fontSize: "0.875rem", color: c(te).neutral.textMuted })
+          style: se({
+            background: c(te).neutral.bg,
+            border: `1px solid ${c(te).neutral.border}`,
+            borderRadius: `${c(Ce).input}px`,
+            padding: `${c(q)[12]}px ${c(q)[16]}px`,
+            marginBottom: `${c(q)[16]}px`,
+            fontSize: "0.875rem",
+            color: c(te).neutral.textMuted
+          })
         }, [
           e("strong", {
             style: se({ display: "block", marginBottom: `${c(q)[4]}px` })
@@ -2077,7 +2097,7 @@ const Ee = [
             ]),
             e("div", Wn, [
               !c(O).message.title && !c(O).message.body ? (a(), n("div", Hn, [...m[18] || (m[18] = [
-                e("p", { class: "kb-push-preview-empty-text" }, "Start adding content to see a live preview here.", -1)
+                e("p", { class: "kb-push-preview-empty-text" }, " Start adding content to see a live preview here. ", -1)
               ])])) : (a(), St(bn, {
                 key: 1,
                 "get-preview": c(L),
@@ -2129,8 +2149,8 @@ const Ee = [
           m[19] || (m[19] = e("h2", {
             id: "preset-confirm-title",
             class: "kb-confirm-title"
-          }, "Replace content?", -1)),
-          m[20] || (m[20] = e("p", { class: "kb-confirm-text" }, "Current changes will be replaced by the preset. Continue?", -1)),
+          }, " Replace content? ", -1)),
+          m[20] || (m[20] = e("p", { class: "kb-confirm-text" }, " Current changes will be replaced by the preset. Continue? ", -1)),
           e("div", Jn, [
             e("button", {
               type: "button",
@@ -2138,12 +2158,12 @@ const Ee = [
               onClick: m[9] || (m[9] = (y) => {
                 $.value = !1, p.value = null;
               })
-            }, "Cancel"),
+            }, " Cancel "),
             e("button", {
               type: "button",
               class: "kb-push-action kb-push-action--primary",
               onClick: m[10] || (m[10] = (y) => p.value && B(p.value))
-            }, "Replace")
+            }, " Replace ")
           ])
         ])
       ])) : h("", !0),
@@ -2155,7 +2175,7 @@ const Ee = [
       }, null, 8, ["open", "versions"])
     ]));
   }
-}), kt = /* @__PURE__ */ be(Gn, [["__scopeId", "data-v-a9e9ca35"]]), Qn = { class: "kb-section" }, Xn = { class: "kb-section__head" }, Zn = { class: "kb-field" }, el = ["value"], tl = { class: "kb-field" }, sl = ["value"], al = {
+}), kt = /* @__PURE__ */ be(Gn, [["__scopeId", "data-v-70606278"]]), Qn = { class: "kb-section" }, Xn = { class: "kb-section__head" }, Zn = { class: "kb-field" }, el = ["value"], tl = { class: "kb-field" }, sl = ["value"], al = {
   key: 0,
   class: "kb-field"
 }, nl = ["value"], ll = {
@@ -2872,11 +2892,7 @@ const Ee = [
       window.addEventListener("keydown", E);
     }), ze(() => {
       window.removeEventListener("keydown", E);
-    }), _e(
-      d,
-      (A) => i("update:modelValue", A),
-      { deep: !0 }
-    );
+    }), _e(d, (A) => i("update:modelValue", A), { deep: !0 });
     const P = Q(), oe = Q(!0);
     async function ce() {
       if (W.estimateReach)
@@ -2943,7 +2959,9 @@ const Ee = [
       const K = lt.find((ue) => ue.id === D);
       K && (g.value ? (L.value = K, me.value = !0) : ke(K), A.target.value = "");
     }
-    const Le = C(() => d.value.template_type ?? "transactional");
+    const Le = C(
+      () => d.value.template_type ?? "transactional"
+    );
     function Ie(A) {
       v({ template_type: A });
     }
@@ -2957,18 +2975,14 @@ const Ee = [
       const D = ` {{ ${A.variable} }}`, K = d.value.message.variables ?? [], ue = Array.from(/* @__PURE__ */ new Set([...K, A.variable]));
       if (A.field === "title") {
         const z = d.value.message.header ?? "";
-        w(
-          {
-            variables: ue
-          }
-        ), d.value.message.header = z + D;
+        w({
+          variables: ue
+        }), d.value.message.header = z + D;
       } else {
         const z = d.value.message.body ?? "";
-        w(
-          {
-            variables: ue
-          }
-        ), d.value.message.body = z + D;
+        w({
+          variables: ue
+        }), d.value.message.body = z + D;
       }
     }
     function Be() {
@@ -2991,7 +3005,13 @@ const Ee = [
         pe.value.length > 0 ? (a(), n("div", {
           key: 0,
           class: "kb-errors",
-          style: se({ background: c(te).dangerBg, border: `1px solid ${c(te).dangerBorder}`, borderRadius: `${c(Ce).input}px`, padding: `${c(q)[12]}px ${c(q)[16]}px`, marginBottom: `${c(q)[16]}px` })
+          style: se({
+            background: c(te).dangerBg,
+            border: `1px solid ${c(te).dangerBorder}`,
+            borderRadius: `${c(Ce).input}px`,
+            padding: `${c(q)[12]}px ${c(q)[16]}px`,
+            marginBottom: `${c(q)[16]}px`
+          })
         }, [
           e("ul", {
             style: se({ margin: 0, paddingLeft: "1.25rem", color: c(te).danger })
@@ -3004,7 +3024,15 @@ const Ee = [
         ge.value.length > 0 ? (a(), n("div", {
           key: 1,
           class: "kb-warnings",
-          style: se({ background: c(te).neutral.bg, border: `1px solid ${c(te).neutral.border}`, borderRadius: `${c(Ce).input}px`, padding: `${c(q)[12]}px ${c(q)[16]}px`, marginBottom: `${c(q)[16]}px`, fontSize: "0.875rem", color: c(te).neutral.textMuted })
+          style: se({
+            background: c(te).neutral.bg,
+            border: `1px solid ${c(te).neutral.border}`,
+            borderRadius: `${c(Ce).input}px`,
+            padding: `${c(q)[12]}px ${c(q)[16]}px`,
+            marginBottom: `${c(q)[16]}px`,
+            fontSize: "0.875rem",
+            color: c(te).neutral.textMuted
+          })
         }, [
           e("strong", {
             style: se({ display: "block", marginBottom: `${c(q)[4]}px` })
@@ -3111,8 +3139,8 @@ const Ee = [
           D[11] || (D[11] = e("h2", {
             id: "wa-preset-confirm-title",
             class: "kb-confirm-title"
-          }, "Replace content?", -1)),
-          D[12] || (D[12] = e("p", { class: "kb-confirm-text" }, "Current changes will be replaced by the preset. Continue?", -1)),
+          }, " Replace content? ", -1)),
+          D[12] || (D[12] = e("p", { class: "kb-confirm-text" }, " Current changes will be replaced by the preset. Continue? ", -1)),
           e("div", Wo, [
             e("button", {
               type: "button",
@@ -3120,18 +3148,18 @@ const Ee = [
               onClick: D[4] || (D[4] = (K) => {
                 me.value = !1, L.value = null;
               })
-            }, "Cancel"),
+            }, " Cancel "),
             e("button", {
               type: "button",
               class: "kb-wa-action kb-wa-action--primary",
               onClick: D[5] || (D[5] = (K) => L.value && ke(L.value))
-            }, "Replace")
+            }, " Replace ")
           ])
         ])
       ])) : h("", !0)
     ]));
   }
-}), ht = /* @__PURE__ */ be(Ho, [["__scopeId", "data-v-5b1d234c"]]), Fo = { class: "kb-section" }, jo = { class: "kb-section__head" }, qo = { class: "kb-field" }, Ko = ["value"], Yo = { class: "kb-field" }, Jo = { class: "kb-label" }, Go = { key: 0 }, Qo = { key: 1 }, Xo = { key: 2 }, Zo = ["value"], ei = {
+}), ht = /* @__PURE__ */ be(Ho, [["__scopeId", "data-v-e5aefa53"]]), Fo = { class: "kb-section" }, jo = { class: "kb-section__head" }, qo = { class: "kb-field" }, Ko = ["value"], Yo = { class: "kb-field" }, Jo = { class: "kb-label" }, Go = { key: 0 }, Qo = { key: 1 }, Xo = { key: 2 }, Zo = ["value"], ei = {
   key: 0,
   class: "kb-truncation-hint"
 }, ti = { class: "kb-field" }, si = { class: "kb-insert-row" }, ai = ["value"], ni = { class: "kb-field" }, li = { class: "kb-insert-row" }, oi = /* @__PURE__ */ re({
@@ -3337,11 +3365,7 @@ const Ee = [
       window.addEventListener("keydown", E);
     }), ze(() => {
       window.removeEventListener("keydown", E);
-    }), _e(
-      d,
-      (z) => i("update:modelValue", z),
-      { deep: !0 }
-    );
+    }), _e(d, (z) => i("update:modelValue", z), { deep: !0 });
     const P = Q(), oe = Q(!0);
     async function ce() {
       if (W.estimateReach)
@@ -3353,7 +3377,9 @@ const Ee = [
       W.canSend && (oe.value = await Promise.resolve(W.canSend()));
     }
     ce(), _e(() => d.value.audience, ce, { deep: !0 });
-    const de = C(() => ($.value, p(P.value))), pe = C(() => de.value.blockingErrors), ge = C(() => de.value.warnings), $e = C(() => de.value.valid), ie = C(() => d.value.template_type ?? "transactional"), me = Q(""), L = Q(!1), ae = Q(null), ne = C(() => {
+    const de = C(() => ($.value, p(P.value))), pe = C(() => de.value.blockingErrors), ge = C(() => de.value.warnings), $e = C(() => de.value.valid), ie = C(
+      () => d.value.template_type ?? "transactional"
+    ), me = Q(""), L = Q(!1), ae = Q(null), ne = C(() => {
       const z = me.value;
       return z ? Ee.find((H) => H.id === z) ?? null : null;
     }), x = C(() => {
@@ -3382,7 +3408,9 @@ const Ee = [
         tracking: { ...d.value.tracking ?? {}, campaign_name: z }
       });
     }
-    const Ie = C(() => (d.value.message.body ?? "") || ""), we = C(() => Ie.value.length), he = C(() => we.value ? we.value <= 160 ? 1 : Math.ceil(we.value / 153) : 0), Be = C(() => {
+    const Ie = C(
+      () => (d.value.message.body ?? "") || ""
+    ), we = C(() => Ie.value.length), he = C(() => we.value ? we.value <= 160 ? 1 : Math.ceil(we.value / 153) : 0), Be = C(() => {
       const z = x.value;
       return z.trim().length ? z : "Your SMS message preview will appear here.";
     }), A = C(() => {
@@ -3569,8 +3597,8 @@ const Ee = [
           H[15] || (H[15] = e("h2", {
             id: "sms-preset-confirm-title",
             class: "kb-confirm-title"
-          }, "Replace content?", -1)),
-          H[16] || (H[16] = e("p", { class: "kb-confirm-text" }, "Current changes will be replaced by the preset. Continue?", -1)),
+          }, " Replace content? ", -1)),
+          H[16] || (H[16] = e("p", { class: "kb-confirm-text" }, " Current changes will be replaced by the preset. Continue? ", -1)),
           e("div", Hi, [
             e("button", {
               type: "button",
@@ -3578,18 +3606,18 @@ const Ee = [
               onClick: H[4] || (H[4] = (X) => {
                 L.value = !1, ae.value = null;
               })
-            }, "Cancel"),
+            }, " Cancel "),
             e("button", {
               type: "button",
               class: "kb-sms-action kb-sms-action--primary",
               onClick: H[5] || (H[5] = (X) => ae.value && fe(ae.value))
-            }, "Replace")
+            }, " Replace ")
           ])
         ])
       ])) : h("", !0)
     ]));
   }
-}), _t = /* @__PURE__ */ be(Fi, [["__scopeId", "data-v-5ba76064"]]), ji = 30, qi = 60, Ki = 130;
+}), _t = /* @__PURE__ */ be(Fi, [["__scopeId", "data-v-c5de9b67"]]), ji = 30, qi = 60, Ki = 130;
 function Yi(t) {
   const r = (t ?? "").trim().length;
   return r < ji ? "too_short" : r <= qi ? "good" : "too_long";
@@ -5133,7 +5161,20 @@ const example = {{ order_id }};`,
     function o(F) {
       if (!Array.isArray(F) || F.length === 0)
         return '<p style="margin:0 0 12px;color:#64748b;font-size:14px;">Add content blocks to design your email.</p>';
-      const _ = (m) => String(m).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), G = ["heading", "paragraph", "image", "button", "divider", "spacer", "footer", "quote", "list", "social", "video", "link_list"], Z = (m, y) => {
+      const _ = (m) => String(m).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), G = [
+        "heading",
+        "paragraph",
+        "image",
+        "button",
+        "divider",
+        "spacer",
+        "footer",
+        "quote",
+        "list",
+        "social",
+        "video",
+        "link_list"
+      ], Z = (m, y) => {
         if (!G.includes(y.type)) return m;
         const M = y.alignment || "left", J = !!y.fullWidth;
         return `<div style="text-align:${M};${J ? "width:100%;" : ""}">${m}</div>`;
@@ -5141,33 +5182,58 @@ const example = {{ order_id }};`,
       for (const m of F)
         switch (m.type) {
           case "heading": {
-            const y = Math.min(3, Math.max(1, Number(m.level) || 1)), M = _(m.content || "").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
-            I.push(Z(`<h${y} style="margin:0 0 12px;font-size:${y === 1 ? "22" : y === 2 ? "18" : "16"}px;font-weight:600;line-height:1.3;color:#0f172a;">${M || "Heading"}</h${y}>`, m));
+            const y = Math.min(3, Math.max(1, Number(m.level) || 1)), M = _(m.content || "").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            );
+            I.push(
+              Z(
+                `<h${y} style="margin:0 0 12px;font-size:${y === 1 ? "22" : y === 2 ? "18" : "16"}px;font-weight:600;line-height:1.3;color:#0f172a;">${M || "Heading"}</h${y}>`,
+                m
+              )
+            );
             break;
           }
           case "paragraph": {
-            const y = _(m.content || "").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
-            I.push(Z(`<p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#334155;">${y || "Paragraph"}</p>`, m));
+            const y = _(m.content || "").replace(/\n/g, "<br/>").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            );
+            I.push(
+              Z(
+                `<p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#334155;">${y || "Paragraph"}</p>`,
+                m
+              )
+            );
             break;
           }
           case "image": {
             const y = (m.src || "").trim(), M = _(m.alt || ""), J = (m.linkUrl || "").trim(), b = !!m.fullWidth ? "width:100%;max-width:100%;height:auto;display:block;border:0;" : "max-width:100%;height:auto;display:block;border:0;", l = y ? `<img src="${_(y)}" alt="${M}" style="${b}" />` : '<div style="background:#f1f5f9;color:#64748b;padding:40px 16px;text-align:center;font-size:13px;">Image URL</div>';
             I.push(
-              Z(`<div style="margin:0 0 12px;">${J ? `<a href="${_(J)}" style="color:#2563eb;">${l}</a>` : l}</div>`, m)
+              Z(
+                `<div style="margin:0 0 12px;">${J ? `<a href="${_(J)}" style="color:#2563eb;">${l}</a>` : l}</div>`,
+                m
+              )
             );
             break;
           }
           case "button": {
             const y = _(m.text || "Button"), M = (m.url || "#").trim(), J = Math.min(24, Math.max(0, Number(m.borderRadius) ?? 8)), le = !!m.fullWidth, b = !!m.ghost, l = b ? "transparent" : "#0f172a", s = b ? "#0f172a" : "#fff", N = b ? "2px solid #0f172a" : "none", u = le ? "block" : "inline-block", T = le ? "100%" : "auto";
             I.push(
-              Z(`<p style="margin:0 0 12px;"><a href="${_(M)}" style="display:${u};width:${T};text-align:center;padding:12px 24px;background:${l};color:${s};border:${N};text-decoration:none;font-size:14px;font-weight:600;border-radius:${J}px;">${y}</a></p>`, m)
+              Z(
+                `<p style="margin:0 0 12px;"><a href="${_(M)}" style="display:${u};width:${T};text-align:center;padding:12px 24px;background:${l};color:${s};border:${N};text-decoration:none;font-size:14px;font-weight:600;border-radius:${J}px;">${y}</a></p>`,
+                m
+              )
             );
             break;
           }
           case "divider": {
             const y = Math.min(8, Math.max(1, Number(m.thickness) || 1)), M = (m.color || "#e2e8f0").trim() || "#e2e8f0", J = m.lineStyle || "solid";
             I.push(
-              Z(`<hr style="margin:16px 0;border:0;border-top:${y}px ${J} ${M};" />`, m)
+              Z(
+                `<hr style="margin:16px 0;border:0;border-top:${y}px ${J} ${M};" />`,
+                m
+              )
             );
             break;
           }
@@ -5177,7 +5243,10 @@ const example = {{ order_id }};`,
             break;
           }
           case "footer": {
-            const y = _(m.content || "").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>'), M = (m.unsubscribeUrl || "").trim(), J = _(m.companyAddress || "");
+            const y = _(m.content || "").replace(/\n/g, "<br/>").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            ), M = (m.unsubscribeUrl || "").trim(), J = _(m.companyAddress || "");
             I.push(
               Z(
                 `<div style="margin:16px 0 0;padding-top:12px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;line-height:1.5;">${y || "Footer"}` + (M ? `<p style="margin:8px 0 0;"><a href="${_(M)}" style="color:#2563eb;">Unsubscribe</a></p>` : "") + (J ? `<p style="margin:4px 0 0;">${J}</p>` : "") + "</div>",
@@ -5190,11 +5259,19 @@ const example = {{ order_id }};`,
             const y = m.style === "numbered" ? "ol" : "ul", J = (Array.isArray(m.items) ? m.items : []).map(
               (le) => `<li style="margin:4px 0;font-size:14px;line-height:1.5;color:#334155;">${_(String(le)).replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>')}</li>`
             ).join("");
-            I.push(Z(`<${y} style="margin:0 0 12px;padding-left:24px;">${J || "<li>Item</li>"}</${y}>`, m));
+            I.push(
+              Z(
+                `<${y} style="margin:0 0 12px;padding-left:24px;">${J || "<li>Item</li>"}</${y}>`,
+                m
+              )
+            );
             break;
           }
           case "quote": {
-            const y = _(m.content || "").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>'), M = {
+            const y = _(m.content || "").replace(/\n/g, "<br/>").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            ), M = {
               default: "border-left:4px solid #e2e8f0;background:#f8fafc;color:#334155;",
               info: "border-left:4px solid #3b82f6;background:#eff6ff;color:#1e40af;",
               success: "border-left:4px solid #22c55e;background:#f0fdf4;color:#166534;",
@@ -5212,11 +5289,19 @@ const example = {{ order_id }};`,
             const M = (Array.isArray(m.links) ? m.links : []).filter((J) => (J.url || "").trim());
             if (M.length === 0)
               I.push(
-                Z('<p style="margin:0 0 12px;font-size:13px;color:#94a3b8;">Add social profile URLs in the sidebar.</p>', m)
+                Z(
+                  '<p style="margin:0 0 12px;font-size:13px;color:#94a3b8;">Add social profile URLs in the sidebar.</p>',
+                  m
+                )
               );
             else {
               const J = (le) => `<a href="${_((le.url || "").trim())}" style="display:inline-block;margin:0 8px;color:#2563eb;text-decoration:none;font-size:13px;font-weight:500;">${_(le.platform || "Link")}</a>`;
-              I.push(Z(`<div style="margin:0 0 12px;">${M.map(J).join("")}</div>`, m));
+              I.push(
+                Z(
+                  `<div style="margin:0 0 12px;">${M.map(J).join("")}</div>`,
+                  m
+                )
+              );
             }
             break;
           }
@@ -5231,16 +5316,27 @@ const example = {{ order_id }};`,
             break;
           }
           case "link_list": {
-            const y = Array.isArray(m.links) ? m.links : [], M = _(m.separator || " | "), le = y.filter((b) => (b.text || b.url) && (b.url || "").trim()).map(
+            const y = Array.isArray(m.links) ? m.links : [], M = _(m.separator || " | "), le = y.filter(
+              (b) => (b.text || b.url) && (b.url || "").trim()
+            ).map(
               (b) => `<a href="${_((b.url || "#").trim())}" style="color:#2563eb;text-decoration:none;font-size:12px;">${_(b.text || "Link")}</a>`
             );
             I.push(
-              Z(`<p style="margin:0 0 12px;font-size:12px;color:#64748b;">${le.join(M)}</p>`, m)
+              Z(
+                `<p style="margin:0 0 12px;font-size:12px;color:#64748b;">${le.join(M)}</p>`,
+                m
+              )
             );
             break;
           }
           case "columns": {
-            const y = _(m.leftContent || "").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>'), M = _(m.rightContent || "").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
+            const y = _(m.leftContent || "").replace(/\n/g, "<br/>").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            ), M = _(m.rightContent || "").replace(/\n/g, "<br/>").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            );
             I.push(
               `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 12px;"><tr><td width="50%" style="padding:0 12px 0 0;font-size:14px;line-height:1.5;color:#334155;vertical-align:top;">${y || "Left"}</td><td width="50%" style="padding:0 0 0 12px;font-size:14px;line-height:1.5;color:#334155;vertical-align:top;">${M || "Right"}</td></tr></table>`
             );
@@ -5248,7 +5344,10 @@ const example = {{ order_id }};`,
           }
           case "row": {
             const y = Math.min(4, Math.max(1, Number(m.columnCount) || 2)), M = Array.isArray(m.cells) ? m.cells.slice(0, y) : [], J = 100 / y, le = Array.from({ length: y }, (b, l) => {
-              const s = M[l] ?? "", N = _(s).replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
+              const s = M[l] ?? "", N = _(s).replace(/\n/g, "<br/>").replace(
+                /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+                '<span style="color:#2563eb;">{{ $1 }}</span>'
+              );
               return `<td width="${J}%" style="padding:0 8px;font-size:14px;line-height:1.5;color:#334155;vertical-align:top;">${N || "—"}</td>`;
             }).join("");
             I.push(
@@ -5257,7 +5356,9 @@ const example = {{ order_id }};`,
             break;
           }
           case "navbar": {
-            const y = Array.isArray(m.links) ? m.links : [], M = _(m.separator || " | "), le = y.filter((b) => (b.text || b.url) && (b.url || "").trim()).map(
+            const y = Array.isArray(m.links) ? m.links : [], M = _(m.separator || " | "), le = y.filter(
+              (b) => (b.text || b.url) && (b.url || "").trim()
+            ).map(
               (b) => `<a href="${_((b.url || "#").trim())}" style="color:#2563eb;text-decoration:none;font-size:12px;">${_(b.text || "Link")}</a>`
             );
             I.push(
@@ -5267,16 +5368,25 @@ const example = {{ order_id }};`,
           }
           case "accordion": {
             const M = (Array.isArray(m.items) ? m.items : []).map((J) => {
-              const le = _(J.title || "Section"), b = _(J.content || "").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>');
+              const le = _(J.title || "Section"), b = _(J.content || "").replace(/\n/g, "<br/>").replace(
+                /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+                '<span style="color:#2563eb;">{{ $1 }}</span>'
+              );
               return `<details style="margin:0 0 8px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;"><summary style="padding:12px 16px;font-weight:600;cursor:pointer;background:#f8fafc;">${le}</summary><div style="padding:12px 16px;font-size:14px;line-height:1.5;color:#334155;">${b}</div></details>`;
             }).join("");
-            I.push(M ? `<div style="margin:0 0 12px;">${M}</div>` : '<p style="margin:0 0 12px;color:#94a3b8;">Add accordion sections.</p>');
+            I.push(
+              M ? `<div style="margin:0 0 12px;">${M}</div>` : '<p style="margin:0 0 12px;color:#94a3b8;">Add accordion sections.</p>'
+            );
             break;
           }
           case "carousel": {
-            const M = (Array.isArray(m.slides) ? m.slides : []).filter((J) => (J.imageUrl || "").trim());
+            const M = (Array.isArray(m.slides) ? m.slides : []).filter(
+              (J) => (J.imageUrl || "").trim()
+            );
             if (M.length === 0)
-              I.push('<div style="margin:0 0 12px;background:#f1f5f9;color:#64748b;padding:48px 16px;text-align:center;font-size:14px;border-radius:8px;">Carousel — add image URLs</div>');
+              I.push(
+                '<div style="margin:0 0 12px;background:#f1f5f9;color:#64748b;padding:48px 16px;text-align:center;font-size:14px;border-radius:8px;">Carousel — add image URLs</div>'
+              );
             else {
               const J = M[0], le = `<img src="${_(J.imageUrl)}" alt="${_(J.alt || "Slide")}" style="max-width:100%;height:auto;display:block;border:0;border-radius:8px;" />`, b = (J.linkUrl || "").trim();
               I.push(
@@ -5307,7 +5417,10 @@ const example = {{ order_id }};`,
             break;
           }
           case "code_block": {
-            const y = (m.content || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/\n/g, "<br/>").replace(/\s*\{\{\s*([^}]+)\s*\}\}\s*/g, '<span style="color:#2563eb;">{{ $1 }}</span>'), M = _((m.caption || "").trim());
+            const y = (m.content || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/\n/g, "<br/>").replace(
+              /\s*\{\{\s*([^}]+)\s*\}\}\s*/g,
+              '<span style="color:#2563eb;">{{ $1 }}</span>'
+            ), M = _((m.caption || "").trim());
             I.push(
               '<div style="margin:0 0 12px;">' + (M ? `<p style="margin:0 0 6px 0;font-size:0.75rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">${M}</p>` : "") + `<div style="padding:14px 16px;background:#1e293b;border-radius:8px;font-family:ui-monospace,monospace;font-size:13px;line-height:1.5;color:#e2e8f0;white-space:pre-wrap;overflow-x:auto;">${y || "Code snippet"}</div></div>`
             );
@@ -5368,11 +5481,7 @@ const example = {{ order_id }};`,
       window.addEventListener("keydown", P);
     }), ze(() => {
       window.removeEventListener("keydown", P);
-    }), _e(
-      g,
-      (F) => d("update:modelValue", F),
-      { deep: !0 }
-    );
+    }), _e(g, (F) => d("update:modelValue", F), { deep: !0 });
     const oe = Q(), ce = Q(!0);
     async function de() {
       if (R.estimateReach)
@@ -5384,7 +5493,9 @@ const example = {{ order_id }};`,
       R.canSend && (ce.value = await Promise.resolve(R.canSend()));
     }
     de(), _e(() => g.value.audience, de, { deep: !0 });
-    const pe = C(() => (p.value, v(oe.value))), ge = C(() => pe.value.blockingErrors), $e = C(() => pe.value.warnings), ie = C(() => pe.value.valid), me = C(() => g.value.template_type ?? "transactional"), L = Q(""), ae = Q(!1), ne = Q(null), x = C(() => {
+    const pe = C(() => (p.value, v(oe.value))), ge = C(() => pe.value.blockingErrors), $e = C(() => pe.value.warnings), ie = C(() => pe.value.valid), me = C(
+      () => g.value.template_type ?? "transactional"
+    ), L = Q(""), ae = Q(!1), ne = Q(null), x = C(() => {
       const F = L.value;
       return F ? Ee.find((_) => _.id === F) ?? null : null;
     });
@@ -5420,9 +5531,12 @@ const example = {{ order_id }};`,
       () => g.value.message.from_name ?? "Your App"
     ), A = C(
       () => g.value.message.from_address ?? "notifications@example.com"
-    ), D = C(() => g.value.message.blocks ?? []), K = C(() => {
+    ), D = C(
+      () => g.value.message.blocks ?? []
+    ), K = C(() => {
       const F = D.value;
-      if (Array.isArray(F) && F.length > 0) return o(F);
+      if (Array.isArray(F) && F.length > 0)
+        return o(F);
       const _ = he.value;
       return _ && _.trim() ? _ : o([]);
     }), ue = C(() => {
@@ -5553,7 +5667,9 @@ const example = {{ order_id }};`,
             e("div", lc, [
               e("button", {
                 type: "button",
-                class: ve(["kb-email-device-btn", { "kb-email-device-btn--active": X.value === "desktop" }]),
+                class: ve(["kb-email-device-btn", {
+                  "kb-email-device-btn--active": X.value === "desktop"
+                }]),
                 onClick: _[2] || (_[2] = (G) => X.value = "desktop")
               }, [..._[13] || (_[13] = [
                 e("svg", {
@@ -5588,7 +5704,9 @@ const example = {{ order_id }};`,
               ])], 2),
               e("button", {
                 type: "button",
-                class: ve(["kb-email-device-btn", { "kb-email-device-btn--active": X.value === "mobile" }]),
+                class: ve(["kb-email-device-btn", {
+                  "kb-email-device-btn--active": X.value === "mobile"
+                }]),
                 onClick: _[3] || (_[3] = (G) => X.value = "mobile")
               }, [..._[14] || (_[14] = [
                 e("svg", {
@@ -5617,7 +5735,9 @@ const example = {{ order_id }};`,
               ])], 2)
             ]),
             e("div", {
-              class: ve(["kb-email-preview-frame", { "kb-email-preview-frame--mobile": X.value === "mobile" }])
+              class: ve(["kb-email-preview-frame", {
+                "kb-email-preview-frame--mobile": X.value === "mobile"
+              }])
             }, [
               e("div", oc, [
                 e("div", ic, [
@@ -5671,8 +5791,8 @@ const example = {{ order_id }};`,
           _[15] || (_[15] = e("h2", {
             id: "email-preset-confirm-title",
             class: "kb-confirm-title"
-          }, "Replace content?", -1)),
-          _[16] || (_[16] = e("p", { class: "kb-confirm-text" }, "Current changes will be replaced by the preset. Continue?", -1)),
+          }, " Replace content? ", -1)),
+          _[16] || (_[16] = e("p", { class: "kb-confirm-text" }, " Current changes will be replaced by the preset. Continue? ", -1)),
           e("div", hc, [
             e("button", {
               type: "button",
@@ -5680,18 +5800,18 @@ const example = {{ order_id }};`,
               onClick: _[6] || (_[6] = (G) => {
                 ae.value = !1, ne.value = null;
               })
-            }, "Cancel"),
+            }, " Cancel "),
             e("button", {
               type: "button",
               class: "kb-email-action kb-email-action--primary",
               onClick: _[7] || (_[7] = (G) => ne.value && fe(ne.value))
-            }, "Replace")
+            }, " Replace ")
           ])
         ])
       ])) : h("", !0)
     ]));
   }
-}), $t = /* @__PURE__ */ be(_c, [["__scopeId", "data-v-1f401f2a"]]), $c = { class: "kb-shell" }, wc = {
+}), $t = /* @__PURE__ */ be(_c, [["__scopeId", "data-v-bf43d0c3"]]), $c = { class: "kb-shell" }, wc = {
   class: "kb-shell__nav",
   role: "tablist",
   "aria-label": "Channel"

@@ -1,17 +1,23 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import type { Campaign, BuilderExtensionHooks } from '@keos/notification-builder-core';
-import { spacing, colors, radius } from '@keos/notification-builder-ui-tokens';
-import { useCampaignState } from './composables/useCampaignState';
-import { useAutosave } from './composables/useAutosave';
-import BuilderHeader from './BuilderHeader.vue';
-import SectionPersonalization from './sections/SectionPersonalization.vue';
-import SectionTemplateType from './sections/SectionTemplateType.vue';
-import SectionWhatsApp from './sections/SectionWhatsApp.vue';
-import WhatsAppTemplatePreview from './WhatsAppTemplatePreview.vue';
-import type { WaPreviewTemplate } from './WhatsAppTemplatePreview.vue';
-import { WHATSAPP_PRESETS } from './config/presets';
-import { DEFAULT_SAMPLE_PROFILES, renderTemplatePreview } from './utils/renderTemplatePreview';
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import type {
+  Campaign,
+  BuilderExtensionHooks,
+} from "@keos/notification-builder-core";
+import { spacing, colors, radius } from "@keos/notification-builder-ui-tokens";
+import { useCampaignState } from "./composables/useCampaignState";
+import { useAutosave } from "./composables/useAutosave";
+import BuilderHeader from "./BuilderHeader.vue";
+import SectionPersonalization from "./sections/SectionPersonalization.vue";
+import SectionTemplateType from "./sections/SectionTemplateType.vue";
+import SectionWhatsApp from "./sections/SectionWhatsApp.vue";
+import WhatsAppTemplatePreview from "./WhatsAppTemplatePreview.vue";
+import type { WaPreviewTemplate } from "./WhatsAppTemplatePreview.vue";
+import { WHATSAPP_PRESETS } from "./config/presets";
+import {
+  DEFAULT_SAMPLE_PROFILES,
+  renderTemplatePreview,
+} from "./utils/renderTemplatePreview";
 
 const props = withDefaults(
   defineProps<{
@@ -42,18 +48,18 @@ const props = withDefaults(
     showSave: true,
     showClose: true,
     showDuplicate: true,
-    actionsNote: '',
+    actionsNote: "",
     designOnly: true,
     enforceSlugName: false,
-  }
+  },
 );
 
 const emit = defineEmits<{
-  'update:modelValue': [campaign: Campaign];
+  "update:modelValue": [campaign: Campaign];
   change: [campaign: Campaign];
   save: [campaign: Campaign];
   edit: [];
-  'send-test': [campaign: Campaign];
+  "send-test": [campaign: Campaign];
   schedule: [campaign: Campaign];
   send: [campaign: Campaign];
   duplicate: [campaign: Campaign];
@@ -78,18 +84,20 @@ const {
     ...props.hooks,
     customValidators: async (c) => {
       const errors: string[] = [];
-      if (!c.name?.trim()) errors.push('Template name is required');
-      const fromHost = props.hooks?.customValidators ? await props.hooks.customValidators(c) : [];
+      if (!c.name?.trim()) errors.push("Template name is required");
+      const fromHost = props.hooks?.customValidators
+        ? await props.hooks.customValidators(c)
+        : [];
       return [...errors, ...fromHost];
     },
   },
-  onDirty: () => emit('change', campaign.value),
+  onDirty: () => emit("change", campaign.value),
 });
 
-const { lastSavedAt } = useAutosave(campaign, { channel: 'whatsapp' });
+const { lastSavedAt } = useAutosave(campaign, { channel: "whatsapp" });
 
 function onKeydown(e: KeyboardEvent) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+  if ((e.metaKey || e.ctrlKey) && e.key === "z") {
     e.preventDefault();
     if (e.shiftKey) redo();
     else undo();
@@ -97,17 +105,13 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKeydown);
+  window.addEventListener("keydown", onKeydown);
 });
 onUnmounted(() => {
-  window.removeEventListener('keydown', onKeydown);
+  window.removeEventListener("keydown", onKeydown);
 });
 
-watch(
-  campaign,
-  (c) => emit('update:modelValue', c),
-  { deep: true }
-);
+watch(campaign, (c) => emit("update:modelValue", c), { deep: true });
 
 const estimatedReach = ref<number | undefined>();
 const canSend = ref(true);
@@ -134,9 +138,9 @@ const blockingErrors = computed(() => validationFull.value.blockingErrors);
 const warningsList = computed(() => validationFull.value.warnings);
 const isValid = computed(() => validationFull.value.valid);
 
-const selectedPreviewProfileId = ref<string>('');
+const selectedPreviewProfileId = ref<string>("");
 const presetConfirmOpen = ref(false);
-const pendingPreset = ref<typeof WHATSAPP_PRESETS[0] | null>(null);
+const pendingPreset = ref<(typeof WHATSAPP_PRESETS)[0] | null>(null);
 
 const previewProfile = computed(() => {
   const id = selectedPreviewProfileId.value;
@@ -145,12 +149,12 @@ const previewProfile = computed(() => {
 });
 
 const waBodyDisplay = computed(() => {
-  const body = (campaign.value.message as any).body ?? '';
+  const body = (campaign.value.message as any).body ?? "";
   if (!previewProfile.value) return body;
   return renderTemplatePreview(body, previewProfile.value.data);
 });
 const waHeaderDisplay = computed(() => {
-  const header = (campaign.value.message as any).header ?? '';
+  const header = (campaign.value.message as any).header ?? "";
   if (!previewProfile.value) return header;
   return renderTemplatePreview(header, previewProfile.value.data);
 });
@@ -158,27 +162,28 @@ const waHeaderDisplay = computed(() => {
 /** Map campaign.message to the WhatsAppTemplatePreview template shape (cream phone + green bubble). */
 const waPreviewTemplate = computed((): WaPreviewTemplate => {
   const msg = campaign.value.message as any;
-  const templateType = msg.template_type ?? 'text';
-  let header: WaPreviewTemplate['header'] | undefined;
-  let location: WaPreviewTemplate['location'] | undefined;
-  let catalog: WaPreviewTemplate['catalog'] | undefined;
-  let multiProduct: WaPreviewTemplate['multiProduct'] | undefined;
-  let coupon: WaPreviewTemplate['coupon'] | undefined;
-  let limitedOffer: WaPreviewTemplate['limitedOffer'] | undefined;
-  let auth: WaPreviewTemplate['auth'] | undefined;
+  const templateType = msg.template_type ?? "text";
+  let header: WaPreviewTemplate["header"] | undefined;
+  let location: WaPreviewTemplate["location"] | undefined;
+  let catalog: WaPreviewTemplate["catalog"] | undefined;
+  let multiProduct: WaPreviewTemplate["multiProduct"] | undefined;
+  let coupon: WaPreviewTemplate["coupon"] | undefined;
+  let limitedOffer: WaPreviewTemplate["limitedOffer"] | undefined;
+  let auth: WaPreviewTemplate["auth"] | undefined;
 
-  if (templateType === 'image' && msg.media_url) {
-    header = { type: 'image', url: msg.media_url };
-  } else if (templateType === 'video' && msg.media_url) {
-    header = { type: 'video', url: msg.media_url };
-  } else if (templateType === 'document' && msg.document_filename) {
-    header = { type: 'document', filename: msg.document_filename };
+  if (templateType === "image" && msg.media_url) {
+    header = { type: "image", url: msg.media_url };
+  } else if (templateType === "video" && msg.media_url) {
+    header = { type: "video", url: msg.media_url };
+  } else if (templateType === "document" && msg.document_filename) {
+    header = { type: "document", filename: msg.document_filename };
   } else if (msg.header) {
-    header = { type: 'text', text: waHeaderDisplay.value };
+    header = { type: "text", text: waHeaderDisplay.value };
   }
-  const body = waBodyDisplay.value || 'Start adding content to see a live preview here.';
+  const body =
+    waBodyDisplay.value || "Start adding content to see a live preview here.";
 
-  if (templateType === 'location' && msg.location) {
+  if (templateType === "location" && msg.location) {
     const rawLoc = msg.location as any;
     const lat = rawLoc.lat ?? rawLoc.latitude;
     const lng = rawLoc.lng ?? rawLoc.lon ?? rawLoc.longitude;
@@ -192,25 +197,29 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
     }
   }
 
-  if ((templateType === 'catalog' || templateType === 'mpm') && Array.isArray(msg.products) && msg.products.length) {
+  if (
+    (templateType === "catalog" || templateType === "mpm") &&
+    Array.isArray(msg.products) &&
+    msg.products.length
+  ) {
     catalog = true;
     multiProduct = (msg.products as any[]).map((p) => ({
       image: p.image ?? p.imageUrl,
-      name: p.name ?? p.sectionTitle ?? p.title ?? 'Product',
-      price: p.price ?? p.productId ?? '',
+      name: p.name ?? p.sectionTitle ?? p.title ?? "Product",
+      price: p.price ?? p.productId ?? "",
     }));
   }
 
-  if (templateType === 'coupon' && msg.coupon_code) {
+  if (templateType === "coupon" && msg.coupon_code) {
     coupon = { code: msg.coupon_code };
   }
 
-  if (templateType === 'lto' && msg.lto_expiry) {
+  if (templateType === "lto" && msg.lto_expiry) {
     limitedOffer = msg.lto_expiry;
   }
 
-  if (templateType === 'auth') {
-    const code = msg.auth_code ?? (msg as any).otp_code ?? '123 456';
+  if (templateType === "auth") {
+    const code = msg.auth_code ?? (msg as any).otp_code ?? "123 456";
     auth = { code };
   }
 
@@ -219,7 +228,7 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
     header,
     body,
     footer: msg.footer || undefined,
-    buttons: buttonsRaw.map((b) => ({ text: b.label || 'Button' })),
+    buttons: buttonsRaw.map((b) => ({ text: b.label || "Button" })),
     location,
     catalog,
     multiProduct,
@@ -229,7 +238,7 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
   };
 });
 
-function applyPreset(preset: typeof WHATSAPP_PRESETS[0]) {
+function applyPreset(preset: (typeof WHATSAPP_PRESETS)[0]) {
   const c = campaign.value;
   const msg = preset.campaign.message
     ? { ...c.message, ...preset.campaign.message }
@@ -253,12 +262,14 @@ function onPresetSelect(e: Event) {
   } else {
     applyPreset(preset);
   }
-  (e.target as HTMLSelectElement).value = '';
+  (e.target as HTMLSelectElement).value = "";
 }
 
-const templateType = computed(() => (campaign.value as any).template_type ?? 'transactional');
+const templateType = computed(
+  () => (campaign.value as any).template_type ?? "transactional",
+);
 
-function updateTemplateType(value: 'transactional' | 'marketing') {
+function updateTemplateType(value: "transactional" | "marketing") {
   update({ template_type: value } as Partial<Campaign>);
 }
 
@@ -269,33 +280,32 @@ function updateName(name: string) {
   });
 }
 
-function onInsertVariable(payload: { variable: string; field: 'title' | 'body' }) {
+function onInsertVariable(payload: {
+  variable: string;
+  field: "title" | "body";
+}) {
   const token = ` {{ ${payload.variable} }}`;
   const existingVars = campaign.value.message.variables ?? [];
   const nextVars = Array.from(new Set([...existingVars, payload.variable]));
   // For WhatsApp we primarily personalize the WhatsApp header/body fields.
-  if (payload.field === 'title') {
-    const currentHeader = (campaign.value.message as any).header ?? '';
-    updateMessage(
-      {
-        variables: nextVars,
-      } as any
-    );
+  if (payload.field === "title") {
+    const currentHeader = (campaign.value.message as any).header ?? "";
+    updateMessage({
+      variables: nextVars,
+    } as any);
     (campaign.value.message as any).header = currentHeader + token;
   } else {
-    const currentBody = (campaign.value.message as any).body ?? '';
-    updateMessage(
-      {
-        variables: nextVars,
-      } as any
-    );
+    const currentBody = (campaign.value.message as any).body ?? "";
+    updateMessage({
+      variables: nextVars,
+    } as any);
     (campaign.value.message as any).body = currentBody + token;
   }
 }
 
 function onSave() {
   if (!isValid.value) return;
-  emit('save', campaign.value);
+  emit("save", campaign.value);
 }
 </script>
 
@@ -315,13 +325,39 @@ function onSave() {
         @redo="redo"
       />
 
-      <div v-if="blockingErrors.length > 0" class="kb-errors" :style="{ background: colors.dangerBg, border: `1px solid ${colors.dangerBorder}`, borderRadius: `${radius.input}px`, padding: `${spacing[12]}px ${spacing[16]}px`, marginBottom: `${spacing[16]}px` }">
-        <ul :style="{ margin: 0, paddingLeft: '1.25rem', color: colors.danger }">
+      <div
+        v-if="blockingErrors.length > 0"
+        class="kb-errors"
+        :style="{
+          background: colors.dangerBg,
+          border: `1px solid ${colors.dangerBorder}`,
+          borderRadius: `${radius.input}px`,
+          padding: `${spacing[12]}px ${spacing[16]}px`,
+          marginBottom: `${spacing[16]}px`,
+        }"
+      >
+        <ul
+          :style="{ margin: 0, paddingLeft: '1.25rem', color: colors.danger }"
+        >
           <li v-for="e in blockingErrors" :key="e.message">{{ e.message }}</li>
         </ul>
       </div>
-      <div v-if="warningsList.length > 0" class="kb-warnings" :style="{ background: colors.neutral.bg, border: `1px solid ${colors.neutral.border}`, borderRadius: `${radius.input}px`, padding: `${spacing[12]}px ${spacing[16]}px`, marginBottom: `${spacing[16]}px`, fontSize: '0.875rem', color: colors.neutral.textMuted }">
-        <strong :style="{ display: 'block', marginBottom: `${spacing[4]}px` }">Warnings</strong>
+      <div
+        v-if="warningsList.length > 0"
+        class="kb-warnings"
+        :style="{
+          background: colors.neutral.bg,
+          border: `1px solid ${colors.neutral.border}`,
+          borderRadius: `${radius.input}px`,
+          padding: `${spacing[12]}px ${spacing[16]}px`,
+          marginBottom: `${spacing[16]}px`,
+          fontSize: '0.875rem',
+          color: colors.neutral.textMuted,
+        }"
+      >
+        <strong :style="{ display: 'block', marginBottom: `${spacing[4]}px` }"
+          >Warnings</strong
+        >
         <ul :style="{ margin: 0, paddingLeft: '1.25rem' }">
           <li v-for="w in warningsList" :key="w.message">{{ w.message }}</li>
         </ul>
@@ -330,10 +366,7 @@ function onSave() {
 
     <div class="kb-wa-layout">
       <aside class="kb-wa-sidebar">
-        <div
-          v-if="!disabledSections.includes('whatsapp')"
-          class="kb-wa-form"
-        >
+        <div v-if="!disabledSections.includes('whatsapp')" class="kb-wa-form">
           <div class="kb-wa-form-head">
             <span class="kb-wa-form-head-label">Template</span>
             <div class="kb-wa-form-head-row">
@@ -347,7 +380,9 @@ function onSave() {
                 @change="onPresetSelect"
               >
                 <option value="">Presets…</option>
-                <option v-for="p in WHATSAPP_PRESETS" :key="p.id" :value="p.id">{{ p.label }}</option>
+                <option v-for="p in WHATSAPP_PRESETS" :key="p.id" :value="p.id">
+                  {{ p.label }}
+                </option>
               </select>
             </div>
           </div>
@@ -367,7 +402,10 @@ function onSave() {
       </aside>
 
       <main class="kb-wa-canvas">
-        <div v-if="!designOnly && campaign.audience.test_mode" class="kb-wa-test-banner">
+        <div
+          v-if="!designOnly && campaign.audience.test_mode"
+          class="kb-wa-test-banner"
+        >
           <span class="kb-wa-test-banner-dot"></span>
           Test mode — only your test segment will receive this.
         </div>
@@ -381,7 +419,13 @@ function onSave() {
                 aria-label="Preview as profile"
               >
                 <option value="">No substitution</option>
-                <option v-for="pr in DEFAULT_SAMPLE_PROFILES" :key="pr.id" :value="pr.id">{{ pr.label }}</option>
+                <option
+                  v-for="pr in DEFAULT_SAMPLE_PROFILES"
+                  :key="pr.id"
+                  :value="pr.id"
+                >
+                  {{ pr.label }}
+                </option>
               </select>
             </label>
           </div>
@@ -424,13 +468,38 @@ function onSave() {
       </div>
     </footer>
 
-    <div v-if="presetConfirmOpen" class="kb-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="wa-preset-confirm-title">
+    <div
+      v-if="presetConfirmOpen"
+      class="kb-confirm-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wa-preset-confirm-title"
+    >
       <div class="kb-confirm-dialog">
-        <h2 id="wa-preset-confirm-title" class="kb-confirm-title">Replace content?</h2>
-        <p class="kb-confirm-text">Current changes will be replaced by the preset. Continue?</p>
+        <h2 id="wa-preset-confirm-title" class="kb-confirm-title">
+          Replace content?
+        </h2>
+        <p class="kb-confirm-text">
+          Current changes will be replaced by the preset. Continue?
+        </p>
         <div class="kb-confirm-actions">
-          <button type="button" class="kb-wa-action kb-wa-action--secondary" @click="presetConfirmOpen = false; pendingPreset = null">Cancel</button>
-          <button type="button" class="kb-wa-action kb-wa-action--primary" @click="pendingPreset && applyPreset(pendingPreset)">Replace</button>
+          <button
+            type="button"
+            class="kb-wa-action kb-wa-action--secondary"
+            @click="
+              presetConfirmOpen = false;
+              pendingPreset = null;
+            "
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="kb-wa-action kb-wa-action--primary"
+            @click="pendingPreset && applyPreset(pendingPreset)"
+          >
+            Replace
+          </button>
         </div>
       </div>
     </div>
@@ -466,14 +535,20 @@ function onSave() {
   color: #64748b;
 }
 .keos-whatsapp-builder {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 14px;
   color: #0f172a;
   max-width: 100%;
   box-sizing: border-box;
   background: #ffffff;
   min-height: 100vh;
-  /* padding: 0 0 32px 0; */
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 .keos-whatsapp-builder button,
@@ -487,6 +562,7 @@ function onSave() {
 .kb-builder-top {
   margin-left: 24px;
   margin-right: 24px;
+  flex-shrink: 0;
 }
 
 .kb-wa-layout {
@@ -494,8 +570,8 @@ function onSave() {
   background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
   grid-template-columns: 380px 1fr;
   gap: 0;
-  height: calc(100vh - 120px);
-  min-height: 320px;
+  flex: 1;
+  min-height: 0;
   align-items: stretch;
   margin-top: 24px;
 }
@@ -510,13 +586,15 @@ function onSave() {
 .kb-wa-sidebar {
   background: #fff;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0;
   margin: 0;
-  border-radius: 0;
+  border-radius: 0 10px 10px 0;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-left: none;
   box-shadow: 2px 0 12px -4px rgba(15, 23, 42, 0.06);
-  min-height: 0;
+  height: 95dvh;
+  -webkit-overflow-scrolling: touch;
 }
 @media (max-width: 1023px) {
   .kb-wa-sidebar {
@@ -526,7 +604,7 @@ function onSave() {
     border: 1px solid rgba(15, 23, 42, 0.06);
     border-top: none;
     box-shadow: 0 -2px 12px -4px rgba(15, 23, 42, 0.06);
-    max-height: none;
+    min-height: 0;
   }
 }
 
@@ -595,8 +673,13 @@ function onSave() {
   animation: kb-pulse-wa 1.5s ease-in-out infinite;
 }
 @keyframes kb-pulse-wa {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .kb-wa-preview-chrome {
@@ -613,7 +696,10 @@ function onSave() {
   margin: 0 auto;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px -2px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
 .kb-actions-note {
@@ -627,12 +713,9 @@ function onSave() {
   align-items: center;
   gap: 16px;
   padding: 20px 32px 24px;
-  /* margin-top: 24px; */
   background: #fff;
   border-top: 1px solid #e2e8f0;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
+  flex-shrink: 0;
 }
 .kb-wa-actions-right {
   display: flex;
@@ -646,7 +729,9 @@ function onSave() {
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
 }
 .kb-wa-action:active {
   transform: scale(0.98);
@@ -780,4 +865,3 @@ function onSave() {
   gap: 8px;
 }
 </style>
-

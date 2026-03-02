@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import type { Campaign, BuilderExtensionHooks } from '@keos/notification-builder-core';
-import { spacing, colors, radius } from '@keos/notification-builder-ui-tokens';
-import { useCampaignState } from './composables/useCampaignState';
-import { useAutosave } from './composables/useAutosave';
-import BuilderHeader from './BuilderHeader.vue';
-import SectionTemplateType from './sections/SectionTemplateType.vue';
-import SectionSms from './sections/SectionSms.vue';
-import { SMS_PRESETS } from './config/presets';
-import { DEFAULT_SAMPLE_PROFILES, renderTemplatePreview } from './utils/renderTemplatePreview';
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import type {
+  Campaign,
+  BuilderExtensionHooks,
+} from "@keos/notification-builder-core";
+import { spacing, colors, radius } from "@keos/notification-builder-ui-tokens";
+import { useCampaignState } from "./composables/useCampaignState";
+import { useAutosave } from "./composables/useAutosave";
+import BuilderHeader from "./BuilderHeader.vue";
+import SectionTemplateType from "./sections/SectionTemplateType.vue";
+import SectionSms from "./sections/SectionSms.vue";
+import { SMS_PRESETS } from "./config/presets";
+import {
+  DEFAULT_SAMPLE_PROFILES,
+  renderTemplatePreview,
+} from "./utils/renderTemplatePreview";
 
 const props = withDefaults(
   defineProps<{
@@ -42,18 +48,18 @@ const props = withDefaults(
     showSave: true,
     showClose: true,
     showDuplicate: true,
-    actionsNote: '',
+    actionsNote: "",
     designOnly: true,
     enforceSlugName: false,
-  }
+  },
 );
 
 const emit = defineEmits<{
-  'update:modelValue': [campaign: Campaign];
+  "update:modelValue": [campaign: Campaign];
   change: [campaign: Campaign];
   save: [campaign: Campaign];
   edit: [];
-  'send-test': [campaign: Campaign];
+  "send-test": [campaign: Campaign];
   schedule: [campaign: Campaign];
   send: [campaign: Campaign];
   duplicate: [campaign: Campaign];
@@ -78,18 +84,20 @@ const {
     ...props.hooks,
     customValidators: async (c) => {
       const errors: string[] = [];
-      if (!c.name?.trim()) errors.push('Template name is required');
-      const fromHost = props.hooks?.customValidators ? await props.hooks.customValidators(c) : [];
+      if (!c.name?.trim()) errors.push("Template name is required");
+      const fromHost = props.hooks?.customValidators
+        ? await props.hooks.customValidators(c)
+        : [];
       return [...errors, ...fromHost];
     },
   },
-  onDirty: () => emit('change', campaign.value),
+  onDirty: () => emit("change", campaign.value),
 });
 
-const { lastSavedAt } = useAutosave(campaign, { channel: 'sms' });
+const { lastSavedAt } = useAutosave(campaign, { channel: "sms" });
 
 function onKeydown(e: KeyboardEvent) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+  if ((e.metaKey || e.ctrlKey) && e.key === "z") {
     e.preventDefault();
     if (e.shiftKey) redo();
     else undo();
@@ -97,17 +105,13 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKeydown);
+  window.addEventListener("keydown", onKeydown);
 });
 onUnmounted(() => {
-  window.removeEventListener('keydown', onKeydown);
+  window.removeEventListener("keydown", onKeydown);
 });
 
-watch(
-  campaign,
-  (c) => emit('update:modelValue', c),
-  { deep: true }
-);
+watch(campaign, (c) => emit("update:modelValue", c), { deep: true });
 
 const estimatedReach = ref<number | undefined>();
 const canSend = ref(true);
@@ -134,10 +138,12 @@ const blockingErrors = computed(() => validationFull.value.blockingErrors);
 const warningsList = computed(() => validationFull.value.warnings);
 const isValid = computed(() => validationFull.value.valid);
 
-const templateType = computed(() => (campaign.value as any).template_type ?? 'transactional');
-const selectedPreviewProfileId = ref<string>('');
+const templateType = computed(
+  () => (campaign.value as any).template_type ?? "transactional",
+);
+const selectedPreviewProfileId = ref<string>("");
 const presetConfirmOpen = ref(false);
-const pendingPreset = ref<typeof SMS_PRESETS[0] | null>(null);
+const pendingPreset = ref<(typeof SMS_PRESETS)[0] | null>(null);
 
 const previewProfile = computed(() => {
   const id = selectedPreviewProfileId.value;
@@ -151,7 +157,7 @@ const smsBodyDisplayPreview = computed(() => {
   return renderTemplatePreview(body, previewProfile.value.data);
 });
 
-function applyPreset(preset: typeof SMS_PRESETS[0]) {
+function applyPreset(preset: (typeof SMS_PRESETS)[0]) {
   const c = campaign.value;
   const msg = preset.campaign.message
     ? { ...c.message, ...preset.campaign.message }
@@ -175,10 +181,10 @@ function onPresetSelect(e: Event) {
   } else {
     applyPreset(preset);
   }
-  (e.target as HTMLSelectElement).value = '';
+  (e.target as HTMLSelectElement).value = "";
 }
 
-function updateTemplateType(value: 'transactional' | 'marketing') {
+function updateTemplateType(value: "transactional" | "marketing") {
   update({ template_type: value } as Partial<Campaign>);
 }
 
@@ -189,7 +195,9 @@ function updateName(name: string) {
   });
 }
 
-const smsBodyRaw = computed(() => (((campaign.value.message as any).body ?? '') as string) || '');
+const smsBodyRaw = computed(
+  () => (((campaign.value.message as any).body ?? "") as string) || "",
+);
 const smsCharCount = computed(() => smsBodyRaw.value.length);
 const smsSegmentCount = computed(() => {
   if (!smsCharCount.value) return 0;
@@ -199,7 +207,7 @@ const smsBodyDisplay = computed(() => {
   const substituted = smsBodyDisplayPreview.value;
   return substituted.trim().length
     ? substituted
-    : 'Your SMS message preview will appear here.';
+    : "Your SMS message preview will appear here.";
 });
 
 const smsEstimatedCost = computed(() => {
@@ -211,16 +219,18 @@ const smsEstimatedCost = computed(() => {
 const smsTruncationHint = computed(() => {
   const n = smsCharCount.value;
   if (n <= 160) return null;
-  if (n <= 306) return 'Consider shortening to stay within 2 segments.';
-  return 'Shorten this message to reduce segment count and cost.';
+  if (n <= 306) return "Consider shortening to stay within 2 segments.";
+  return "Shorten this message to reduce segment count and cost.";
 });
 const smsSenderId = computed(
-  () => ((campaign.value.message as any).sender_id as string | undefined) ?? 'YourBrand'
+  () =>
+    ((campaign.value.message as any).sender_id as string | undefined) ??
+    "YourBrand",
 );
 
 function onSave() {
   if (!isValid.value) return;
-  emit('save', campaign.value);
+  emit("save", campaign.value);
 }
 </script>
 
@@ -251,7 +261,9 @@ function onSave() {
           marginBottom: `${spacing[16]}px`,
         }"
       >
-        <ul :style="{ margin: 0, paddingLeft: '1.25rem', color: colors.danger }">
+        <ul
+          :style="{ margin: 0, paddingLeft: '1.25rem', color: colors.danger }"
+        >
           <li v-for="e in blockingErrors" :key="e.message">
             {{ e.message }}
           </li>
@@ -271,7 +283,9 @@ function onSave() {
           color: colors.neutral.textMuted,
         }"
       >
-        <strong :style="{ display: 'block', marginBottom: `${spacing[4]}px` }">Warnings</strong>
+        <strong :style="{ display: 'block', marginBottom: `${spacing[4]}px` }"
+          >Warnings</strong
+        >
         <ul :style="{ margin: 0, paddingLeft: '1.25rem' }">
           <li v-for="w in warningsList" :key="w.message">
             {{ w.message }}
@@ -282,10 +296,7 @@ function onSave() {
 
     <div class="kb-sms-layout">
       <aside class="kb-sms-sidebar">
-        <div
-          v-if="!disabledSections.includes('sms')"
-          class="kb-sms-form"
-        >
+        <div v-if="!disabledSections.includes('sms')" class="kb-sms-form">
           <div class="kb-sms-form-head">
             <span class="kb-sms-form-head-label">Template</span>
             <div class="kb-wa-form-head-row">
@@ -299,7 +310,9 @@ function onSave() {
                 @change="onPresetSelect"
               >
                 <option value="">Presets…</option>
-                <option v-for="p in SMS_PRESETS" :key="p.id" :value="p.id">{{ p.label }}</option>
+                <option v-for="p in SMS_PRESETS" :key="p.id" :value="p.id">
+                  {{ p.label }}
+                </option>
               </select>
             </div>
           </div>
@@ -314,7 +327,10 @@ function onSave() {
       </aside>
 
       <main class="kb-sms-canvas">
-        <div v-if="!designOnly && campaign.audience.test_mode" class="kb-sms-test-banner">
+        <div
+          v-if="!designOnly && campaign.audience.test_mode"
+          class="kb-sms-test-banner"
+        >
           <span class="kb-sms-test-banner-dot"></span>
           Test mode — only your test segment will receive this.
         </div>
@@ -328,49 +344,55 @@ function onSave() {
                 aria-label="Preview as profile"
               >
                 <option value="">No substitution</option>
-                <option v-for="pr in DEFAULT_SAMPLE_PROFILES" :key="pr.id" :value="pr.id">{{ pr.label }}</option>
+                <option
+                  v-for="pr in DEFAULT_SAMPLE_PROFILES"
+                  :key="pr.id"
+                  :value="pr.id"
+                >
+                  {{ pr.label }}
+                </option>
               </select>
             </label>
           </div>
           <div class="kb-sms-preview-frame">
             <div class="kb-preview">
-          <div class="kb-sms-preview">
-              <div class="kb-sms-phone">
-                <div class="kb-sms-status-bar">
-                  <span class="kb-sms-time">9:41</span>
-                  <span class="kb-sms-icons">◆ ◆ ◆</span>
-                </div>
-                <div class="kb-sms-header">
-                  <div class="kb-sms-sender">
-                    {{ smsSenderId }}
+              <div class="kb-sms-preview">
+                <div class="kb-sms-phone">
+                  <div class="kb-sms-status-bar">
+                    <span class="kb-sms-time">9:41</span>
+                    <span class="kb-sms-icons">◆ ◆ ◆</span>
                   </div>
-                  <div class="kb-sms-meta">Text message</div>
-                </div>
-                <div class="kb-sms-thread">
-                  <div class="kb-sms-bubble kb-sms-bubble--outgoing">
-                    <span class="kb-sms-text">
-                      {{ smsBodyDisplay }}
-                    </span>
-                    <span class="kb-sms-bubble-meta">
-                      09:21
-                    </span>
+                  <div class="kb-sms-header">
+                    <div class="kb-sms-sender">
+                      {{ smsSenderId }}
+                    </div>
+                    <div class="kb-sms-meta">Text message</div>
+                  </div>
+                  <div class="kb-sms-thread">
+                    <div class="kb-sms-bubble kb-sms-bubble--outgoing">
+                      <span class="kb-sms-text">
+                        {{ smsBodyDisplay }}
+                      </span>
+                      <span class="kb-sms-bubble-meta"> 09:21 </span>
+                    </div>
                   </div>
                 </div>
+                <p class="kb-sms-counter">
+                  {{ smsCharCount }} characters ·
+                  <span v-if="smsSegmentCount === 0">0 segments</span>
+                  <span v-else-if="smsSegmentCount === 1">1 segment</span>
+                  <span v-else>{{ smsSegmentCount }} segments</span>
+                  (160 chars for 1 segment, 153 for multi-part)
+                  <span v-if="smsEstimatedCost !== null" class="kb-sms-cost">
+                    · Est. {{ smsEstimatedCost }}
+                  </span>
+                </p>
+                <p v-if="smsTruncationHint" class="kb-sms-truncation-hint">
+                  {{ smsTruncationHint }}
+                </p>
               </div>
-              <p class="kb-sms-counter">
-                {{ smsCharCount }} characters ·
-                <span v-if="smsSegmentCount === 0">0 segments</span>
-                <span v-else-if="smsSegmentCount === 1">1 segment</span>
-                <span v-else>{{ smsSegmentCount }} segments</span>
-                (160 chars for 1 segment, 153 for multi-part)
-                <span v-if="smsEstimatedCost !== null" class="kb-sms-cost"> · Est. {{ smsEstimatedCost }} </span>
-              </p>
-              <p v-if="smsTruncationHint" class="kb-sms-truncation-hint">
-                {{ smsTruncationHint }}
-              </p>
-              </div>
-          </div>
             </div>
+          </div>
         </div>
       </main>
     </div>
@@ -407,13 +429,38 @@ function onSave() {
       </div>
     </footer>
 
-    <div v-if="presetConfirmOpen" class="kb-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="sms-preset-confirm-title">
+    <div
+      v-if="presetConfirmOpen"
+      class="kb-confirm-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sms-preset-confirm-title"
+    >
       <div class="kb-confirm-dialog">
-        <h2 id="sms-preset-confirm-title" class="kb-confirm-title">Replace content?</h2>
-        <p class="kb-confirm-text">Current changes will be replaced by the preset. Continue?</p>
+        <h2 id="sms-preset-confirm-title" class="kb-confirm-title">
+          Replace content?
+        </h2>
+        <p class="kb-confirm-text">
+          Current changes will be replaced by the preset. Continue?
+        </p>
         <div class="kb-confirm-actions">
-          <button type="button" class="kb-sms-action kb-sms-action--secondary" @click="presetConfirmOpen = false; pendingPreset = null">Cancel</button>
-          <button type="button" class="kb-sms-action kb-sms-action--primary" @click="pendingPreset && applyPreset(pendingPreset)">Replace</button>
+          <button
+            type="button"
+            class="kb-sms-action kb-sms-action--secondary"
+            @click="
+              presetConfirmOpen = false;
+              pendingPreset = null;
+            "
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="kb-sms-action kb-sms-action--primary"
+            @click="pendingPreset && applyPreset(pendingPreset)"
+          >
+            Replace
+          </button>
         </div>
       </div>
     </div>
@@ -449,14 +496,20 @@ function onSave() {
   color: #64748b;
 }
 .keos-sms-builder {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 14px;
   color: #0f172a;
   max-width: 100%;
   box-sizing: border-box;
   background: #ffffff;
   min-height: 100vh;
-  /* padding: 0 0 32px 0; */
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 .keos-sms-builder button,
@@ -470,6 +523,7 @@ function onSave() {
 .kb-builder-top {
   margin-left: 24px;
   margin-right: 24px;
+  flex-shrink: 0;
 }
 
 .kb-sms-layout {
@@ -477,8 +531,8 @@ function onSave() {
   background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
   grid-template-columns: 380px 1fr;
   gap: 0;
-  height: calc(100vh - 120px);
-  min-height: 320px;
+  flex: 1;
+  min-height: 0;
   align-items: stretch;
   margin-top: 24px;
 }
@@ -493,14 +547,16 @@ function onSave() {
 .kb-sms-sidebar {
   background: #fff;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0;
   margin: 0;
-  border-radius: 0;
+  border-radius: 0 10px 10px 0;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-left: none;
   box-shadow: 2px 0 12px -4px rgba(15, 23, 42, 0.06);
-  min-height: 0;
-}
+  height: 95dvh;
+  -webkit-overflow-scrolling: touch;
+} 
 @media (max-width: 1023px) {
   .kb-sms-sidebar {
     order: 1;
@@ -509,7 +565,7 @@ function onSave() {
     border: 1px solid rgba(15, 23, 42, 0.06);
     border-top: none;
     box-shadow: 0 -2px 12px -4px rgba(15, 23, 42, 0.06);
-    max-height: none;
+    min-height: 0;
   }
 }
 
@@ -578,8 +634,13 @@ function onSave() {
   animation: kb-pulse-sms 1.5s ease-in-out infinite;
 }
 @keyframes kb-pulse-sms {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .kb-sms-preview-chrome {
@@ -605,7 +666,10 @@ function onSave() {
   margin: 0 auto;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px -2px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
 }
@@ -621,12 +685,9 @@ function onSave() {
   align-items: center;
   gap: 16px;
   padding: 20px 32px 24px;
-  /* margin-top: 24px; */
   background: #fff;
   border-top: 1px solid #e2e8f0;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
+  flex-shrink: 0;
 }
 .kb-sms-actions-right {
   display: flex;
@@ -640,7 +701,9 @@ function onSave() {
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
 }
 .kb-sms-action:active {
   transform: scale(0.98);
@@ -855,4 +918,3 @@ function onSave() {
   gap: 8px;
 }
 </style>
-
