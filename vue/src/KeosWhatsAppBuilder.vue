@@ -9,7 +9,6 @@ import { useCampaignState } from "./composables/useCampaignState";
 import { useAutosave } from "./composables/useAutosave";
 import BuilderHeader from "./BuilderHeader.vue";
 import SectionPersonalization from "./sections/SectionPersonalization.vue";
-import SectionTemplateType from "./sections/SectionTemplateType.vue";
 import SectionWhatsApp from "./sections/SectionWhatsApp.vue";
 import WhatsAppTemplatePreview from "./WhatsAppTemplatePreview.vue";
 import type { WaPreviewTemplate } from "./WhatsAppTemplatePreview.vue";
@@ -18,6 +17,82 @@ import {
   DEFAULT_SAMPLE_PROFILES,
   renderTemplatePreview,
 } from "./utils/renderTemplatePreview";
+
+const WA_HEADER_LIMIT = 60;
+const WA_BODY_LIMIT = 1024;
+const WA_FOOTER_LIMIT = 60;
+const WA_MAX_BUTTONS = 10;
+const WA_MAX_CAROUSEL_CARDS = 10;
+
+function validateWhatsAppTemplate(c: Campaign): string[] {
+  const errors: string[] = [];
+  const msg = c.message as any;
+  const category = (msg.template_category ?? "").toString().trim();
+  const templateType = (msg.template_type ?? "text").toString();
+  const headerType = (msg.header_type ?? "none").toString();
+  const headerText = (msg.header ?? "").toString();
+  const body = (msg.body ?? "").toString();
+  const footer = (msg.footer ?? "").toString();
+  const buttons = Array.isArray(msg.buttons) ? msg.buttons : [];
+  const cards = Array.isArray(msg.cards) ? msg.cards : [];
+
+  if (!c.name?.trim()) errors.push("Template name is required");
+  if (!msg.template_name?.trim())
+    errors.push("WhatsApp template name is required");
+  if (!category)
+    errors.push("WhatsApp category is required (Marketing, Utility, or Authentication)");
+  if (!body.trim()) errors.push("Body is required");
+
+  if (headerType === "text" && headerText.length > WA_HEADER_LIMIT) {
+    errors.push(`Header text cannot exceed ${WA_HEADER_LIMIT} characters`);
+  }
+  if (body.length > WA_BODY_LIMIT) {
+    errors.push(`Body cannot exceed ${WA_BODY_LIMIT} characters`);
+  }
+  if (footer.length > WA_FOOTER_LIMIT) {
+    errors.push(`Footer cannot exceed ${WA_FOOTER_LIMIT} characters`);
+  }
+  if (buttons.length > WA_MAX_BUTTONS) {
+    errors.push(`Buttons cannot exceed ${WA_MAX_BUTTONS}`);
+  }
+
+  if (
+    (templateType === "image" ||
+      templateType === "video" ||
+      templateType === "document" ||
+      headerType === "image" ||
+      headerType === "video" ||
+      headerType === "document") &&
+    !msg.media_url
+  ) {
+    errors.push("Media URL is required for rich media templates");
+  }
+
+  if (category === "authentication" && templateType !== "auth") {
+    errors.push("Authentication category must use Authentication format");
+  }
+  if (templateType === "auth" && !msg.auth_label?.trim() && !body.includes("{{")) {
+    errors.push("Authentication templates should include a code label or placeholder variable");
+  }
+  if (templateType === "lto" && !msg.lto_expiry) {
+    errors.push("Limited-time offer requires an expiry");
+  }
+  if ((templateType === "mpm" || templateType === "catalog") && !msg.products?.length) {
+    errors.push("Catalog and multi-product templates require at least one product");
+  }
+  if (templateType === "flow" && !msg.flow_id?.trim()) {
+    errors.push("WhatsApp Flow format requires a flow ID");
+  }
+  if (templateType === "carousel") {
+    if (!cards.length) {
+      errors.push("Carousel format requires at least one card");
+    } else if (cards.length > WA_MAX_CAROUSEL_CARDS) {
+      errors.push(`Carousel supports up to ${WA_MAX_CAROUSEL_CARDS} cards`);
+    }
+  }
+
+  return errors;
+}
 
 const props = withDefaults(
   defineProps<{
@@ -83,8 +158,7 @@ const {
   hooks: {
     ...props.hooks,
     customValidators: async (c) => {
-      const errors: string[] = [];
-      if (!c.name?.trim()) errors.push("Template name is required");
+      const errors = validateWhatsAppTemplate(c);
       const fromHost = props.hooks?.customValidators
         ? await props.hooks.customValidators(c)
         : [];
@@ -163,6 +237,7 @@ const waHeaderDisplay = computed(() => {
 const waPreviewTemplate = computed((): WaPreviewTemplate => {
   const msg = campaign.value.message as any;
   const templateType = msg.template_type ?? "text";
+  const headerType = msg.header_type ?? "none";
   let header: WaPreviewTemplate["header"] | undefined;
   let location: WaPreviewTemplate["location"] | undefined;
   let catalog: WaPreviewTemplate["catalog"] | undefined;
@@ -171,12 +246,17 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
   let limitedOffer: WaPreviewTemplate["limitedOffer"] | undefined;
   let auth: WaPreviewTemplate["auth"] | undefined;
 
-  if (templateType === "image" && msg.media_url) {
+  if ((templateType === "image" || headerType === "image") && msg.media_url) {
     header = { type: "image", url: msg.media_url };
-  } else if (templateType === "video" && msg.media_url) {
+  } else if ((templateType === "video" || headerType === "video") && msg.media_url) {
     header = { type: "video", url: msg.media_url };
-  } else if (templateType === "document" && msg.document_filename) {
-    header = { type: "document", filename: msg.document_filename };
+  } else if (templateType === "document" || headerType === "document") {
+    header = {
+      type: "document",
+      filename: msg.document_filename || msg.media_url || "document.pdf",
+    };
+  } else if (headerType === "text" && msg.header) {
+    header = { type: "text", text: waHeaderDisplay.value };
   } else if (msg.header) {
     header = { type: "text", text: waHeaderDisplay.value };
   }
@@ -209,6 +289,14 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
       price: p.price ?? p.productId ?? "",
     }));
   }
+  if (templateType === "carousel" && Array.isArray(msg.cards) && msg.cards.length) {
+    catalog = true;
+    multiProduct = (msg.cards as any[]).map((c) => ({
+      image: c.image ?? c.media_url,
+      name: c.title ?? "Card",
+      price: c.button_label ?? "",
+    }));
+  }
 
   if (templateType === "coupon" && msg.coupon_code) {
     coupon = { code: msg.coupon_code };
@@ -224,9 +312,19 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
   }
 
   const buttonsRaw = (msg.buttons as { label?: string }[] | undefined) ?? [];
+  if (templateType === "flow") {
+    buttonsRaw.push({
+      label: msg.flow_cta_label ?? "Open flow",
+    });
+  }
   return {
+    format: templateType,
+    templateName: msg.template_name || undefined,
+    templateLanguage: msg.template_language || undefined,
+    templateCategory: msg.template_category || undefined,
     header,
     body,
+    mediaCaption: msg.media_caption || undefined,
     footer: msg.footer || undefined,
     buttons: buttonsRaw.map((b) => ({ text: b.label || "Button" })),
     location,
@@ -235,6 +333,13 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
     coupon,
     limitedOffer,
     auth,
+    flow:
+      templateType === "flow"
+        ? {
+            id: msg.flow_id || undefined,
+            ctaLabel: msg.flow_cta_label || "Open flow",
+          }
+        : undefined,
   };
 });
 
@@ -265,14 +370,6 @@ function onPresetSelect(e: Event) {
   (e.target as HTMLSelectElement).value = "";
 }
 
-const templateType = computed(
-  () => (campaign.value as any).template_type ?? "transactional",
-);
-
-function updateTemplateType(value: "transactional" | "marketing") {
-  update({ template_type: value } as Partial<Campaign>);
-}
-
 function updateName(name: string) {
   update({
     name,
@@ -287,19 +384,18 @@ function onInsertVariable(payload: {
   const token = ` {{ ${payload.variable} }}`;
   const existingVars = campaign.value.message.variables ?? [];
   const nextVars = Array.from(new Set([...existingVars, payload.variable]));
-  // For WhatsApp we primarily personalize the WhatsApp header/body fields.
   if (payload.field === "title") {
     const currentHeader = (campaign.value.message as any).header ?? "";
     updateMessage({
       variables: nextVars,
+      header: currentHeader + token,
     } as any);
-    (campaign.value.message as any).header = currentHeader + token;
   } else {
     const currentBody = (campaign.value.message as any).body ?? "";
     updateMessage({
       variables: nextVars,
+      body: currentBody + token,
     } as any);
-    (campaign.value.message as any).body = currentBody + token;
   }
 }
 
@@ -370,10 +466,6 @@ function onSave() {
           <div class="kb-wa-form-head">
             <span class="kb-wa-form-head-label">Template</span>
             <div class="kb-wa-form-head-row">
-              <SectionTemplateType
-                :template-type="templateType"
-                @update="updateTemplateType"
-              />
               <select
                 class="kb-preset-select"
                 aria-label="Load template preset"
@@ -568,12 +660,17 @@ function onSave() {
 .kb-wa-layout {
   display: grid;
   background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: minmax(360px, 420px) minmax(420px, 1fr);
   gap: 0;
   flex: 1;
   min-height: 0;
   align-items: stretch;
   margin-top: 24px;
+}
+@media (max-width: 1360px) {
+  .kb-wa-layout {
+    grid-template-columns: minmax(340px, 400px) minmax(400px, 1fr);
+  }
 }
 @media (max-width: 1023px) {
   .kb-wa-layout {
@@ -610,6 +707,11 @@ function onSave() {
 
 .kb-wa-form {
   padding: 28px 24px 40px 24px;
+}
+@media (max-width: 1360px) {
+  .kb-wa-form {
+    padding: 24px 18px 34px 18px;
+  }
 }
 .kb-wa-form-head {
   margin-bottom: 28px;

@@ -15,6 +15,56 @@ const emit = defineEmits<{
   reset: [];
 }>();
 
+const FORMAT_OPTIONS = [
+  { value: 'text', label: 'Text', hint: 'Standard text template.' },
+  { value: 'image', label: 'Rich media (image header)', hint: 'Body with image in header.' },
+  { value: 'video', label: 'Rich media (video header)', hint: 'Body with video in header.' },
+  { value: 'document', label: 'Rich media (document header)', hint: 'Body with PDF/document in header.' },
+  { value: 'carousel', label: 'Carousel', hint: 'Up to 10 cards with media + buttons.' },
+  { value: 'flow', label: 'WhatsApp Flow', hint: 'Launch a multi-step in-chat flow.' },
+  { value: 'lto', label: 'Limited-time offer', hint: 'Adds expiry urgency to the offer.' },
+  { value: 'catalog', label: 'Catalog', hint: 'Open WhatsApp catalog or product list.' },
+  { value: 'mpm', label: 'Multi-product', hint: 'Show multiple products in one template.' },
+  { value: 'auth', label: 'Authentication', hint: 'OTP/login verification template.' },
+  { value: 'location', label: 'Location', hint: 'Share a pinned location.' },
+  { value: 'coupon', label: 'Coupon', hint: 'Send a coupon code.' },
+] as const;
+
+const HEADER_LIMIT = 60;
+const BODY_LIMIT = 1024;
+const FOOTER_LIMIT = 60;
+const MAX_BUTTONS = 10;
+const MAX_CAROUSEL_CARDS = 10;
+
+const messageAny = computed(() => props.message as any);
+const currentFormat = computed(() => messageAny.value.template_type ?? 'text');
+const headerType = computed(() => messageAny.value.header_type ?? 'none');
+const headerText = computed(() => String(messageAny.value.header ?? ''));
+const bodyText = computed(() => String(messageAny.value.body ?? ''));
+const footerText = computed(() => String(messageAny.value.footer ?? ''));
+const buttons = computed(() => (messageAny.value.buttons as any[]) ?? []);
+const products = computed(() => (messageAny.value.products as any[]) ?? []);
+const cards = computed(() => (messageAny.value.cards as any[]) ?? []);
+
+const selectedFormatHint = computed(() => {
+  const found = FORMAT_OPTIONS.find((f) => f.value === currentFormat.value);
+  return found?.hint ?? 'Choose the approved WhatsApp template format.';
+});
+const categoryLabel = computed(() => {
+  const raw = String(messageAny.value.template_category ?? '').trim();
+  if (!raw) return 'Uncategorized';
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
+});
+const formatLabel = computed(() => {
+  const found = FORMAT_OPTIONS.find((f) => f.value === currentFormat.value);
+  return found?.label ?? 'Text';
+});
+const setupProgressLabel = computed(() => {
+  if (!messageAny.value.template_name) return 'Needs setup';
+  if (!bodyText.value.trim()) return 'Draft';
+  return 'Ready to validate';
+});
+
 function extractPlaceholders(text: string): string[] {
   if (!text || typeof text !== 'string') return [];
   const re = /\{\{\s*([^}]+?)\s*\}\}/g;
@@ -32,6 +82,101 @@ const templateFields = computed(() => {
   const uniq = Array.from(new Set(placeholders));
   return uniq.map((name) => ({ name, configured: vars.has(name) }));
 });
+
+function emitUpdate(partial: Record<string, unknown>) {
+  emit('update', partial);
+}
+
+function onCategoryChange(value: string) {
+  const partial: Record<string, unknown> = {
+    template_category: value || undefined,
+  };
+  if (value === 'authentication' && currentFormat.value !== 'auth') {
+    partial.template_type = 'auth';
+  }
+  emitUpdate(partial);
+}
+
+function onFormatChange(value: string) {
+  const partial: Record<string, unknown> = { template_type: value };
+  if (value === 'auth') partial.template_category = 'authentication';
+  if (value === 'image' || value === 'video' || value === 'document') {
+    partial.header_type = value;
+  }
+  emitUpdate(partial);
+}
+
+function updateButton(index: number, patch: Record<string, unknown>) {
+  const next = [...buttons.value];
+  next[index] = {
+    ...next[index],
+    id: next[index]?.id || `btn_${index + 1}`,
+    ...patch,
+  };
+  emitUpdate({ buttons: next });
+}
+
+function removeButton(index: number) {
+  const next = [...buttons.value];
+  next.splice(index, 1);
+  emitUpdate({ buttons: next });
+}
+
+function addButton() {
+  const next = [...buttons.value];
+  next.push({ id: `btn_${next.length + 1}`, label: '', type: 'quick_reply' });
+  emitUpdate({ buttons: next });
+}
+
+function updateProduct(index: number, patch: Record<string, unknown>) {
+  const next = [...products.value];
+  next[index] = {
+    ...next[index],
+    id: next[index]?.id || `prod_${index + 1}`,
+    ...patch,
+  };
+  emitUpdate({ products: next });
+}
+
+function removeProduct(index: number) {
+  const next = [...products.value];
+  next.splice(index, 1);
+  emitUpdate({ products: next });
+}
+
+function addProduct() {
+  const next = [...products.value];
+  next.push({ id: `prod_${next.length + 1}`, productId: '' });
+  emitUpdate({ products: next });
+}
+
+function updateCard(index: number, patch: Record<string, unknown>) {
+  const next = [...cards.value];
+  next[index] = {
+    ...next[index],
+    id: next[index]?.id || `card_${index + 1}`,
+    ...patch,
+  };
+  emitUpdate({ cards: next });
+}
+
+function removeCard(index: number) {
+  const next = [...cards.value];
+  next.splice(index, 1);
+  emitUpdate({ cards: next });
+}
+
+function addCard() {
+  const next = [...cards.value];
+  next.push({
+    id: `card_${next.length + 1}`,
+    title: '',
+    media_url: '',
+    button_label: '',
+    button_url: '',
+  });
+  emitUpdate({ cards: next });
+}
 </script>
 
 <template>
@@ -48,34 +193,48 @@ const templateFields = computed(() => {
       </button>
     </div>
     <p class="kb-section__desc">
-      Configure how this campaign will look when sent as a WhatsApp template message.
+      Configure purpose, format, and components for your approved WhatsApp template.
     </p>
+    <div class="kb-summary-bar">
+      <span class="kb-pill kb-pill--category">{{ categoryLabel }}</span>
+      <span class="kb-pill kb-pill--format">{{ formatLabel }}</span>
+      <span class="kb-pill kb-pill--status">{{ setupProgressLabel }}</span>
+    </div>
 
     <div class="kb-field">
       <label class="kb-label">
-        Template type
-        <span class="kb-helper">Match the content type approved in WhatsApp (text, media, coupon, offer, catalog, etc.).</span>
+        Category (purpose)
+        <span class="kb-helper">Defines the business intent and pricing bucket.</span>
       </label>
       <select
         class="kb-select"
-        :value="(props.message as any).template_type ?? 'text'"
-        @change="
-          (e) =>
-            emit('update', {
-              template_type: (e.target as HTMLSelectElement).value,
-            })
-        "
+        :value="messageAny.template_category ?? ''"
+        @change="onCategoryChange(($event.target as HTMLSelectElement).value)"
       >
-        <option value="text">Text</option>
-        <option value="image">Image</option>
-        <option value="video">Video</option>
-        <option value="document">Document</option>
-        <option value="location">Location</option>
-        <option value="coupon">Coupon code</option>
-        <option value="lto">Limited time offer</option>
-        <option value="mpm">Multi product message</option>
-        <option value="catalog">Catalog</option>
-        <option value="auth">Authentication</option>
+        <option value="">Select category</option>
+        <option value="marketing">Marketing</option>
+        <option value="utility">Utility</option>
+        <option value="authentication">Authentication</option>
+      </select>
+    </div>
+
+    <div class="kb-field">
+      <label class="kb-label">
+        Functional format
+        <span class="kb-helper">{{ selectedFormatHint }}</span>
+      </label>
+      <select
+        class="kb-select"
+        :value="currentFormat"
+        @change="onFormatChange(($event.target as HTMLSelectElement).value)"
+      >
+        <option
+          v-for="opt in FORMAT_OPTIONS"
+          :key="opt.value"
+          :value="opt.value"
+        >
+          {{ opt.label }}
+        </option>
       </select>
     </div>
 
@@ -88,19 +247,92 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. order_update_1"
-        :value="(props.message as any).template_name ?? ''"
+        :value="messageAny.template_name ?? ''"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               template_name: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
     </div>
 
-    <!-- Media configuration -->
+    <div class="kb-field kb-field--inline">
+      <div class="kb-field-half">
+        <label class="kb-label">
+          Template language
+          <span class="kb-helper">Locale code used in WhatsApp (for example, en_US, en_GB, es_ES).</span>
+        </label>
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="e.g. en_US"
+          :value="messageAny.template_language ?? ''"
+          @input="
+            (e) =>
+              emitUpdate({
+                template_language: (e.target as HTMLInputElement).value || undefined,
+              })
+          "
+        />
+      </div>
+      <div class="kb-field-half">
+        <div class="kb-meta-card">
+          <span class="kb-meta-title">Component limits</span>
+          <ul class="kb-meta-list">
+            <li>Header text: {{ HEADER_LIMIT }} chars</li>
+            <li>Body: {{ BODY_LIMIT }} chars</li>
+            <li>Footer: {{ FOOTER_LIMIT }} chars</li>
+            <li>Buttons: up to {{ MAX_BUTTONS }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="kb-field">
+      <label class="kb-label">
+        Header component (optional)
+        <span class="kb-helper">Header can be text or rich media.</span>
+      </label>
+      <select
+        class="kb-select"
+        :value="headerType"
+        @change="emitUpdate({ header_type: ($event.target as HTMLSelectElement).value })"
+      >
+        <option value="none">No header</option>
+        <option value="text">Text header</option>
+        <option value="image">Image header</option>
+        <option value="video">Video header</option>
+        <option value="document">Document header</option>
+      </select>
+    </div>
+
+    <div v-if="headerType === 'text'" class="kb-field">
+      <label class="kb-label">
+        Header text
+        <span
+          class="kb-counter"
+          :class="{ 'kb-counter--warn': headerText.length > HEADER_LIMIT }"
+        >
+          {{ headerText.length }}/{{ HEADER_LIMIT }}
+        </span>
+      </label>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="e.g. Order update"
+        :value="headerText"
+        @input="
+          (e) =>
+            emitUpdate({
+              header: (e.target as HTMLInputElement).value || undefined,
+            })
+        "
+      />
+    </div>
+
     <div
-      v-if="['image', 'video', 'document'].includes(((props.message as any).template_type ?? 'text'))"
+      v-if="['image', 'video', 'document'].includes(headerType) || ['image', 'video', 'document'].includes(currentFormat)"
       class="kb-field"
     >
       <label class="kb-label">
@@ -111,17 +343,38 @@ const templateFields = computed(() => {
         type="url"
         class="kb-input"
         placeholder="https://..."
-        :value="(props.message as any).media_url ?? ''"
+        :value="messageAny.media_url ?? ''"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               media_url: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
     </div>
     <div
-      v-if="['image', 'video', 'document'].includes(((props.message as any).template_type ?? 'text'))"
+      v-if="headerType === 'document' || currentFormat === 'document'"
+      class="kb-field"
+    >
+      <label class="kb-label">
+        Document filename
+        <span class="kb-helper">Filename shown in the document preview.</span>
+      </label>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="e.g. invoice.pdf"
+        :value="messageAny.document_filename ?? ''"
+        @input="
+          (e) =>
+            emitUpdate({
+              document_filename: (e.target as HTMLInputElement).value || undefined,
+            })
+        "
+      />
+    </div>
+    <div
+      v-if="['image', 'video', 'document'].includes(headerType) || ['image', 'video', 'document'].includes(currentFormat)"
       class="kb-field"
     >
       <label class="kb-label">
@@ -132,10 +385,10 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. Your order is on the way"
-        :value="(props.message as any).media_caption ?? ''"
+        :value="messageAny.media_caption ?? ''"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               media_caption: (e.target as HTMLInputElement).value || undefined,
             })
         "
@@ -144,7 +397,7 @@ const templateFields = computed(() => {
 
     <!-- Location configuration -->
     <div
-      v-if="(props.message as any).template_type === 'location'"
+      v-if="currentFormat === 'location'"
       class="kb-field kb-field--inline"
     >
       <label class="kb-label">
@@ -157,12 +410,12 @@ const templateFields = computed(() => {
           step="0.000001"
           class="kb-input"
           placeholder="Latitude"
-          :value="(props.message as any).location?.lat ?? ''"
+          :value="messageAny.location?.lat ?? ''"
           @input="
             (e) => {
-              const loc = { ...( (props.message as any).location ?? {} ) };
+              const loc = { ...( messageAny.location ?? {} ) };
               loc.lat = Number((e.target as HTMLInputElement).value);
-              emit('update', { location: loc });
+              emitUpdate({ location: loc });
             }
           "
         />
@@ -171,12 +424,12 @@ const templateFields = computed(() => {
           step="0.000001"
           class="kb-input"
           placeholder="Longitude"
-          :value="(props.message as any).location?.lon ?? ''"
+          :value="messageAny.location?.lon ?? ''"
           @input="
             (e) => {
-              const loc = { ...( (props.message as any).location ?? {} ) };
+              const loc = { ...( messageAny.location ?? {} ) };
               loc.lon = Number((e.target as HTMLInputElement).value);
-              emit('update', { location: loc });
+              emitUpdate({ location: loc });
             }
           "
         />
@@ -185,12 +438,12 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="Location name"
-        :value="(props.message as any).location?.name ?? ''"
+        :value="messageAny.location?.name ?? ''"
         @input="
           (e) => {
-            const loc = { ...( (props.message as any).location ?? {} ) };
+            const loc = { ...( messageAny.location ?? {} ) };
             loc.name = (e.target as HTMLInputElement).value || undefined;
-            emit('update', { location: loc });
+            emitUpdate({ location: loc });
           }
         "
       />
@@ -198,12 +451,12 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="Address (optional)"
-        :value="(props.message as any).location?.address ?? ''"
+        :value="messageAny.location?.address ?? ''"
         @input="
           (e) => {
-            const loc = { ...( (props.message as any).location ?? {} ) };
+            const loc = { ...( messageAny.location ?? {} ) };
             loc.address = (e.target as HTMLInputElement).value || undefined;
-            emit('update', { location: loc });
+            emitUpdate({ location: loc });
           }
         "
       />
@@ -211,7 +464,7 @@ const templateFields = computed(() => {
 
     <!-- Coupon configuration -->
     <div
-      v-if="(props.message as any).template_type === 'coupon'"
+      v-if="currentFormat === 'coupon'"
       class="kb-field"
     >
       <label class="kb-label">
@@ -222,10 +475,10 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. SAVE20"
-        :value="(props.message as any).coupon_code ?? ''"
+        :value="messageAny.coupon_code ?? ''"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               coupon_code: (e.target as HTMLInputElement).value || undefined,
             })
         "
@@ -234,7 +487,7 @@ const templateFields = computed(() => {
 
     <!-- LTO configuration -->
     <div
-      v-if="(props.message as any).template_type === 'lto'"
+      v-if="currentFormat === 'lto'"
       class="kb-field"
     >
       <label class="kb-label">
@@ -244,19 +497,102 @@ const templateFields = computed(() => {
       <input
         type="datetime-local"
         class="kb-input"
-        :value="(props.message as any).lto_expiry ?? ''"
+        :value="messageAny.lto_expiry ?? ''"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               lto_expiry: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
     </div>
 
+    <div v-if="currentFormat === 'flow'" class="kb-field">
+      <label class="kb-label">
+        Flow
+        <span class="kb-helper">Connect this template to a published WhatsApp Flow.</span>
+      </label>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Flow ID"
+        :value="messageAny.flow_id ?? ''"
+        @input="
+          (e) =>
+            emitUpdate({
+              flow_id: (e.target as HTMLInputElement).value || undefined,
+            })
+        "
+      />
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Flow CTA label (e.g. Start booking)"
+        :value="messageAny.flow_cta_label ?? ''"
+        @input="
+          (e) =>
+            emitUpdate({
+              flow_cta_label: (e.target as HTMLInputElement).value || undefined,
+            })
+        "
+      />
+    </div>
+
+    <div v-if="currentFormat === 'carousel'" class="kb-field">
+      <label class="kb-label">
+        Carousel cards
+        <span class="kb-helper">Each card can include media and one CTA. Max {{ MAX_CAROUSEL_CARDS }} cards.</span>
+      </label>
+      <div class="kb-wa-buttons">
+        <div
+          v-for="(card, index) in cards"
+          :key="card.id || index"
+          class="kb-card-row"
+        >
+          <input
+            type="text"
+            class="kb-input"
+            placeholder="Card title"
+            :value="card.title ?? ''"
+            @input="updateCard(Number(index), { title: ($event.target as HTMLInputElement).value })"
+          />
+          <input
+            type="url"
+            class="kb-input"
+            placeholder="Card media URL"
+            :value="card.media_url ?? ''"
+            @input="updateCard(Number(index), { media_url: ($event.target as HTMLInputElement).value })"
+          />
+          <input
+            type="text"
+            class="kb-input"
+            placeholder="Button label"
+            :value="card.button_label ?? ''"
+            @input="updateCard(Number(index), { button_label: ($event.target as HTMLInputElement).value })"
+          />
+          <input
+            type="url"
+            class="kb-input"
+            placeholder="Button URL"
+            :value="card.button_url ?? ''"
+            @input="updateCard(Number(index), { button_url: ($event.target as HTMLInputElement).value })"
+          />
+          <button type="button" class="kb-wa-btn-remove" @click="removeCard(Number(index))">Remove</button>
+        </div>
+        <button
+          type="button"
+          class="kb-wa-btn-add"
+          :disabled="cards.length >= MAX_CAROUSEL_CARDS"
+          @click="addCard"
+        >
+          Add card
+        </button>
+      </div>
+    </div>
+
     <!-- MPM / Catalog configuration -->
     <div
-      v-if="['mpm', 'catalog'].includes((props.message as any).template_type)"
+      v-if="['mpm', 'catalog'].includes(currentFormat)"
       class="kb-field"
     >
       <label class="kb-label">
@@ -267,56 +603,28 @@ const templateFields = computed(() => {
       </label>
       <div class="kb-wa-buttons">
         <div
-          v-for="(item, index) in ((props.message as any).products ?? [])"
+          v-for="(item, index) in products"
           :key="item.id || index"
-          class="kb-wa-button-row"
+          class="kb-product-row"
         >
           <input
             type="text"
             class="kb-input kb-input--btn-label"
             placeholder="Product ID"
             :value="item.productId"
-            @input="
-              (e) => {
-                const next = [...(((props.message as any).products as any[]) ?? [])];
-                const i = Number(index);
-                next[i] = {
-                  ...next[i],
-                  id: next[i]?.id || `prod_${i + 1}`,
-                  productId: (e.target as HTMLInputElement).value,
-                };
-                emit('update', { products: next });
-              }
-            "
+            @input="updateProduct(Number(index), { productId: ($event.target as HTMLInputElement).value })"
           />
           <input
             type="text"
             class="kb-input kb-input--btn-target"
             placeholder="Section title (optional)"
             :value="item.sectionTitle"
-            @input="
-              (e) => {
-                const next = [...(((props.message as any).products as any[]) ?? [])];
-                const i = Number(index);
-                next[i] = {
-                  ...next[i],
-                  id: next[i]?.id || `prod_${i + 1}`,
-                  sectionTitle: (e.target as HTMLInputElement).value || undefined,
-                };
-                emit('update', { products: next });
-              }
-            "
+            @input="updateProduct(Number(index), { sectionTitle: ($event.target as HTMLInputElement).value || undefined })"
           />
           <button
             type="button"
             class="kb-wa-btn-remove"
-            @click="
-              () => {
-                const next = [...(((props.message as any).products as any[]) ?? [])];
-                next.splice(Number(index), 1);
-                emit('update', { products: next });
-              }
-            "
+            @click="removeProduct(Number(index))"
           >
             Remove
           </button>
@@ -324,17 +632,7 @@ const templateFields = computed(() => {
         <button
           type="button"
           class="kb-wa-btn-add"
-          @click="
-            () => {
-              const current = (((props.message as any).products as any[]) ?? []);
-              const next = [...current];
-              next.push({
-                id: `prod_${next.length + 1}`,
-                productId: '',
-              });
-              emit('update', { products: next });
-            }
-          "
+          @click="addProduct"
         >
           Add product
         </button>
@@ -343,7 +641,7 @@ const templateFields = computed(() => {
 
     <!-- Authentication configuration -->
     <div
-      v-if="(props.message as any).template_type === 'auth'"
+      v-if="currentFormat === 'auth'"
       class="kb-field"
     >
       <label class="kb-label">
@@ -352,10 +650,10 @@ const templateFields = computed(() => {
       </label>
       <select
         class="kb-select"
-        :value="(props.message as any).auth_type ?? 'otp'"
+        :value="messageAny.auth_type ?? 'otp'"
         @change="
           (e) =>
-            emit('update', {
+            emitUpdate({
               auth_type: (e.target as HTMLSelectElement).value,
             })
         "
@@ -367,30 +665,11 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="Code label (e.g. Your code is {{1}})"
-        :value="(props.message as any).auth_label ?? ''"
+        :value="messageAny.auth_label ?? ''"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               auth_label: (e.target as HTMLInputElement).value || undefined,
-            })
-        "
-      />
-    </div>
-
-    <div class="kb-field">
-      <label class="kb-label">
-        Header (optional)
-        <span class="kb-helper">Short text or variable used as the WhatsApp template header.</span>
-      </label>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="e.g. Order update"
-        :value="(props.message as any).header ?? ''"
-        @input="
-          (e) =>
-            emit('update', {
-              header: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -400,17 +679,23 @@ const templateFields = computed(() => {
       <label class="kb-label">
         Body
         <span class="kb-helper">
-          Use the exact template body including variables like {{1}}, {{2}} as approved in WhatsApp.
+          Body is required. Use the exact approved text with variables like {{1}}, {{2}}.
+        </span>
+        <span
+          class="kb-counter"
+          :class="{ 'kb-counter--warn': bodyText.length > BODY_LIMIT }"
+        >
+          {{ bodyText.length }}/{{ BODY_LIMIT }}
         </span>
       </label>
       <textarea
         class="kb-textarea"
         rows="4"
         placeholder="Hi {{1}}, your order {{2}} has been shipped..."
-        :value="(props.message as any).body ?? ''"
+        :value="bodyText"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               body: (e.target as HTMLTextAreaElement).value || undefined,
             })
         "
@@ -437,26 +722,32 @@ const templateFields = computed(() => {
         type="text"
         class="kb-input"
         placeholder="e.g. Reply STOP to unsubscribe"
-        :value="(props.message as any).footer ?? ''"
+        :value="footerText"
         @input="
           (e) =>
-            emit('update', {
+            emitUpdate({
               footer: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
+      <div
+        class="kb-counter kb-counter--inline"
+        :class="{ 'kb-counter--warn': footerText.length > FOOTER_LIMIT }"
+      >
+        {{ footerText.length }}/{{ FOOTER_LIMIT }}
+      </div>
     </div>
 
     <div class="kb-field">
       <label class="kb-label">
         Buttons (optional)
         <span class="kb-helper">
-          Add quick replies or call-to-action buttons. Order should match your provider configuration.
+          Use quick replies, CTA (URL/phone), or marketing opt-out. Max {{ MAX_BUTTONS }} buttons.
         </span>
       </label>
       <div class="kb-wa-buttons">
         <div
-          v-for="(btn, index) in ((props.message as any).buttons ?? [])"
+          v-for="(btn, index) in buttons"
           :key="btn.id || index"
           class="kb-wa-button-row"
         >
@@ -465,38 +756,17 @@ const templateFields = computed(() => {
             class="kb-input kb-input--btn-label"
             placeholder="Button label (e.g. View order)"
             :value="btn.label"
-            @input="
-              (e) => {
-                const next = [...(((props.message as any).buttons as any[]) ?? [])];
-                const i = Number(index);
-                next[i] = {
-                  ...next[i],
-                  id: next[i]?.id || `btn_${i + 1}`,
-                  label: (e.target as HTMLInputElement).value,
-                };
-                emit('update', { buttons: next });
-              }
-            "
+            @input="updateButton(Number(index), { label: ($event.target as HTMLInputElement).value })"
           />
           <select
             class="kb-select kb-select--btn-type"
             :value="btn.type ?? 'quick_reply'"
-            @change="
-              (e) => {
-                const next = [...(((props.message as any).buttons as any[]) ?? [])];
-                const i = Number(index);
-                next[i] = {
-                  ...next[i],
-                  id: next[i]?.id || `btn_${i + 1}`,
-                  type: (e.target as HTMLSelectElement).value,
-                };
-                emit('update', { buttons: next });
-              }
-            "
+            @change="updateButton(Number(index), { type: ($event.target as HTMLSelectElement).value })"
           >
             <option value="quick_reply">Quick reply</option>
             <option value="url">Visit URL</option>
             <option value="call">Call phone</option>
+            <option value="opt_out">Marketing opt-out</option>
           </select>
           <input
             v-if="btn.type === 'url'"
@@ -504,18 +774,7 @@ const templateFields = computed(() => {
             class="kb-input kb-input--btn-target"
             placeholder="https://..."
             :value="btn.url"
-            @input="
-              (e) => {
-                const next = [...(((props.message as any).buttons as any[]) ?? [])];
-                const i = Number(index);
-                next[i] = {
-                  ...next[i],
-                  id: next[i]?.id || `btn_${i + 1}`,
-                  url: (e.target as HTMLInputElement).value || undefined,
-                };
-                emit('update', { buttons: next });
-              }
-            "
+            @input="updateButton(Number(index), { url: ($event.target as HTMLInputElement).value || undefined })"
           />
           <input
             v-else-if="btn.type === 'call'"
@@ -523,29 +782,15 @@ const templateFields = computed(() => {
             class="kb-input kb-input--btn-target"
             placeholder="+1 555 123 4567"
             :value="btn.phone"
-            @input="
-              (e) => {
-                const next = [...(((props.message as any).buttons as any[]) ?? [])];
-                const i = Number(index);
-                next[i] = {
-                  ...next[i],
-                  id: next[i]?.id || `btn_${i + 1}`,
-                  phone: (e.target as HTMLInputElement).value || undefined,
-                };
-                emit('update', { buttons: next });
-              }
-            "
+            @input="updateButton(Number(index), { phone: ($event.target as HTMLInputElement).value || undefined })"
           />
+          <span v-else-if="btn.type === 'opt_out'" class="kb-opt-out-note">
+            Sends a built-in opt-out action.
+          </span>
           <button
             type="button"
             class="kb-wa-btn-remove"
-            @click="
-              () => {
-                const next = [...(((props.message as any).buttons as any[]) ?? [])];
-                next.splice(Number(index), 1);
-                emit('update', { buttons: next });
-              }
-            "
+            @click="removeButton(Number(index))"
           >
             Remove
           </button>
@@ -553,19 +798,8 @@ const templateFields = computed(() => {
         <button
           type="button"
           class="kb-wa-btn-add"
-          :disabled="(((props.message as any).buttons as any[]) ?? []).length >= 3"
-          @click="
-            () => {
-              const current = (((props.message as any).buttons as any[]) ?? []);
-              const next = [...current];
-              next.push({
-                id: `btn_${next.length + 1}`,
-                label: '',
-                type: 'quick_reply',
-              });
-              emit('update', { buttons: next });
-            }
-          "
+          :disabled="buttons.length >= MAX_BUTTONS"
+          @click="addButton"
         >
           Add button
         </button>
@@ -577,6 +811,15 @@ const templateFields = computed(() => {
 <style scoped>
 .kb-section {
   margin-bottom: 1.25rem;
+  border: 1px solid #dbe3ec;
+  border-radius: 16px;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.09), transparent 38%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 8px 24px rgba(15, 23, 42, 0.04);
 }
 .kb-section__head {
   display: flex;
@@ -586,27 +829,62 @@ const templateFields = computed(() => {
   margin-bottom: 0.25rem;
 }
 .kb-section__title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.02rem;
+  font-weight: 700;
   margin: 0;
+  color: #0f172a;
+  letter-spacing: 0.01em;
 }
 .kb-section__reset {
   font-size: 0.75rem;
-  color: #64748b;
-  background: none;
-  border: none;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #dbe3ec;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 0.36rem 0.62rem;
+  border-radius: 999px;
+  font-weight: 600;
 }
 .kb-section__reset:hover {
   color: #0f172a;
-  background: #f1f5f9;
+  background: #eef2f7;
 }
 .kb-section__desc {
   font-size: 0.875rem;
-  color: #64748b;
-  margin: 0 0 0.75rem 0;
+  color: #5b6b80;
+  margin: 0;
+  line-height: 1.45;
+}
+.kb-summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0.95rem;
+}
+.kb-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+}
+.kb-pill--category {
+  color: #14532d;
+  background: #dcfce7;
+  border-color: #86efac;
+}
+.kb-pill--format {
+  color: #1e3a8a;
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+.kb-pill--status {
+  color: #374151;
+  background: #f3f4f6;
+  border-color: #d1d5db;
 }
 .kb-wa-fields-list {
   list-style: none;
@@ -617,92 +895,168 @@ const templateFields = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 0.46rem 0.62rem;
+  border-radius: 8px;
   font-size: 0.8125rem;
-  margin-bottom: 4px;
-  background: #fef2f2;
+  margin-bottom: 6px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
   color: #991b1b;
 }
 .kb-wa-field-item--ok {
-  background: #f0fdf4;
+  background: #ecfdf5;
+  border-color: #86efac;
   color: #166534;
 }
 .kb-wa-field-name {
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .kb-wa-field-status {
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 .kb-field {
-  margin-bottom: 18px;
+  margin-bottom: 0.9rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.95rem;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
 }
 .kb-field:last-child {
   margin-bottom: 0;
 }
+.kb-field-half {
+  min-width: 0;
+}
+.kb-field--inline {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+}
 .kb-label {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #475569;
-  margin-bottom: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
 }
 .kb-helper {
   display: block;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #64748b;
+  margin-top: 0.38rem;
+  line-height: 1.35;
+}
+.kb-counter {
+  font-size: 0.75rem;
+  color: #334155;
+  margin-left: 8px;
+  font-weight: 700;
+}
+.kb-counter--inline {
+  margin-left: 0;
   margin-top: 6px;
+}
+.kb-counter--warn {
+  color: #b91c1c;
 }
 .kb-input,
 .kb-textarea,
 .kb-select {
-  width: stretch;
-  padding: 12px 14px;
-  border: 1px solid #e2e8f0;
+  width: 100%;
+  min-height: 42px;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid #cfd8e3;
   border-radius: 10px;
-  font-size: 0.875rem;
+  font-size: 0.92rem;
   color: #0f172a;
-  background: #fff;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  background: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
 }
 .kb-input:focus,
 .kb-textarea:focus,
 .kb-select:focus {
   outline: none;
-  border-color: #94a3b8;
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+  background-color: #ffffff;
 }
 .kb-input::placeholder,
 .kb-textarea::placeholder {
-  color: #94a3b8;
+  color: #93a2b7;
 }
 .kb-textarea {
   resize: vertical;
-  min-height: 64px;
+  min-height: 86px;
+  line-height: 1.45;
 }
 .kb-wa-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.56rem;
+}
+.kb-card-row {
+  display: grid;
+  grid-template-columns:
+    minmax(160px, 1.2fr)
+    minmax(170px, 1.3fr)
+    minmax(130px, 1fr)
+    minmax(170px, 1.3fr)
+    auto;
+  gap: 0.56rem;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 0.5rem;
 }
 .kb-wa-button-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr) minmax(0, 1.2fr) auto;
-  gap: 0.5rem;
+  grid-template-columns:
+    minmax(150px, 1.3fr)
+    minmax(130px, 1fr)
+    minmax(160px, 1.2fr)
+    auto;
+  gap: 0.56rem;
   align-items: center;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+.kb-product-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.56rem;
+  align-items: stretch;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+.kb-product-row .kb-wa-btn-remove {
+  align-self: flex-start;
 }
 .kb-wa-btn-add,
 .kb-wa-btn-remove {
   font-size: 0.75rem;
-  padding: 0.25rem 0.6rem;
+  padding: 0.38rem 0.72rem;
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   background: #ffffff;
   cursor: pointer;
+  color: #334155;
+  font-weight: 700;
+  transition: all 0.14s ease;
 }
 .kb-wa-btn-add {
   align-self: flex-start;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #3730a3;
 }
 .kb-wa-btn-add:disabled {
   opacity: 0.5;
@@ -710,12 +1064,75 @@ const templateFields = computed(() => {
 }
 .kb-wa-btn-add:hover:not(:disabled),
 .kb-wa-btn-remove:hover {
-  background: #f1f5f9;
+  background: #e2e8f0;
+}
+.kb-opt-out-note {
+  font-size: 0.75rem;
+  color: #334155;
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  border-radius: 999px;
+  padding: 0.34rem 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+}
+.kb-meta-card {
+  border: 1px solid #dbe3ec;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  min-height: 100%;
+}
+.kb-meta-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+}
+.kb-meta-list {
+  margin: 0;
+  padding-left: 0.95rem;
+  font-size: 0.75rem;
+  color: #475569;
+  line-height: 1.5;
+}
+@media (max-width: 1480px) {
+  .kb-field--inline {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kb-card-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kb-wa-button-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 1240px) {
+  .kb-field {
+    padding: 0.85rem;
+  }
+  .kb-input,
+  .kb-textarea,
+  .kb-select {
+    font-size: 0.9rem;
+  }
 }
 @media (max-width: 720px) {
+  .kb-section {
+    padding: 0.8rem;
+  }
+  .kb-card-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .kb-wa-button-row {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: auto;
+  }
+  .kb-opt-out-note {
+    width: 100%;
   }
 }
 
@@ -725,4 +1142,3 @@ const templateFields = computed(() => {
   margin-bottom: 0.5rem;
 }
 </style>
-
