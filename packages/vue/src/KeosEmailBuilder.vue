@@ -866,28 +866,6 @@ function onSave() {
         </ul>
       </div>
 
-      <div
-        v-if="warningsList.length > 0"
-        class="kb-warnings"
-        :style="{
-          background: colors.neutral.bg,
-          border: `1px solid ${colors.neutral.border}`,
-          borderRadius: `${radius.input}px`,
-          padding: `${spacing[16]}px ${spacing[24]}px`,
-          marginBottom: `${spacing[24]}px`,
-          fontSize: '0.875rem',
-          color: colors.neutral.textMuted,
-        }"
-      >
-        <strong :style="{ display: 'block', marginBottom: `${spacing[4]}px` }"
-          >Warnings</strong
-        >
-        <ul :style="{ margin: 0, paddingLeft: '1.25rem' }">
-          <li v-for="w in warningsList" :key="w.message">
-            {{ w.message }}
-          </li>
-        </ul>
-      </div>
     </div>
 
     <div class="kb-email-layout">
@@ -1055,8 +1033,11 @@ function onSave() {
     </div>
 
     <footer class="kb-email-actions">
-      <div v-if="props.actionsNote" class="kb-actions-note">
-        {{ props.actionsNote }}
+      <div v-if="warningsList.length > 0" class="kb-actions-note">
+        <strong>Warning:</strong> {{ warningsList[0]?.message }}
+        <span v-if="warningsList.length > 1">
+          (+{{ warningsList.length - 1 }} more)
+        </span>
       </div>
       <div class="kb-email-actions-right">
         <button
