@@ -155,6 +155,7 @@ const setupStatusLabel = computed(() => {
   if (setupScore.value >= 40) return "In progress";
   return "Needs setup";
 });
+const hasSmsPreviewContent = computed(() => Boolean(smsBodyRaw.value.trim()));
 
 const templateType = computed(
   () => (campaign.value as any).template_type ?? "transactional",
@@ -386,7 +387,10 @@ function onSave() {
               <strong>{{ smsSegmentCount || 0 }}</strong>
             </div>
           </div>
-          <div class="kb-sms-preview-frame">
+          <div
+            class="kb-sms-preview-frame"
+            :class="{ 'kb-sms-preview-frame--empty': !hasSmsPreviewContent }"
+          >
             <div class="kb-preview">
               <div class="kb-sms-preview">
                 <div class="kb-sms-phone">
@@ -793,6 +797,9 @@ function onSave() {
   flex-direction: column;
   overflow: hidden;
 }
+.kb-sms-preview-frame--empty {
+  min-height: clamp(220px, 34vh, 320px);
+}
 .kb-preview-status {
   display: inline-flex;
   align-items: center;
@@ -883,6 +890,9 @@ function onSave() {
   }
   .kb-push-preview-controls {
     padding: 10px;
+  }
+  .kb-sms-preview-frame--empty {
+    min-height: clamp(200px, 30vh, 280px);
   }
   .kb-preview-status {
     width: 100%;
