@@ -14,6 +14,8 @@ export interface WaPreviewTemplate {
     footer?: string;
     buttons?: {
         text: string;
+        type?: string;
+        value?: string;
     }[];
     location?: {
         lat: number;
@@ -40,6 +42,46 @@ export interface WaPreviewTemplate {
         id?: string;
         ctaLabel?: string;
     };
+    linkPreview?: {
+        title?: string;
+        description?: string;
+        domain?: string;
+        url?: string;
+        thumbnail?: string;
+    };
+    voiceNote?: {
+        duration?: string;
+        transcript?: string;
+        profileImage?: string;
+    };
+    contactCard?: {
+        name?: string;
+        title?: string;
+        phone?: string;
+        email?: string;
+        address?: string;
+    };
+    documentCard?: {
+        filename?: string;
+        size?: string;
+        caption?: string;
+    };
+    locationRequest?: {
+        label?: string;
+    };
+    orderCard?: {
+        title?: string;
+        items?: string;
+        image?: string;
+        buttonLabel?: string;
+    };
+    carouselCards?: {
+        title?: string;
+        description?: string;
+        image?: string;
+        button?: string;
+    }[];
+    reactionEmoji?: string;
 }
 declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<__VLS_TypePropsToRuntimeProps<{
     template: WaPreviewTemplate;

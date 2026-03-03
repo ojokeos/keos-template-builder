@@ -238,6 +238,10 @@ const hasWaPreviewContent = computed(() => {
       msg.flow_id ||
       msg.coupon_code ||
       msg.lto_expiry ||
+      msg.voice_transcript ||
+      msg.contact_name ||
+      msg.link_title ||
+      msg.order_title ||
       (Array.isArray(msg.buttons) && msg.buttons.length) ||
       (Array.isArray(msg.products) && msg.products.length) ||
       (Array.isArray(msg.cards) && msg.cards.length),
@@ -343,7 +347,7 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
     auth = { code };
   }
 
-  const buttonsRaw = (msg.buttons as { label?: string }[] | undefined) ?? [];
+  const buttonsRaw = (msg.buttons as { label?: string; type?: string; value?: string }[] | undefined) ?? [];
   if (templateType === "flow") {
     buttonsRaw.push({
       label: msg.flow_cta_label ?? "Open flow",
@@ -358,13 +362,71 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
     body,
     mediaCaption: msg.media_caption || undefined,
     footer: msg.footer || undefined,
-    buttons: buttonsRaw.map((b) => ({ text: b.label || "Button" })),
+    buttons: buttonsRaw.map((b) => ({ text: b.label || "Button", type: b.type, value: b.value })),
     location,
     catalog,
     multiProduct,
     coupon,
     limitedOffer,
     auth,
+    linkPreview:
+      msg.link_title || msg.link_description || msg.link_url
+        ? {
+            title: msg.link_title || undefined,
+            description: msg.link_description || undefined,
+            domain: msg.link_domain || undefined,
+            url: msg.link_url || undefined,
+            thumbnail: msg.link_thumbnail_url || undefined,
+          }
+        : undefined,
+    voiceNote:
+      msg.voice_transcript || msg.voice_duration || msg.voice_profile_image
+        ? {
+            transcript: msg.voice_transcript || undefined,
+            duration: msg.voice_duration || undefined,
+            profileImage: msg.voice_profile_image || undefined,
+          }
+        : undefined,
+    contactCard:
+      msg.contact_name || msg.contact_phone || msg.contact_email
+        ? {
+            name: msg.contact_name || undefined,
+            title: msg.contact_title || undefined,
+            phone: msg.contact_phone || undefined,
+            email: msg.contact_email || undefined,
+            address: msg.contact_address || undefined,
+          }
+        : undefined,
+    documentCard:
+      msg.document_filename || templateType === "document" || headerType === "document"
+        ? {
+            filename: msg.document_filename || msg.media_url || "document.pdf",
+            size: msg.document_size || undefined,
+            caption: msg.media_caption || undefined,
+          }
+        : undefined,
+    locationRequest: msg.location_request_label
+      ? { label: msg.location_request_label }
+      : undefined,
+    orderCard:
+      msg.order_title || msg.order_items || msg.order_image
+        ? {
+            title: msg.order_title || undefined,
+            items: msg.order_items || undefined,
+            image: msg.order_image || undefined,
+            buttonLabel: msg.order_button_label || undefined,
+          }
+        : undefined,
+    carouselCards:
+      templateType === "carousel" && Array.isArray(msg.cards)
+        ? (msg.cards as any[]).map((c) => ({
+            title: c.title || undefined,
+            description: c.description || msg.body || undefined,
+            image: c.media_url || undefined,
+            button: c.button_label || undefined,
+          }))
+        : undefined,
+    reactionEmoji: msg.reaction_emoji || undefined,
     flow:
       templateType === "flow"
         ? {
@@ -935,7 +997,7 @@ function onSave() {
 }
 .kb-wa-preview-frame {
   width: 100%;
-  min-height: 100vh;
+  min-height: 200px;
   height: auto;
   margin: 0 auto;
   background: linear-gradient(180deg, #eef4fa, #e7eff6);
@@ -950,7 +1012,7 @@ function onSave() {
   place-items: center;
 }
 .kb-wa-preview-frame--empty {
-  min-height: clamp(220px, 34vh, 320px);
+  min-height: 200px;
 }
 .kb-preview-status {
   display: inline-flex;
@@ -1070,11 +1132,8 @@ function onSave() {
     flex: 1;
   }
   .kb-wa-preview-frame {
-    min-height: 100vh;
+    min-height: 200px;
     padding: 8px;
-  }
-  .kb-wa-preview-frame--empty {
-    min-height: clamp(200px, 30vh, 280px);
   }
   .kb-preview-status {
     width: 100%;

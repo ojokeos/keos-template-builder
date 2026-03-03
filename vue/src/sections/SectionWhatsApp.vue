@@ -395,6 +395,153 @@ function addCard() {
       />
     </div>
 
+    <div class="kb-field">
+      <label class="kb-label">
+        Advanced preview details (optional)
+        <span class="kb-helper">Use these to preview WhatsApp-native cards like links, voice notes, contacts, orders, and reactions.</span>
+      </label>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Link title"
+        :value="messageAny.link_title ?? ''"
+        @input="emitUpdate({ link_title: ($event.target as HTMLInputElement).value || undefined })"
+      />
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Link description"
+        :value="messageAny.link_description ?? ''"
+        @input="emitUpdate({ link_description: ($event.target as HTMLInputElement).value || undefined })"
+      />
+      <div class="kb-location-row">
+        <input
+          type="url"
+          class="kb-input"
+          placeholder="Link URL"
+          :value="messageAny.link_url ?? ''"
+          @input="emitUpdate({ link_url: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Link domain"
+          :value="messageAny.link_domain ?? ''"
+          @input="emitUpdate({ link_domain: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Voice transcript"
+        :value="messageAny.voice_transcript ?? ''"
+        @input="emitUpdate({ voice_transcript: ($event.target as HTMLInputElement).value || undefined })"
+      />
+      <div class="kb-location-row">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Voice duration (e.g. 0:10)"
+          :value="messageAny.voice_duration ?? ''"
+          @input="emitUpdate({ voice_duration: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="url"
+          class="kb-input"
+          placeholder="Voice profile image URL"
+          :value="messageAny.voice_profile_image ?? ''"
+          @input="emitUpdate({ voice_profile_image: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+      <div class="kb-location-row">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Contact name"
+          :value="messageAny.contact_name ?? ''"
+          @input="emitUpdate({ contact_name: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Contact title"
+          :value="messageAny.contact_title ?? ''"
+          @input="emitUpdate({ contact_title: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+      <div class="kb-location-row">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Contact phone"
+          :value="messageAny.contact_phone ?? ''"
+          @input="emitUpdate({ contact_phone: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="email"
+          class="kb-input"
+          placeholder="Contact email"
+          :value="messageAny.contact_email ?? ''"
+          @input="emitUpdate({ contact_email: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="Contact address"
+        :value="messageAny.contact_address ?? ''"
+        @input="emitUpdate({ contact_address: ($event.target as HTMLInputElement).value || undefined })"
+      />
+      <div class="kb-location-row">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Order title"
+          :value="messageAny.order_title ?? ''"
+          @input="emitUpdate({ order_title: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Order items text"
+          :value="messageAny.order_items ?? ''"
+          @input="emitUpdate({ order_items: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+      <div class="kb-location-row">
+        <input
+          type="url"
+          class="kb-input"
+          placeholder="Order image URL"
+          :value="messageAny.order_image ?? ''"
+          @input="emitUpdate({ order_image: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Order button label"
+          :value="messageAny.order_button_label ?? ''"
+          @input="emitUpdate({ order_button_label: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+      <div class="kb-location-row">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Location request button label"
+          :value="messageAny.location_request_label ?? ''"
+          @input="emitUpdate({ location_request_label: ($event.target as HTMLInputElement).value || undefined })"
+        />
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="Reaction emoji (e.g. 😀)"
+          :value="messageAny.reaction_emoji ?? ''"
+          @input="emitUpdate({ reaction_emoji: ($event.target as HTMLInputElement).value || undefined })"
+        />
+      </div>
+    </div>
+
     <!-- Location configuration -->
     <div
       v-if="currentFormat === 'location'"
@@ -1021,14 +1168,25 @@ function addCard() {
   align-items: center;
 }
 .kb-wa-button-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 170px) minmax(0, 1fr) auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.56rem;
   align-items: center;
   border: 1px solid var(--wa-border);
   background: var(--wa-surface-muted);
   border-radius: 11px;
   padding: 0.56rem;
+}
+.kb-wa-button-row .kb-input--btn-label {
+  flex: 1 1 220px;
+}
+.kb-wa-button-row .kb-select--btn-type {
+  flex: 0 0 170px;
+  min-width: 170px;
+}
+.kb-wa-button-row .kb-input--btn-target,
+.kb-wa-button-row .kb-opt-out-note {
+  flex: 1 1 220px;
 }
 .kb-product-row {
   display: grid;
@@ -1046,7 +1204,7 @@ function addCard() {
 .kb-card-row .kb-wa-btn-remove,
 .kb-wa-button-row .kb-wa-btn-remove {
   justify-self: end;
-  grid-column: -1;
+  margin-left: auto;
 }
 .kb-wa-btn-add,
 .kb-wa-btn-remove {
@@ -1119,13 +1277,9 @@ function addCard() {
 }
 @media (max-width: 1280px) {
   .kb-card-row,
-  .kb-wa-button-row,
   .kb-product-row {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: stretch;
-  }
-  .kb-wa-button-row {
-    grid-template-columns: minmax(0, 1fr);
   }
   .kb-product-row .kb-wa-btn-remove,
   .kb-card-row .kb-wa-btn-remove,
@@ -1163,6 +1317,15 @@ function addCard() {
   margin-bottom: 0.5rem;
 }
 .kb-field--inline .kb-location-row .kb-input {
+  flex: 1 1 180px;
+}
+.kb-location-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.kb-location-row .kb-input {
   flex: 1 1 180px;
 }
 </style>
