@@ -50,7 +50,7 @@ function addVariable() {
 <template>
   <section class="kb-section kb-section--inline-personalization">
     <h3 class="kb-section__title">Insert variables</h3>
-    <p class="kb-section__desc">Add &#123;&#123; variable_name &#125;&#125; into the title or message above where you need it.</p>
+    <p class="kb-section__desc">Add &#123;&#123; .variable_name &#125;&#125; into the title or message above where you need it.</p>
 
     <div class="kb-field">
       <label class="kb-label">Variable</label>
@@ -81,11 +81,11 @@ function addVariable() {
     <div class="kb-field">
       <label class="kb-label">Available variables</label>
       <p class="kb-hint">
-        Insert in title or message: &#123;&#123; variable_name &#125;&#125;. Fallback can be set when sending.
+        Insert in title or message: &#123;&#123; .variable_name &#125;&#125;. Fallback can be set when sending.
       </p>
       <ul class="kb-variable-list">
         <li v-for="v in allVariables" :key="v">
-          <code>&#123;&#123; {{ v }} &#125;&#125;</code>
+          <code>&#123;&#123; .{{ v }} &#125;&#125;</code>
         </li>
       </ul>
     </div>

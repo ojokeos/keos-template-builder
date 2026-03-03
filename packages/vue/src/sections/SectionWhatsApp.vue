@@ -567,7 +567,7 @@ function addCard() {
       <input
         type="text"
         class="kb-input"
-        placeholder="Code label (e.g. Your code is {{1}})"
+        placeholder="Code label (e.g. Your code is {{ .otp_code }})"
         :value="messageAny.auth_label ?? ''"
         @input="
           (e) =>
@@ -582,7 +582,7 @@ function addCard() {
       <label class="kb-label">
         Body
         <span class="kb-helper">
-          Body is required. Use the exact approved text with variables like {{1}}, {{2}}.
+          Body is required. Use Go placeholders like &#123;&#123; .first_name &#125;&#125;, &#123;&#123; .order_id &#125;&#125;.
         </span>
         <span
           class="kb-counter"
@@ -594,7 +594,7 @@ function addCard() {
       <textarea
         class="kb-textarea"
         rows="4"
-        placeholder="Hi {{1}}, your order {{2}} has been shipped..."
+        placeholder="Hi {{ .first_name }}, your order {{ .order_id }} has been shipped..."
         :value="bodyText"
         @input="
           (e) =>

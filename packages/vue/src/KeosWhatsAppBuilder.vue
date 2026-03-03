@@ -504,7 +504,7 @@ function onInsertVariable(payload: {
   variable: string;
   field: "title" | "body";
 }) {
-  const token = ` {{ ${payload.variable} }}`;
+  const token = ` {{ .${payload.variable} }}`;
   const existingVars = campaign.value.message.variables ?? [];
   const nextVars = Array.from(new Set([...existingVars, payload.variable]));
   if (payload.field === "title") {

@@ -36,8 +36,8 @@ export const PUSH_PRESETS: PresetOption[] = [
     label: 'Transactional',
     campaign: {
       message: {
-        title: 'Order {{ order_id }} update',
-        body: 'Hi {{ first_name }}, your order has shipped.',
+        title: 'Order {{ .order_id }} update',
+        body: 'Hi {{ .first_name }}, your order has shipped.',
         variables: ['first_name', 'order_id'],
       },
     },
@@ -68,13 +68,13 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Your code is {{ otp_code }}. Valid for 10 minutes.',
+        body: 'Your code is {{ .otp_code }}. Valid for 10 minutes.',
         variables: [],
         template_type: 'auth',
         template_category: 'authentication',
         template_name: 'otp_verification',
         auth_type: 'otp',
-        auth_label: 'Your verification code is {{ otp_code }}',
+        auth_label: 'Your verification code is {{ .otp_code }}',
       } as any,
     },
   },
@@ -84,7 +84,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, your order {{ order_id }} is on its way.',
+        body: 'Hi {{ .first_name }}, your order {{ .order_id }} is on its way.',
         variables: ['first_name', 'order_id'],
         template_type: 'text',
         template_category: 'utility',
@@ -98,7 +98,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, we have a special offer for you.',
+        body: 'Hi {{ .first_name }}, we have a special offer for you.',
         variables: ['first_name'],
         template_type: 'text',
         template_category: 'marketing',
@@ -112,7 +112,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, we have responded to your request.',
+        body: 'Hi {{ .first_name }}, we have responded to your request.',
         variables: ['first_name'],
         template_type: 'text',
         template_category: 'utility',
@@ -126,7 +126,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, tap to see the latest arrivals.',
+        body: 'Hi {{ .first_name }}, tap to see the latest arrivals.',
         variables: ['first_name'],
         template_type: 'image',
         template_category: 'marketing',
@@ -143,7 +143,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, watch this short video to see what is new.',
+        body: 'Hi {{ .first_name }}, watch this short video to see what is new.',
         variables: ['first_name'],
         template_type: 'video',
         template_category: 'marketing',
@@ -160,13 +160,13 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, here is your receipt for order {{ order_id }}.',
+        body: 'Hi {{ .first_name }}, here is your receipt for order {{ .order_id }}.',
         variables: ['first_name', 'order_id'],
         template_type: 'document',
         template_category: 'utility',
         header_type: 'document',
         template_name: 'order_receipt',
-        document_filename: 'receipt-{{ order_id }}.pdf',
+        document_filename: 'receipt-{{ .order_id }}.pdf',
         media_url: 'https://example.com/receipt.pdf',
       } as any,
     },
@@ -177,7 +177,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, this offer expires soon. Don’t miss out.',
+        body: 'Hi {{ .first_name }}, this offer expires soon. Don’t miss out.',
         variables: ['first_name'],
         template_type: 'lto',
         template_category: 'marketing',
@@ -192,7 +192,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, pick one of these products below.',
+        body: 'Hi {{ .first_name }}, pick one of these products below.',
         variables: ['first_name'],
         template_type: 'mpm',
         template_category: 'marketing',
@@ -251,7 +251,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
         template_name: 'auth_code',
         auth_code: '123 456',
         auth_type: 'otp',
-        auth_label: 'Your code is {{1}}',
+        auth_label: 'Your code is {{ .otp_code }}',
       } as any,
     },
   },
@@ -322,7 +322,7 @@ export const SMS_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Your code: {{ otp_code }}',
+        body: 'Your code: {{ .otp_code }}',
         variables: ['otp_code'],
         sender_id: 'YourBrand',
       } as any,
@@ -334,7 +334,7 @@ export const SMS_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Hi {{ first_name }}, your order {{ order_id }} has shipped.',
+        body: 'Hi {{ .first_name }}, your order {{ .order_id }} has shipped.',
         variables: ['first_name', 'order_id'],
         sender_id: 'YourBrand',
       } as any,
@@ -346,7 +346,7 @@ export const SMS_PRESETS: PresetOption[] = [
     campaign: {
       message: {
         title: '',
-        body: 'Flash sale today! Use SAVE20 at checkout. {{ link }}',
+        body: 'Flash sale today! Use SAVE20 at checkout. {{ .link }}',
         variables: ['link'],
         sender_id: 'YourBrand',
       } as any,
@@ -369,7 +369,7 @@ export const EMAIL_PRESETS: PresetOption[] = [
         from_address: 'hello@example.com',
         blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Important update' },
-          { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, here is what\'s new.' },
+          { id: 'p1', type: 'paragraph', content: 'Hi {{ .first_name }}, here is what\'s new.' },
         ],
       } as any,
     },
@@ -388,7 +388,7 @@ export const EMAIL_PRESETS: PresetOption[] = [
         from_address: 'news@example.com',
         blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Weekly digest' },
-          { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, here are this week\'s highlights.' },
+          { id: 'p1', type: 'paragraph', content: 'Hi {{ .first_name }}, here are this week\'s highlights.' },
           { id: 'btn1', type: 'button', text: 'Read more', url: 'https://example.com' },
         ],
       } as any,
@@ -402,13 +402,13 @@ export const EMAIL_PRESETS: PresetOption[] = [
         title: '',
         body: '',
         variables: ['first_name'],
-        subject: 'Special offer for you, {{ first_name }}',
+        subject: 'Special offer for you, {{ .first_name }}',
         preview_text: 'Limited time only',
         from_name: 'Your Brand',
         from_address: 'offers@example.com',
         blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Exclusive offer' },
-          { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, enjoy 20% off your next order.' },
+          { id: 'p1', type: 'paragraph', content: 'Hi {{ .first_name }}, enjoy 20% off your next order.' },
           { id: 'btn1', type: 'button', text: 'Claim offer', url: 'https://example.com/offer' },
         ],
       } as any,
@@ -422,13 +422,13 @@ export const EMAIL_PRESETS: PresetOption[] = [
         title: '',
         body: '',
         variables: ['first_name', 'order_id'],
-        subject: 'Receipt for order {{ order_id }}',
+        subject: 'Receipt for order {{ .order_id }}',
         preview_text: 'Thank you for your order',
         from_name: 'Your Brand',
         from_address: 'orders@example.com',
         blocks: [
           { id: 'h1', type: 'heading', level: 1, content: 'Thank you for your order' },
-          { id: 'p1', type: 'paragraph', content: 'Hi {{ first_name }}, we received your order {{ order_id }}.' },
+          { id: 'p1', type: 'paragraph', content: 'Hi {{ .first_name }}, we received your order {{ .order_id }}.' },
         ],
       } as any,
     },

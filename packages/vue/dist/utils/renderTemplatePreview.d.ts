@@ -1,5 +1,6 @@
 /**
- * Replaces {{ variable }} placeholders in a string with values from the given profile.
+ * Replaces Go-template placeholders (for example {{ .first_name }})
+ * with values from the given profile.
  * Used for preview only; does not modify stored templates.
  */
 export declare function renderTemplatePreview(text: string, profile: Record<string, string>): string;

@@ -256,7 +256,7 @@ function createBlock(type: EmailBlockType): EmailBlock {
     case 'heading':
       return { id: blockId(), type: 'heading', level: 1, content: 'Heading', alignment: 'left', fullWidth: false };
     case 'paragraph':
-      return { id: blockId(), type: 'paragraph', content: 'Your text here. Use {{ first_name }} for personalization.', alignment: 'left', fullWidth: false };
+      return { id: blockId(), type: 'paragraph', content: 'Your text here. Use {{ .first_name }} for personalization.', alignment: 'left', fullWidth: false };
     case 'image':
       return { id: blockId(), type: 'image', src: '', alt: '', linkUrl: '', alignment: 'left', fullWidth: false };
     case 'button':
@@ -300,7 +300,7 @@ function createBlock(type: EmailBlockType): EmailBlock {
       return {
         id: blockId(),
         type: 'columns',
-        leftContent: 'Left column text or {{ variable }}.',
+        leftContent: 'Left column text or {{ .variable }}.',
         rightContent: 'Right column text.',
       };
     case 'row':
@@ -365,7 +365,7 @@ function createBlock(type: EmailBlockType): EmailBlock {
       return {
         id: blockId(),
         type: 'code_block',
-        content: '// Code or snippet to display\nconst example = {{ order_id }};',
+        content: '// Code or snippet to display\nconst example = {{ .order_id }};',
         caption: '',
       };
     case 'rss_feed':
@@ -379,7 +379,7 @@ function createBlock(type: EmailBlockType): EmailBlock {
       return {
         id: blockId(),
         type: 'dynamic_image',
-        imageUrl: 'https://example.com/map/{{ store_id }}.png',
+        imageUrl: 'https://example.com/map/{{ .store_id }}.png',
         alt: 'Dynamic image',
         fallbackUrl: '',
       };
@@ -669,7 +669,7 @@ function removeCarouselSlide(blockId: string, index: number) {
 }
 
 function insertVariableInto(field: 'subject' | 'preview', variable = selectedVariable.value) {
-  const token = ` {{ ${variable} }}`;
+  const token = ` {{ .${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, variable]));
 
@@ -689,7 +689,7 @@ function insertVariableInto(field: 'subject' | 'preview', variable = selectedVar
 function insertVariableIntoBlock(blockId: string, variable = selectedVariable.value) {
   const block = blocks.value.find((b) => b.id === blockId);
   if (!block || (block.type !== 'paragraph' && block.type !== 'heading' && block.type !== 'footer' && block.type !== 'quote' && block.type !== 'liquid' && block.type !== 'code_block')) return;
-  const token = ` {{ ${variable} }}`;
+  const token = ` {{ .${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, variable]));
   const contentKey = block.type === 'footer' ? 'content' : 'content';
@@ -704,7 +704,7 @@ function insertVariableIntoBlock(blockId: string, variable = selectedVariable.va
 function insertVariableIntoRow(blockId: string, cellIndex: number, variable = selectedVariable.value) {
   const block = blocks.value.find((b) => b.id === blockId) as EmailBlockRow | undefined;
   if (!block || block.type !== 'row') return;
-  const token = ` {{ ${variable} }}`;
+  const token = ` {{ .${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, variable]));
   const cells = [...(block.cells || [])];
@@ -716,7 +716,7 @@ function insertVariableIntoRow(blockId: string, cellIndex: number, variable = se
 function insertVariableIntoColumns(blockId: string, column: 'left' | 'right', variable = selectedVariable.value) {
   const block = blocks.value.find((b) => b.id === blockId) as EmailBlockColumns | undefined;
   if (!block || block.type !== 'columns') return;
-  const token = ` {{ ${variable} }}`;
+  const token = ` {{ .${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, variable]));
   const key = column === 'left' ? 'leftContent' : 'rightContent';
@@ -752,7 +752,7 @@ function addVariable() {
   newVariable.value = '';
 }
 
-const varChipLabel = '{{ var }}';
+const varChipLabel = '{{ .var }}';
 </script>
 
 <template>
@@ -803,13 +803,13 @@ const varChipLabel = '{{ var }}';
       <div class="em-field kb-field">
         <label class="em-label">Subject line</label>
         <div class="em-input-group">
-          <input
-            type="text"
-            class="em-input em-input--flex"
-            placeholder="e.g. Your order {{ order_id }} has shipped"
-            :value="subject"
-            @input="updateSubject"
-          />
+            <input
+              type="text"
+              class="em-input em-input--flex"
+              placeholder="e.g. Your order {{ .order_id }} has shipped"
+              :value="subject"
+              @input="updateSubject"
+            />
           <div class="em-var-picker-wrap">
             <button type="button" class="em-chip" @click="toggleVarPicker('subject')" title="Insert variable">
               {{ varChipLabel }}
@@ -1236,7 +1236,7 @@ const varChipLabel = '{{ var }}';
           </div>
 
           <div v-else-if="block.type === 'dynamic_image'" class="em-block-fields">
-            <input type="url" class="em-input" :value="(block as any).imageUrl" @input="(e) => updateBlock(block.id, { imageUrl: (e.target as HTMLInputElement).value })" placeholder="Image URL (use {{ var }} for per-recipient)" />
+            <input type="url" class="em-input" :value="(block as any).imageUrl" @input="(e) => updateBlock(block.id, { imageUrl: (e.target as HTMLInputElement).value })" placeholder="Image URL (use {{ .var }} for per-recipient)" />
             <input type="text" class="em-input" :value="(block as any).alt" @input="(e) => updateBlock(block.id, { alt: (e.target as HTMLInputElement).value })" placeholder="Alt text" />
             <input type="url" class="em-input" :value="(block as any).fallbackUrl" @input="(e) => updateBlock(block.id, { fallbackUrl: (e.target as HTMLInputElement).value })" placeholder="Fallback URL (optional)" />
           </div>
