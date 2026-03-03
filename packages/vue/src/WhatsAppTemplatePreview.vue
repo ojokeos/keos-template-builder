@@ -15,7 +15,7 @@ export interface WaPreviewTemplate {
   body: string;
   mediaCaption?: string;
   footer?: string;
-  buttons?: { text: string }[];
+  buttons?: { text: string; type?: string; value?: string }[];
   location?: {
     lat: number;
     lng: number;
@@ -28,6 +28,41 @@ export interface WaPreviewTemplate {
   limitedOffer?: string;
   auth?: { code: string };
   flow?: { id?: string; ctaLabel?: string };
+  linkPreview?: {
+    title?: string;
+    description?: string;
+    domain?: string;
+    url?: string;
+    thumbnail?: string;
+  };
+  voiceNote?: {
+    duration?: string;
+    transcript?: string;
+    profileImage?: string;
+  };
+  contactCard?: {
+    name?: string;
+    title?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+  };
+  documentCard?: {
+    filename?: string;
+    size?: string;
+    caption?: string;
+  };
+  locationRequest?: {
+    label?: string;
+  };
+  orderCard?: {
+    title?: string;
+    items?: string;
+    image?: string;
+    buttonLabel?: string;
+  };
+  carouselCards?: { title?: string; description?: string; image?: string; button?: string }[];
+  reactionEmoji?: string;
 }
 
 const props = defineProps<{
@@ -54,7 +89,8 @@ const formattedBody = computed(() => {
 const displayTitle = computed(() => props.template.templateName || 'Ecoshop');
 const displaySubtitle = computed(() => 'Business Account');
 const isFlowPreview = computed(() => props.template.format === 'flow' || Boolean(props.template.flow));
-const primaryButton = computed(() => props.template.buttons?.[0]?.text || props.template.flow?.ctaLabel || 'Continue');
+const primaryButtonObject = computed(() => props.template.buttons?.[0]);
+const primaryButton = computed(() => primaryButtonObject.value?.text || props.template.flow?.ctaLabel || 'Continue');
 const actionButtons = computed(() => props.template.buttons ?? []);
 const hasProductList = computed(() => (props.template.multiProduct?.length ?? 0) > 0);
 const formatLabel = computed(() => (props.template.format || 'text').toUpperCase());
@@ -69,6 +105,48 @@ const mediaPreviewStyle = computed(() => {
   const h = props.template.header;
   if (!h || h.type !== 'image' || !h.url) return undefined;
   return { backgroundImage: `url(${h.url})` };
+});
+const detectedUrl = computed(() => {
+  const m = (props.template.body || '').match(/https?:\/\/[^\s]+/i);
+  return m?.[0] || '';
+});
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return 'example.com';
+  }
+}
+const linkPreviewData = computed(() => {
+  const lp = props.template.linkPreview;
+  if (!lp && !detectedUrl.value) return null;
+  return {
+    title: lp?.title || 'Link preview',
+    description: lp?.description || 'Preview from your WhatsApp template link.',
+    domain: lp?.domain || (detectedUrl.value ? safeHostname(detectedUrl.value) : 'example.com'),
+    url: lp?.url || detectedUrl.value || '#',
+    thumbnail: lp?.thumbnail || '',
+  };
+});
+const fileTypeLabel = computed(() => {
+  const raw = props.template.documentCard?.filename || props.template.header?.filename || '';
+  const ext = raw.split('.').pop()?.trim().toUpperCase();
+  if (!ext) return 'DOC';
+  return ext.slice(0, 4);
+});
+function buttonIconClass(type?: string, value?: string): string {
+  if (type === 'phone_number') return 'wa-btn-icon--phone';
+  if (type === 'url') return 'wa-btn-icon--external';
+  if (type === 'copy_code') return 'wa-btn-icon--code';
+  if (type === 'opt_out') return 'wa-btn-icon--optout';
+  if ((value || '').toLowerCase().includes('unsubscribe')) return 'wa-btn-icon--optout';
+  if ((value || '').toLowerCase().includes('location')) return 'wa-btn-icon--location';
+  return 'wa-btn-icon--reply';
+}
+const cardSideIconClass = computed(() => {
+  if (props.template.location || props.template.locationRequest) return 'wa-side-icon--info';
+  if (props.template.header?.type === 'video' || props.template.voiceNote) return 'wa-side-icon--play';
+  return 'wa-side-icon--share';
 });
 const assistantReply = computed(() => {
   const t = props.template;
@@ -187,6 +265,18 @@ const flowOptions = computed(() => {
 
                 <div class="wa-card-body" v-html="formattedBody"></div>
 
+                <div v-if="linkPreviewData" class="wa-link-preview">
+                  <div class="wa-link-preview-head">
+                    <div v-if="linkPreviewData.thumbnail" class="wa-link-preview-thumb" :style="{ backgroundImage: `url(${linkPreviewData.thumbnail})` }"></div>
+                    <div class="wa-link-preview-text">
+                      <strong>{{ linkPreviewData.title }}</strong>
+                      <p>{{ linkPreviewData.description }}</p>
+                      <span>{{ linkPreviewData.domain }}</span>
+                    </div>
+                  </div>
+                  <a :href="linkPreviewData.url" @click.prevent>{{ linkPreviewData.url }}</a>
+                </div>
+
                 <div v-if="template.location" class="wa-inline-note">
                   📍 {{ template.location.name || template.location.address || `${template.location.lat}, ${template.location.lng}` }}
                 </div>
@@ -214,7 +304,10 @@ const flowOptions = computed(() => {
                   </div>
                 </div>
 
-                <button v-if="primaryButton" type="button" class="wa-template-cta">{{ primaryButton }}</button>
+                <button v-if="primaryButton" type="button" class="wa-template-cta">
+                  <span v-if="primaryButtonObject" class="wa-btn-icon" :class="buttonIconClass(primaryButtonObject.type, primaryButtonObject.value || primaryButtonObject.text)" aria-hidden="true"></span>
+                  {{ primaryButton }}
+                </button>
                 <div v-if="actionButtons.length > 1" class="wa-template-actions">
                   <button
                     v-for="(btn, i) in actionButtons.slice(1, 4)"
@@ -222,11 +315,88 @@ const flowOptions = computed(() => {
                     type="button"
                     class="wa-template-action"
                   >
+                    <span class="wa-btn-icon" :class="buttonIconClass(btn.type, btn.value || btn.text)" aria-hidden="true"></span>
                     {{ btn.text }}
                   </button>
                 </div>
 
                 <div class="wa-meta-time">11:59</div>
+              </div>
+              <span class="wa-side-icon" :class="cardSideIconClass" aria-hidden="true"></span>
+            </div>
+
+            <div v-if="template.orderCard" class="wa-msg wa-msg--out">
+              <div class="wa-order-card">
+                <div class="wa-order-card-top">
+                  <img v-if="template.orderCard.image" :src="template.orderCard.image" alt="Order image" />
+                  <div>
+                    <strong>{{ template.orderCard.title || 'Order #238990321' }}</strong>
+                    <p>{{ template.orderCard.items || '3 items' }}</p>
+                  </div>
+                </div>
+                <button type="button">{{ template.orderCard.buttonLabel || 'View' }}</button>
+                <div class="wa-meta-time">11:59 ✓✓</div>
+              </div>
+            </div>
+
+            <div v-if="template.documentCard || template.header?.type === 'document'" class="wa-msg wa-msg--in">
+              <div class="wa-document-card">
+                <div class="wa-document-file">
+                  <span class="wa-document-icon">{{ fileTypeLabel }}</span>
+                  <div>
+                    <strong>{{ template.documentCard?.filename || template.header?.filename || 'document.pdf' }}</strong>
+                    <p>{{ template.documentCard?.size || '243 KB • html' }}</p>
+                  </div>
+                  <span class="wa-document-download">↓</span>
+                </div>
+                <p class="wa-document-caption">{{ template.documentCard?.caption || template.mediaCaption || 'Document attached' }}</p>
+              </div>
+            </div>
+
+            <div v-if="template.voiceNote" class="wa-msg wa-msg--in">
+              <div class="wa-voice-card">
+                <div class="wa-voice-top">
+                  <span class="wa-voice-play">▶</span>
+                  <div class="wa-voice-wave"></div>
+                  <div class="wa-voice-profile">
+                    <img v-if="template.voiceNote.profileImage" :src="template.voiceNote.profileImage" alt="Profile" />
+                    <span class="wa-voice-profile-mic">🎤</span>
+                  </div>
+                </div>
+                <p class="wa-voice-duration">{{ template.voiceNote.duration || '0:10' }}</p>
+                <p class="wa-voice-transcript">{{ template.voiceNote.transcript || 'Voice note transcript preview.' }}</p>
+              </div>
+            </div>
+
+            <div v-if="template.contactCard" class="wa-msg wa-msg--in">
+              <div class="wa-contact-card">
+                <strong>{{ template.contactCard.name || 'Contact Name' }}</strong>
+                <p>{{ template.contactCard.title || 'Lead Counsel - Legal' }}</p>
+                <p>{{ template.contactCard.phone || '+1 650 555 9999' }}</p>
+                <p>{{ template.contactCard.email || 'contact@example.com' }}</p>
+                <p>{{ template.contactCard.address || '1 Business Street' }}</p>
+              </div>
+            </div>
+
+            <div v-if="template.location && template.locationRequest" class="wa-msg wa-msg--in">
+              <div class="wa-location-card">
+                <div class="wa-location-map"></div>
+                <div class="wa-location-content">
+                  <strong>{{ template.location.name || 'Location' }}</strong>
+                  <a href="#" @click.prevent>{{ template.location.address || `${template.location.lat}, ${template.location.lng}` }}</a>
+                </div>
+                <button type="button">{{ template.locationRequest.label || 'Send location' }}</button>
+              </div>
+            </div>
+
+            <div v-if="template.carouselCards?.length" class="wa-msg wa-msg--in">
+              <div class="wa-carousel-track">
+                <article v-for="(card, i) in template.carouselCards.slice(0, 4)" :key="`c-${i}`" class="wa-carousel-card">
+                  <div class="wa-carousel-media" :style="card.image ? { backgroundImage: `url(${card.image})` } : undefined"></div>
+                  <strong>{{ card.title || `Card ${i + 1}` }}</strong>
+                  <p>{{ card.description || 'Card description' }}</p>
+                  <button type="button">{{ card.button || 'Learn more' }}</button>
+                </article>
               </div>
             </div>
 
@@ -235,6 +405,7 @@ const flowOptions = computed(() => {
                 <span class="wa-bubble-author">{{ displayTitle }}</span>
                 <p>{{ assistantReply }}</p>
                 <div class="wa-meta-time">11:59 ✓✓</div>
+                <span v-if="template.reactionEmoji" class="wa-reaction">{{ template.reactionEmoji }}</span>
               </div>
             </div>
 
@@ -279,7 +450,8 @@ const flowOptions = computed(() => {
 
 .wa-device {
   width: min(100%, clamp(300px, 40vw, 388px));
-  aspect-ratio: 9 / 18.8;
+  aspect-ratio: 9 / 17.2;
+  max-height: min(82vh, 760px);
   border-radius: 34px;
   border: 3px solid #101418;
   background: linear-gradient(160deg, #1b2128, #0f1419);
@@ -302,13 +474,21 @@ const flowOptions = computed(() => {
   width: 100%;
   height: 100%;
   border-radius: 28px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--wa-thread-bg);
   background-image: url('https://static.whatsapp.net/rsrc.php/v3/yA/r/3XjvM8yK5Q0.png');
   background-size: 408px auto;
   display: flex;
   flex-direction: column;
   position: relative;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.wa-screen::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .wa-statusbar {
@@ -485,9 +665,9 @@ const flowOptions = computed(() => {
 .wa-secure-banner {
   align-self: center;
   max-width: 94%;
-  background: #d6f5dd;
-  border: 1px solid #bdeac8;
-  color: #4b5563;
+  background: #f9edcf;
+  border: 1px solid #efdfb3;
+  color: #5f6470;
   border-radius: 8px;
   font-size: 0.64rem;
   line-height: 1.25;
@@ -502,6 +682,7 @@ const flowOptions = computed(() => {
 .wa-msg {
   display: flex;
   animation: wa-fade-in 0.22s ease both;
+  position: relative;
 }
 
 .wa-msg:nth-child(3) {
@@ -645,6 +826,10 @@ const flowOptions = computed(() => {
 }
 
 .wa-template-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   width: calc(100% - 18px);
   margin: 2px 9px 4px;
   border: none;
@@ -663,8 +848,274 @@ const flowOptions = computed(() => {
   margin: 0 8px 4px;
   border-top: 1px solid #ebedef;
 }
+.wa-link-preview {
+  margin: 0 9px 8px;
+  border: 1px solid #d9e1ec;
+  border-radius: 8px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+.wa-link-preview-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 8px;
+}
+.wa-link-preview-thumb {
+  height: 84px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+}
+.wa-link-preview-text {
+  min-width: 0;
+}
+.wa-link-preview-head strong {
+  display: block;
+  font-size: 0.86rem;
+}
+.wa-link-preview-head p {
+  margin: 4px 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+.wa-link-preview-head span {
+  font-size: 0.74rem;
+  color: #8b95a1;
+}
+.wa-link-preview a {
+  display: block;
+  padding: 8px;
+  border-top: 1px solid #e2e8f0;
+  color: #2f855a;
+  font-size: 0.78rem;
+}
+.wa-order-card {
+  width: min(286px, 93%);
+  background: #ddf7d8;
+  border: 1px solid #bde7b5;
+  border-radius: 12px;
+  padding: 8px;
+}
+.wa-order-card-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.wa-order-card-top img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.wa-order-card-top strong {
+  font-size: 0.96rem;
+}
+.wa-order-card-top p {
+  margin: 2px 0 0;
+  font-size: 0.76rem;
+  color: #4b5563;
+}
+.wa-order-card button {
+  width: 100%;
+  margin-top: 8px;
+  border: none;
+  background: transparent;
+  border-top: 1px solid #bde7b5;
+  padding-top: 8px;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+.wa-document-card {
+  width: min(286px, 93%);
+  background: #fff;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  padding: 8px;
+}
+.wa-document-file {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 8px;
+}
+.wa-document-icon {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 8px 6px;
+}
+.wa-document-file strong {
+  font-size: 0.86rem;
+}
+.wa-document-file p {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: #6b7280;
+}
+.wa-document-download {
+  color: #16a34a;
+  font-size: 1.25rem;
+}
+.wa-document-caption {
+  margin: 8px 2px 2px;
+  font-size: 0.8rem;
+}
+.wa-voice-card,
+.wa-contact-card,
+.wa-location-card {
+  width: min(286px, 93%);
+  background: #fff;
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  padding: 10px;
+}
+.wa-voice-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wa-voice-play {
+  color: #6b7280;
+}
+.wa-voice-wave {
+  flex: 1;
+  height: 20px;
+  background-image:
+    radial-gradient(circle, #56b370 0 3px, transparent 4px),
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent 5px,
+      #9ca3af 5px,
+      #9ca3af 8px
+    );
+  background-position: left center, left center;
+  background-size: 12px 20px, auto 20px;
+  background-repeat: no-repeat, repeat-x;
+  border-radius: 999px;
+}
+.wa-voice-profile {
+  position: relative;
+  width: 28px;
+  height: 28px;
+}
+.wa-voice-top img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.wa-voice-profile-mic {
+  position: absolute;
+  left: -6px;
+  bottom: -8px;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+.wa-voice-duration {
+  margin: 6px 0;
+  color: #6b7280;
+}
+.wa-voice-transcript {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #4b5563;
+}
+.wa-contact-card strong {
+  font-size: 0.96rem;
+}
+.wa-contact-card p {
+  margin: 3px 0;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+.wa-location-map {
+  height: 120px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #dfe6ef, #c8d6e5);
+}
+.wa-location-content {
+  margin-top: 8px;
+}
+.wa-location-content a {
+  display: block;
+  margin-top: 4px;
+  color: #6b7280;
+  text-decoration: underline;
+}
+.wa-location-card button {
+  width: 100%;
+  margin-top: 8px;
+  border: none;
+  background: transparent;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+  color: #1d4ed8;
+}
+.wa-carousel-track {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(180px, 220px);
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+}
+.wa-carousel-card {
+  background: #fff;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.wa-carousel-media {
+  height: 96px;
+  background: linear-gradient(140deg, #a7b4c7, #d3dae3);
+  background-size: cover;
+  background-position: center;
+}
+.wa-carousel-card strong,
+.wa-carousel-card p {
+  display: block;
+  margin: 8px;
+}
+.wa-carousel-card p {
+  margin-top: 0;
+  font-size: 0.78rem;
+  color: #4b5563;
+}
+.wa-carousel-card button {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  padding: 8px;
+  background: transparent;
+  color: #2f855a;
+}
+.wa-reaction {
+  position: absolute;
+  right: -6px;
+  bottom: -9px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 1px 5px;
+  font-size: 0.86rem;
+}
 
 .wa-template-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: none;
   border-top: 1px solid #ebedef;
   background: transparent;
@@ -679,6 +1130,7 @@ const flowOptions = computed(() => {
   border-radius: 8px;
   padding: 7px 9px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .wa-bubble--out {
@@ -923,6 +1375,75 @@ const flowOptions = computed(() => {
   display: grid;
   place-items: center;
   box-shadow: 0 6px 14px rgba(20, 163, 89, 0.3);
+}
+
+.wa-btn-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  position: relative;
+}
+.wa-btn-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.wa-btn-icon--reply::before,
+.wa-btn-icon--optout::before {
+  content: '↩';
+  font-size: 14px;
+  line-height: 14px;
+  color: #2f855a;
+}
+.wa-btn-icon--external::before {
+  content: '↗';
+  font-size: 14px;
+  line-height: 14px;
+  color: #2f855a;
+}
+.wa-btn-icon--phone::before {
+  content: '☎';
+  font-size: 12px;
+  line-height: 14px;
+  color: #2f855a;
+}
+.wa-btn-icon--code::before {
+  content: '#';
+  font-size: 13px;
+  line-height: 14px;
+  color: #2f855a;
+}
+.wa-btn-icon--location::before {
+  content: '⌖';
+  font-size: 14px;
+  line-height: 14px;
+  color: #2f855a;
+}
+.wa-side-icon {
+  position: absolute;
+  right: -4px;
+  top: 52%;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(200, 205, 213, 0.95);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  transform: translateY(-50%);
+}
+.wa-side-icon::before {
+  content: '↗';
+  font-size: 13px;
+}
+.wa-side-icon--info::before {
+  content: 'i';
+  font-size: 16px;
+  font-weight: 700;
+}
+.wa-side-icon--play::before {
+  content: '▶';
+  font-size: 11px;
 }
 
 @keyframes wa-fade-in {

@@ -785,7 +785,7 @@ function onSave() {
 }
 .kb-sms-preview-frame {
   width: 100%;
-  min-height: 100vh;
+  min-height: 200px;
   margin: 0 auto;
   background: linear-gradient(180deg, #eef4fa, #e7eff6);
   border: 1px solid var(--kb-border);
@@ -798,7 +798,7 @@ function onSave() {
   overflow: hidden;
 }
 .kb-sms-preview-frame--empty {
-  min-height: clamp(220px, 34vh, 320px);
+  min-height: 200px;
 }
 .kb-preview-status {
   display: inline-flex;
@@ -890,9 +890,6 @@ function onSave() {
   }
   .kb-push-preview-controls {
     padding: 10px;
-  }
-  .kb-sms-preview-frame--empty {
-    min-height: clamp(200px, 30vh, 280px);
   }
   .kb-preview-status {
     width: 100%;
