@@ -35,6 +35,8 @@ const emit = defineEmits<{
   redo: [];
 }>();
 
+const hasCampaignName = () => Boolean((props.campaignName || '').trim());
+
 function normalizeName(value: string) {
   if (!props.slugifyName) return value;
   return value.trim().replace(/\s+/g, '-');
@@ -65,15 +67,21 @@ function statusPillStyle(status: string) {
     }"
   >
     <div class="kb-header__row">
-      <input
-        type="text"
-        class="kb-header__name"
-        :value="campaignName"
-        placeholder="Name this template (e.g. Spring Sale Push)"
-        :style="{ fontSize: '1rem', fontWeight: 600 }"
-        @input="emit('update:campaignName', normalizeName(($event.target as HTMLInputElement).value))"
-        aria-label="Campaign name"
-      />
+      <div class="kb-header__name-section" :class="{ 'kb-header__name-section--filled': hasCampaignName() }">
+        <label class="kb-header__name-label">Template Name</label>
+        <input
+          type="text"
+          class="kb-header__name"
+          :value="campaignName"
+          placeholder="Name this template (e.g. Spring Sale Push)"
+          :style="{ fontSize: '1rem', fontWeight: 600 }"
+          @input="emit('update:campaignName', normalizeName(($event.target as HTMLInputElement).value))"
+          aria-label="Campaign name"
+        />
+        <span class="kb-header__name-helper">
+          This name is used as your template/campaign label.
+        </span>
+      </div>
       <div class="kb-header__actions">
         <button
           type="button"
@@ -143,21 +151,64 @@ function statusPillStyle(status: string) {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  border: 1px solid #d8e3ee;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  padding: 0.65rem 0.72rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 8px 18px rgba(15, 23, 42, 0.05);
+}
+.kb-header__name-section {
+  flex: 1;
+  min-width: 220px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 0.1rem 0.15rem;
+  transition: box-shadow 0.16s ease, background 0.16s ease;
+}
+.kb-header__name-section:focus-within {
+  border-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 3px rgba(37, 99, 235, 0.12);
+  background: #ffffff;
+}
+.kb-header__name-section--filled {
+  background: #ffffff;
+}
+.kb-header__name-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin-bottom: 0.28rem;
 }
 .kb-header__name {
-  flex: 1;
-  min-width: 120px;
+  width: 100%;
   border: none;
   background: transparent;
   color: inherit;
   outline: none;
+  margin: 0;
 }
 .kb-header__name::placeholder {
   color: #94a3b8;
 }
+.kb-header__name-helper {
+  display: block;
+  margin-top: 0.28rem;
+  font-size: 0.72rem;
+  color: #7a889b;
+  line-height: 1.25;
+}
 .kb-header__actions {
   display: flex;
   gap: 6px;
+  margin-left: auto;
 }
 .kb-header__btn {
   padding: 4px 10px;
@@ -178,8 +229,17 @@ function statusPillStyle(status: string) {
 }
 .kb-header__status-select {
   appearance: auto;
+  border: 1px solid #d4deea !important;
 }
 .kb-header__status-select:focus {
   outline: none;
+}
+@media (max-width: 760px) {
+  .kb-header__row {
+    align-items: flex-start;
+  }
+  .kb-header__actions {
+    margin-left: 0;
+  }
 }
 </style>
