@@ -65,7 +65,7 @@ function updateBody(e: Event) {
 function insertVariable() {
   const variable = selectedVariable.value;
   if (!variable) return;
-  const token = ` {{ ${variable} }}`;
+  const token = ` {{ .${variable} }}`;
   const currentBody = bodyText.value || '';
   const existingVars = ((props.message as any).variables ?? []) as string[];
   const nextVars = Array.from(new Set([...existingVars, variable]));
@@ -132,7 +132,7 @@ function addVariable() {
       <textarea
         class="kb-textarea"
         rows="4"
-        placeholder="Hi {{ first_name }}, your order {{ order_id }} is out for delivery."
+        placeholder="Hi {{ .first_name }}, your order {{ .order_id }} is out for delivery."
         :value="bodyText"
         @input="updateBody"
       />
@@ -158,7 +158,7 @@ function addVariable() {
         </button>
       </div>
       <p class="kb-hint">
-        Variables render as &#123;&#123; variable_name &#125;&#125; at send time (e.g. first_name, city).
+        Variables render as &#123;&#123; .variable_name &#125;&#125; at send time (e.g. .first_name, .city).
       </p>
     </div>
 

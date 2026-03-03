@@ -1,5 +1,6 @@
 /**
- * Replaces {{ variable }} placeholders in a string with values from the given profile.
+ * Replaces Go-template placeholders (for example {{ .first_name }})
+ * with values from the given profile.
  * Used for preview only; does not modify stored templates.
  */
 export function renderTemplatePreview(
@@ -7,9 +8,11 @@ export function renderTemplatePreview(
   profile: Record<string, string>
 ): string {
   if (!text || typeof text !== 'string') return text;
-  return text.replace(/\{\{\s*([^}]+?)\s*\}\}/g, (_, key) => {
-    const k = key.trim();
-    return k in profile ? String(profile[k]) : `{{ ${key} }}`;
+  return text.replace(/\{\{\s*([^}]+?)\s*\}\}/g, (match, key) => {
+    const rawKey = String(key).trim();
+    const lookupKey = rawKey.replace(/^\./, '');
+    if (lookupKey in profile) return String(profile[lookupKey]);
+    return match;
   });
 }
 
