@@ -26,8 +26,6 @@ const FORMAT_OPTIONS = [
   { value: 'catalog', label: 'Catalog', hint: 'Open WhatsApp catalog or product list.' },
   { value: 'mpm', label: 'Multi-product', hint: 'Show multiple products in one template.' },
   { value: 'auth', label: 'Authentication', hint: 'OTP/login verification template.' },
-  { value: 'location', label: 'Location', hint: 'Share a pinned location.' },
-  { value: 'coupon', label: 'Coupon', hint: 'Send a coupon code.' },
 ] as const;
 
 const HEADER_LIMIT = 60;
@@ -241,23 +239,18 @@ function addCard() {
     <div class="kb-field">
       <label class="kb-label">
         Template name
-        <span class="kb-helper">Match the approved template name in your WhatsApp Business provider.</span>
+        <span class="kb-helper">Auto-synced from the campaign name in the header.</span>
       </label>
       <input
         type="text"
         class="kb-input"
-        placeholder="e.g. order_update_1"
         :value="messageAny.template_name ?? ''"
-        @input="
-          (e) =>
-            emitUpdate({
-              template_name: (e.target as HTMLInputElement).value || undefined,
-            })
-        "
+        readonly
+        disabled
       />
     </div>
 
-    <div class="kb-field kb-field--inline">
+    <div class="kb-field kb-field--inline kb-field--language-limits">
       <div class="kb-field-half">
         <label class="kb-label">
           Template language
@@ -390,243 +383,6 @@ function addCard() {
           (e) =>
             emitUpdate({
               media_caption: (e.target as HTMLInputElement).value || undefined,
-            })
-        "
-      />
-    </div>
-
-    <div class="kb-field">
-      <label class="kb-label">
-        Advanced preview details (optional)
-        <span class="kb-helper">Use these to preview WhatsApp-native cards like links, voice notes, contacts, orders, and reactions.</span>
-      </label>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="Link title"
-        :value="messageAny.link_title ?? ''"
-        @input="emitUpdate({ link_title: ($event.target as HTMLInputElement).value || undefined })"
-      />
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="Link description"
-        :value="messageAny.link_description ?? ''"
-        @input="emitUpdate({ link_description: ($event.target as HTMLInputElement).value || undefined })"
-      />
-      <div class="kb-location-row">
-        <input
-          type="url"
-          class="kb-input"
-          placeholder="Link URL"
-          :value="messageAny.link_url ?? ''"
-          @input="emitUpdate({ link_url: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Link domain"
-          :value="messageAny.link_domain ?? ''"
-          @input="emitUpdate({ link_domain: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="Voice transcript"
-        :value="messageAny.voice_transcript ?? ''"
-        @input="emitUpdate({ voice_transcript: ($event.target as HTMLInputElement).value || undefined })"
-      />
-      <div class="kb-location-row">
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Voice duration (e.g. 0:10)"
-          :value="messageAny.voice_duration ?? ''"
-          @input="emitUpdate({ voice_duration: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="url"
-          class="kb-input"
-          placeholder="Voice profile image URL"
-          :value="messageAny.voice_profile_image ?? ''"
-          @input="emitUpdate({ voice_profile_image: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-      <div class="kb-location-row">
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Contact name"
-          :value="messageAny.contact_name ?? ''"
-          @input="emitUpdate({ contact_name: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Contact title"
-          :value="messageAny.contact_title ?? ''"
-          @input="emitUpdate({ contact_title: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-      <div class="kb-location-row">
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Contact phone"
-          :value="messageAny.contact_phone ?? ''"
-          @input="emitUpdate({ contact_phone: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="email"
-          class="kb-input"
-          placeholder="Contact email"
-          :value="messageAny.contact_email ?? ''"
-          @input="emitUpdate({ contact_email: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="Contact address"
-        :value="messageAny.contact_address ?? ''"
-        @input="emitUpdate({ contact_address: ($event.target as HTMLInputElement).value || undefined })"
-      />
-      <div class="kb-location-row">
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Order title"
-          :value="messageAny.order_title ?? ''"
-          @input="emitUpdate({ order_title: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Order items text"
-          :value="messageAny.order_items ?? ''"
-          @input="emitUpdate({ order_items: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-      <div class="kb-location-row">
-        <input
-          type="url"
-          class="kb-input"
-          placeholder="Order image URL"
-          :value="messageAny.order_image ?? ''"
-          @input="emitUpdate({ order_image: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Order button label"
-          :value="messageAny.order_button_label ?? ''"
-          @input="emitUpdate({ order_button_label: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-      <div class="kb-location-row">
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Location request button label"
-          :value="messageAny.location_request_label ?? ''"
-          @input="emitUpdate({ location_request_label: ($event.target as HTMLInputElement).value || undefined })"
-        />
-        <input
-          type="text"
-          class="kb-input"
-          placeholder="Reaction emoji (e.g. 😀)"
-          :value="messageAny.reaction_emoji ?? ''"
-          @input="emitUpdate({ reaction_emoji: ($event.target as HTMLInputElement).value || undefined })"
-        />
-      </div>
-    </div>
-
-    <!-- Location configuration -->
-    <div
-      v-if="currentFormat === 'location'"
-      class="kb-field kb-field--inline"
-    >
-      <label class="kb-label">
-        Location
-        <span class="kb-helper">Coordinates and label for the location card.</span>
-      </label>
-      <div class="kb-location-row">
-        <input
-          type="number"
-          step="0.000001"
-          class="kb-input"
-          placeholder="Latitude"
-          :value="messageAny.location?.lat ?? ''"
-          @input="
-            (e) => {
-              const loc = { ...( messageAny.location ?? {} ) };
-              loc.lat = Number((e.target as HTMLInputElement).value);
-              emitUpdate({ location: loc });
-            }
-          "
-        />
-        <input
-          type="number"
-          step="0.000001"
-          class="kb-input"
-          placeholder="Longitude"
-          :value="messageAny.location?.lon ?? ''"
-          @input="
-            (e) => {
-              const loc = { ...( messageAny.location ?? {} ) };
-              loc.lon = Number((e.target as HTMLInputElement).value);
-              emitUpdate({ location: loc });
-            }
-          "
-        />
-      </div>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="Location name"
-        :value="messageAny.location?.name ?? ''"
-        @input="
-          (e) => {
-            const loc = { ...( messageAny.location ?? {} ) };
-            loc.name = (e.target as HTMLInputElement).value || undefined;
-            emitUpdate({ location: loc });
-          }
-        "
-      />
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="Address (optional)"
-        :value="messageAny.location?.address ?? ''"
-        @input="
-          (e) => {
-            const loc = { ...( messageAny.location ?? {} ) };
-            loc.address = (e.target as HTMLInputElement).value || undefined;
-            emitUpdate({ location: loc });
-          }
-        "
-      />
-    </div>
-
-    <!-- Coupon configuration -->
-    <div
-      v-if="currentFormat === 'coupon'"
-      class="kb-field"
-    >
-      <label class="kb-label">
-        Coupon code
-        <span class="kb-helper">Single coupon code placeholder used in the template.</span>
-      </label>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="e.g. SAVE20"
-        :value="messageAny.coupon_code ?? ''"
-        @input="
-          (e) =>
-            emitUpdate({
-              coupon_code: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -885,7 +641,7 @@ function addCard() {
       </div>
     </div>
 
-    <div class="kb-field">
+    <div v-if="bodyText.trim().length > 0" class="kb-field">
       <label class="kb-label">
         Buttons (optional)
         <span class="kb-helper">
@@ -1265,6 +1021,29 @@ function addCard() {
   color: #475569;
   line-height: 1.5;
 }
+.kb-field--language-limits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.7rem;
+}
+.kb-field--language-limits .kb-field-half {
+  flex: 1 1 280px;
+}
+.kb-field--language-limits .kb-meta-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+.kb-field--language-limits .kb-meta-list li {
+  border: 1px solid #d7e3f1;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 0.22rem 0.52rem;
+  white-space: nowrap;
+}
 .kb-select {
   appearance: auto;
   background-image: none;
@@ -1273,6 +1052,10 @@ function addCard() {
 @media (max-width: 1480px) {
   .kb-field--inline {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .kb-field--language-limits {
+    display: flex;
+    flex-wrap: wrap;
   }
 }
 @media (max-width: 1280px) {

@@ -218,15 +218,36 @@ const smsBodyRaw = computed(
   () => (((campaign.value.message as any).body ?? "") as string) || "",
 );
 const smsCharCount = computed(() => smsBodyRaw.value.length);
+const smsUsesUnicode = computed(() => /[^\x00-\x7f]/.test(smsBodyRaw.value));
+const smsSingleSegmentLimit = computed(() => (smsUsesUnicode.value ? 70 : 160));
+const smsMultipartSize = computed(() => (smsUsesUnicode.value ? 67 : 153));
 const smsSegmentCount = computed(() => {
   if (!smsCharCount.value) return 0;
-  return smsCharCount.value <= 160 ? 1 : Math.ceil(smsCharCount.value / 153);
+  if (smsCharCount.value <= smsSingleSegmentLimit.value) return 1;
+  return Math.ceil(smsCharCount.value / smsMultipartSize.value);
 });
-const smsBodyDisplay = computed(() => {
-  const substituted = smsBodyDisplayPreview.value;
-  return substituted.trim().length
-    ? substituted
-    : "Your SMS message preview will appear here.";
+const smsBodySegments = computed(() => {
+  const text = smsBodyDisplayPreview.value.trim();
+  if (!text) return [] as string[];
+  const chunkSize =
+    smsSegmentCount.value <= 1
+      ? smsSingleSegmentLimit.value
+      : smsMultipartSize.value;
+  const segments: string[] = [];
+  for (let i = 0; i < text.length; i += chunkSize) {
+    segments.push(text.slice(i, i + chunkSize));
+  }
+  return segments;
+});
+const smsPreviewSegments = computed(() => smsBodySegments.value.slice(0, 3));
+const smsOverflowSegments = computed(() =>
+  Math.max(0, smsBodySegments.value.length - smsPreviewSegments.value.length),
+);
+const smsEncodingLabel = computed(() => (smsUsesUnicode.value ? "Unicode" : "GSM-7"));
+const smsDeliveryState = computed(() => {
+  if (!hasSmsPreviewContent.value) return "Draft";
+  if (smsSegmentCount.value > 3) return "Queued";
+  return "Delivered";
 });
 
 const smsEstimatedCost = computed(() => {
@@ -237,8 +258,9 @@ const smsEstimatedCost = computed(() => {
 
 const smsTruncationHint = computed(() => {
   const n = smsCharCount.value;
-  if (n <= 160) return null;
-  if (n <= 306) return "Consider shortening to stay within 2 segments.";
+  const softTwoPartLimit = smsSingleSegmentLimit.value + smsMultipartSize.value;
+  if (n <= smsSingleSegmentLimit.value) return null;
+  if (n <= softTwoPartLimit) return "Consider shortening to stay within 2 segments.";
   return "Shorten this message to reduce segment count and cost.";
 });
 const smsSenderId = computed(
@@ -396,21 +418,41 @@ function onSave() {
                 <div class="kb-sms-phone">
                   <div class="kb-sms-status-bar">
                     <span class="kb-sms-time">9:41</span>
-                    <span class="kb-sms-icons">◆ ◆ ◆</span>
+                    <span class="kb-sms-device-icons">
+                      <i></i><i></i><i></i>
+                    </span>
                   </div>
                   <div class="kb-sms-header">
-                    <div class="kb-sms-sender">
-                      {{ smsSenderId }}
+                    <div class="kb-sms-sender-avatar">{{ smsSenderId.slice(0, 1).toUpperCase() }}</div>
+                    <div class="kb-sms-header-copy">
+                      <div class="kb-sms-sender">{{ smsSenderId }}</div>
+                      <div class="kb-sms-meta">Text message · {{ smsDeliveryState }}</div>
                     </div>
-                    <div class="kb-sms-meta">Text message</div>
                   </div>
                   <div class="kb-sms-thread">
-                    <div class="kb-sms-bubble kb-sms-bubble--outgoing">
-                      <span class="kb-sms-text">
-                        {{ smsBodyDisplay }}
-                      </span>
-                      <span class="kb-sms-bubble-meta"> 09:21 </span>
+                    <div v-if="!hasSmsPreviewContent" class="kb-sms-empty">
+                      Start typing your SMS to see a realistic thread preview.
                     </div>
+                    <template v-else>
+                      <div
+                        v-for="(segment, idx) in smsPreviewSegments"
+                        :key="`${idx}-${segment.length}`"
+                        class="kb-sms-bubble kb-sms-bubble--outgoing"
+                      >
+                        <span class="kb-sms-text">{{ segment }}</span>
+                        <span class="kb-sms-bubble-meta">
+                          09:21
+                          <span v-if="smsPreviewSegments.length > 1" class="kb-sms-segment-chip">Part {{ idx + 1 }}</span>
+                        </span>
+                      </div>
+                      <div v-if="smsOverflowSegments > 0" class="kb-sms-more-segments">
+                        +{{ smsOverflowSegments }} more segments
+                      </div>
+                      <div class="kb-sms-delivery-line">
+                        <span class="kb-sms-delivery-dot"></span>
+                        {{ smsDeliveryState }}
+                      </div>
+                    </template>
                   </div>
                 </div>
                 <p class="kb-sms-counter">
@@ -418,7 +460,7 @@ function onSave() {
                   <span v-if="smsSegmentCount === 0">0 segments</span>
                   <span v-else-if="smsSegmentCount === 1">1 segment</span>
                   <span v-else>{{ smsSegmentCount }} segments</span>
-                  (160 chars for 1 segment, 153 for multi-part)
+                  ({{ smsSingleSegmentLimit }} chars single, {{ smsMultipartSize }} multi-part · {{ smsEncodingLabel }})
                   <span v-if="smsEstimatedCost !== null" class="kb-sms-cost">
                     · Est. {{ smsEstimatedCost }}
                   </span>
@@ -972,84 +1014,198 @@ function onSave() {
   color: #15803d;
 }
 .kb-preview {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1rem;
-  background: #f8fafc;
+  border: 1px solid #dbe5ef;
+  border-radius: 16px;
+  padding: 1rem 0.9rem;
+  background: linear-gradient(180deg, #f7fbff, #f2f7fd);
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 2px 8px rgba(15, 23, 42, 0.06);
 }
 .kb-sms-preview {
   margin-top: 8px;
 }
 .kb-sms-phone {
-  max-width: 360px;
+  width: min(100%, 356px);
   margin: 0 auto;
-  border-radius: 24px;
-  background: #020617;
-  padding: 10px 12px 14px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.5);
-  color: #e5e7eb;
+  border-radius: 28px;
+  border: 1px solid #c8d3df;
+  background: #f9fbfe;
+  padding: 8px 10px 12px;
+  box-shadow:
+    0 20px 34px rgba(15, 23, 42, 0.18),
+    0 3px 10px rgba(15, 23, 42, 0.14);
+  color: #0f172a;
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .kb-sms-status-bar {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  opacity: 0.8;
-  margin-bottom: 6px;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #475569;
+  margin: 2px 4px 6px;
 }
 .kb-sms-header {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-bottom: 8px;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border-radius: 16px 16px 10px 10px;
+  background: #e8edf4;
+  border: 1px solid #d9e1eb;
+}
+.kb-sms-device-icons {
+  display: inline-flex;
+  gap: 4px;
+}
+.kb-sms-device-icons i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  display: inline-block;
+  background: #64748b;
+}
+.kb-sms-device-icons i:nth-child(1) {
+  opacity: 0.45;
+}
+.kb-sms-device-icons i:nth-child(2) {
+  opacity: 0.7;
+}
+.kb-sms-device-icons i:nth-child(3) {
+  opacity: 1;
+}
+.kb-sms-sender-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #0ea5e9, #0284c7);
+  color: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.kb-sms-header-copy {
+  min-width: 0;
 }
 .kb-sms-sender {
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: #0f172a;
+  line-height: 1.2;
 }
 .kb-sms-meta {
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font-size: 0.72rem;
+  color: #64748b;
 }
 .kb-sms-thread {
-  margin-top: 6px;
+  margin-top: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 8px 10px;
+  background:
+    radial-gradient(circle at 25% 20%, rgba(226, 232, 240, 0.35) 0 14px, transparent 15px) 0 0 / 52px 52px,
+    #eff3f8;
+  border: 1px solid #d9e2ee;
+  border-radius: 14px;
 }
 .kb-sms-bubble {
-  max-width: 80%;
+  max-width: 86%;
   margin-left: auto;
-  border-radius: 18px;
-  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 17px 17px 5px 17px;
+  padding: 10px 11px 8px;
   font-size: 0.875rem;
-  line-height: 1.35;
-  background: linear-gradient(to right, #22c55e, #16a34a);
-  color: #022c22;
+  line-height: 1.4;
+  background: linear-gradient(180deg, #dcfce7, #bbf7d0);
+  color: #062a1a;
+  border: 1px solid #86efac;
   position: relative;
+  box-shadow: 0 2px 4px rgba(22, 101, 52, 0.09);
 }
 .kb-sms-bubble-meta {
-  display: block;
-  font-size: 0.7rem;
-  color: #0f172a;
-  opacity: 0.75;
-  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  width: 100%;
+  font-size: 0.68rem;
+  color: #334155;
+  opacity: 0.85;
+  margin-top: 5px;
   text-align: right;
 }
 .kb-sms-text {
   white-space: pre-wrap;
 }
-.kb-sms-counter {
-  margin-top: 8px;
-  font-size: 0.75rem;
+.kb-sms-segment-chip {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #166534;
+}
+.kb-sms-more-segments {
+  margin: 2px 0 8px auto;
+  width: fit-content;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #334155;
+  padding: 4px 8px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+}
+.kb-sms-empty {
   color: #64748b;
+  font-size: 0.8rem;
+  text-align: center;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 10px;
+  background: rgba(255, 255, 255, 0.88);
+}
+.kb-sms-delivery-line {
+  margin: 4px 2px 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #475569;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.kb-sms-delivery-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #10b981;
+}
+.kb-sms-counter {
+  margin-top: 10px;
+  font-size: 0.74rem;
+  color: #475569;
+  line-height: 1.35;
 }
 .kb-sms-cost {
-  font-weight: 500;
+  font-weight: 700;
   color: #0f172a;
 }
 .kb-sms-truncation-hint {
-  margin-top: 4px;
-  font-size: 0.75rem;
+  margin-top: 5px;
+  font-size: 0.72rem;
   color: #b45309;
 }
 .kb-confirm-overlay {

@@ -507,6 +507,8 @@ function onSave() {
               :get-preview="getPreview"
               :selected-platform="selectedPlatform"
               :preview-profile="previewProfile"
+              :message="campaign.message"
+              :delivery="campaign.delivery"
               @update:selected-platform="
                 (p: Platform) => (selectedPlatform = p)
               "

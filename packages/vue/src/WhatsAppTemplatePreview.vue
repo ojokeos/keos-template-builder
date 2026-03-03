@@ -90,7 +90,7 @@ const displayTitle = computed(() => props.template.templateName || 'Ecoshop');
 const displaySubtitle = computed(() => 'Business Account');
 const isFlowPreview = computed(() => props.template.format === 'flow' || Boolean(props.template.flow));
 const primaryButtonObject = computed(() => props.template.buttons?.[0]);
-const primaryButton = computed(() => primaryButtonObject.value?.text || props.template.flow?.ctaLabel || 'Continue');
+const primaryButton = computed(() => primaryButtonObject.value?.text || props.template.flow?.ctaLabel || '');
 const actionButtons = computed(() => props.template.buttons ?? []);
 const hasProductList = computed(() => (props.template.multiProduct?.length ?? 0) > 0);
 const formatLabel = computed(() => (props.template.format || 'text').toUpperCase());
@@ -105,6 +105,21 @@ const mediaPreviewStyle = computed(() => {
   const h = props.template.header;
   if (!h || h.type !== 'image' || !h.url) return undefined;
   return { backgroundImage: `url(${h.url})` };
+});
+function filenameFromUrl(url?: string): string {
+  if (!url) return '';
+  try {
+    const clean = url.split('?')[0].split('#')[0];
+    const name = clean.substring(clean.lastIndexOf('/') + 1);
+    return decodeURIComponent(name || '');
+  } catch {
+    return '';
+  }
+}
+const documentHeaderName = computed(() => {
+  const h = props.template.header;
+  if (!h || h.type !== 'document') return '';
+  return h.filename || filenameFromUrl(h.url) || 'document.pdf';
 });
 const detectedUrl = computed(() => {
   const m = (props.template.body || '').match(/https?:\/\/[^\s]+/i);
@@ -237,7 +252,7 @@ const flowOptions = computed(() => {
               </div>
             </div>
             <div class="wa-flow-footer">
-              <button type="button" class="wa-flow-cta">{{ primaryButton }}</button>
+              <button v-if="primaryButton" type="button" class="wa-flow-cta">{{ primaryButton }}</button>
               <p class="wa-managed">Managed by EcoShop. <a href="#" @click.prevent>Learn more</a></p>
             </div>
           </div>
@@ -255,9 +270,35 @@ const flowOptions = computed(() => {
             <div class="wa-msg wa-msg--in">
               <div class="wa-template-card">
                 <div v-if="template.header && template.header.type !== 'text'" class="wa-card-media">
-                  <div class="wa-card-media-tag">{{ formatLabel }} TEMPLATE</div>
-                  <div class="wa-card-media-sub">{{ mediaLabel }}</div>
-                  <div v-if="mediaPreviewStyle" class="wa-card-media-image" :style="mediaPreviewStyle"></div>
+                  <img
+                    v-if="template.header.type === 'image' && template.header.url"
+                    class="wa-card-media-real"
+                    :src="template.header.url"
+                    alt="Header media"
+                  />
+                  <div
+                    v-else-if="template.header.type === 'video' && template.header.url"
+                    class="wa-card-media-real wa-card-media-real--video"
+                  >
+                    <video :src="template.header.url" preload="metadata" muted playsinline></video>
+                    <span class="wa-card-media-play">▶</span>
+                  </div>
+                  <a
+                    v-else-if="template.header.type === 'document'"
+                    href="#"
+                    class="wa-card-media-doc"
+                    @click.prevent
+                  >
+                    <span class="wa-card-media-doc-icon">{{ fileTypeLabel }}</span>
+                    <span class="wa-card-media-doc-name" :title="documentHeaderName">{{ documentHeaderName }}</span>
+                  </a>
+                  <template v-else>
+                    <div class="wa-card-media-fallback">
+                      <div class="wa-card-media-tag">{{ formatLabel }} TEMPLATE</div>
+                      <div class="wa-card-media-sub">{{ mediaLabel }}</div>
+                      <div v-if="mediaPreviewStyle" class="wa-card-media-image" :style="mediaPreviewStyle"></div>
+                    </div>
+                  </template>
                 </div>
                 <div v-else-if="template.header?.text" class="wa-card-header-text">
                   {{ template.header.text }}
@@ -344,7 +385,7 @@ const flowOptions = computed(() => {
                 <div class="wa-document-file">
                   <span class="wa-document-icon">{{ fileTypeLabel }}</span>
                   <div>
-                    <strong>{{ template.documentCard?.filename || template.header?.filename || 'document.pdf' }}</strong>
+                    <strong :title="template.documentCard?.filename || template.header?.filename || 'document.pdf'">{{ template.documentCard?.filename || template.header?.filename || 'document.pdf' }}</strong>
                     <p>{{ template.documentCard?.size || '243 KB • html' }}</p>
                   </div>
                   <span class="wa-document-download">↓</span>
@@ -721,11 +762,84 @@ const flowOptions = computed(() => {
 }
 
 .wa-card-media {
-  height: 124px;
-  background: linear-gradient(140deg, #0f4660, #1e3a8a 48%, #7c3aed);
+  min-height: 0;
+  background: transparent;
+  padding: 0;
+  overflow: hidden;
+}
+.wa-card-media-fallback {
+  min-height: 124px;
+  background: #f3f4f6;
   display: grid;
-  place-items: end start;
+  align-content: end;
   padding: 9px;
+}
+.wa-card-media-real {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0;
+  border: 0;
+  display: block;
+}
+.wa-card-media-real--video {
+  position: relative;
+  background: #000;
+  border-radius: 0;
+  overflow: hidden;
+}
+.wa-card-media-real--video video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  background: #000;
+}
+.wa-card-media-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.56);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+}
+.wa-card-media-doc {
+  width: 100%;
+  min-height: 72px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  text-decoration: none;
+}
+.wa-card-media-doc-icon {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: 8px 6px;
+  background: #fff;
+}
+.wa-card-media-doc-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wa-card-media-tag {
@@ -942,6 +1056,9 @@ const flowOptions = computed(() => {
   border-radius: 8px;
   padding: 8px;
 }
+.wa-document-file > div {
+  min-width: 0;
+}
 .wa-document-icon {
   font-size: 0.7rem;
   font-weight: 700;
@@ -951,9 +1068,21 @@ const flowOptions = computed(() => {
   padding: 8px 6px;
 }
 .wa-document-file strong {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 0.86rem;
 }
 .wa-document-file p {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin: 2px 0 0;
   font-size: 0.72rem;
   color: #6b7280;
