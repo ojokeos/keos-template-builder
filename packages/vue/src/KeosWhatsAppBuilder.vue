@@ -229,6 +229,20 @@ const setupStatusLabel = computed(() => {
   if (setupScore.value >= 40) return "In progress";
   return "Needs setup";
 });
+const hasWaPreviewContent = computed(() => {
+  const msg = campaign.value.message as any;
+  return Boolean(
+    (msg.body ?? "").toString().trim() ||
+      (msg.header ?? "").toString().trim() ||
+      msg.media_url ||
+      msg.flow_id ||
+      msg.coupon_code ||
+      msg.lto_expiry ||
+      (Array.isArray(msg.buttons) && msg.buttons.length) ||
+      (Array.isArray(msg.products) && msg.products.length) ||
+      (Array.isArray(msg.cards) && msg.cards.length),
+  );
+});
 
 const selectedPreviewProfileId = ref<string>("");
 const presetConfirmOpen = ref(false);
@@ -555,7 +569,10 @@ function onSave() {
               <strong>{{ (campaign.message as any).template_type || "text" }}</strong>
             </div>
           </div>
-          <div class="kb-wa-preview-frame">
+          <div
+            class="kb-wa-preview-frame"
+            :class="{ 'kb-wa-preview-frame--empty': !hasWaPreviewContent }"
+          >
             <WhatsAppTemplatePreview :template="waPreviewTemplate" />
           </div>
         </div>
@@ -932,6 +949,9 @@ function onSave() {
   display: grid;
   place-items: center;
 }
+.kb-wa-preview-frame--empty {
+  min-height: clamp(220px, 34vh, 320px);
+}
 .kb-preview-status {
   display: inline-flex;
   align-items: center;
@@ -1052,6 +1072,9 @@ function onSave() {
   .kb-wa-preview-frame {
     min-height: 100vh;
     padding: 8px;
+  }
+  .kb-wa-preview-frame--empty {
+    min-height: clamp(200px, 30vh, 280px);
   }
   .kb-preview-status {
     width: 100%;

@@ -227,6 +227,14 @@ const setupStatusLabel = computed(() => {
   if (setupScore.value >= 40) return "In progress";
   return "Needs setup";
 });
+const hasPushPreviewContent = computed(() => {
+  const msg = campaign.value.message as any;
+  return Boolean(
+    (msg.title ?? "").toString().trim() ||
+      (msg.body ?? "").toString().trim() ||
+      (Array.isArray(msg.actions) && msg.actions.length),
+  );
+});
 
 const titleLimit = computed(
   () => characterLimits[selectedPlatform.value].title,
@@ -481,7 +489,10 @@ function onSave() {
               {{ p.toUpperCase() }}
             </button>
           </div>
-          <div class="kb-push-preview-frame">
+          <div
+            class="kb-push-preview-frame"
+            :class="{ 'kb-push-preview-frame--empty': !hasPushPreviewContent }"
+          >
             <div
               v-if="!campaign.message.title && !campaign.message.body"
               class="kb-push-preview-empty"
@@ -923,6 +934,9 @@ function onSave() {
     0 2px 8px rgba(15, 23, 42, 0.08);
   overflow: hidden;
 }
+.kb-push-preview-frame--empty {
+  min-height: clamp(220px, 34vh, 320px);
+}
 .kb-push-preview-empty {
   display: flex;
   align-items: center;
@@ -1037,6 +1051,9 @@ function onSave() {
   }
   .kb-push-preview-controls {
     padding: 10px;
+  }
+  .kb-push-preview-frame--empty {
+    min-height: clamp(200px, 30vh, 280px);
   }
   .kb-preview-status {
     width: 100%;

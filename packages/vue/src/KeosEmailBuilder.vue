@@ -468,6 +468,48 @@ function emailBlocksToHtml(blocks: any[]): string {
   return parts.join("");
 }
 
+function hasHtmlDocument(html: string): boolean {
+  return /<\s*html[\s>]/i.test(html) || /<!doctype\s+html/i.test(html);
+}
+
+function extractBodyContent(html: string): string {
+  const m = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  return m ? m[1] : html;
+}
+
+function emailContentToDocument(
+  bodyContent: string,
+  subject?: string,
+  previewText?: string,
+): string {
+  const title = (subject || "Email").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const preheader = (previewText || "")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return [
+    "<!doctype html>",
+    '<html lang="en">',
+    "<head>",
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+    `<title>${title}</title>`,
+    "</head>",
+    '<body style="margin:0;padding:0;background:#f4f7fb;">',
+    preheader
+      ? `<div style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;mso-hide:all;">${preheader}</div>`
+      : "",
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f7fb;border-collapse:collapse;">',
+    "<tr><td align=\"center\" style=\"padding:24px 12px;\">",
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:100%;max-width:600px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;border-collapse:separate;">',
+    `<tr><td style="padding:24px;">${bodyContent}</td></tr>`,
+    "</table>",
+    "</td></tr>",
+    "</table>",
+    "</body>",
+    "</html>",
+  ].join("");
+}
+
 const props = withDefaults(
   defineProps<{
     modelValue?: Partial<Campaign>;
@@ -568,7 +610,18 @@ onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
 });
 
-watch(campaign, (c) => emit("update:modelValue", c), { deep: true });
+watch(
+  campaign,
+  (c) =>
+    emit("update:modelValue", {
+      ...c,
+      message: {
+        ...c.message,
+        html: canonicalEmailHtml.value,
+      },
+    }),
+  { deep: true },
+);
 
 const estimatedReach = ref<number | undefined>();
 const canSend = ref(true);
@@ -688,14 +741,63 @@ const emailFromAddress = computed(
 const emailBlocks = computed(
   () => (campaign.value.message as any).blocks ?? [],
 );
+const hasEmailPreviewContent = computed(() => {
+  const msg = campaign.value.message as any;
+  const htmlRaw = ((msg.html ?? "") as string).trim();
+  const blocks = Array.isArray(msg.blocks) ? msg.blocks : [];
+  const hasMeaningfulBlock = blocks.some((b: any) => {
+    if (!b || typeof b !== "object") return false;
+    const t = (b.type ?? "").toString();
+    if (t === "paragraph" || t === "heading" || t === "quote" || t === "footer") {
+      const c = (b.content ?? "").toString().trim();
+      if (!c) return false;
+      if (c === "Heading" || c.startsWith("Your text here.")) return false;
+      return true;
+    }
+    if (t === "image" || t === "video" || t === "dynamic_image") {
+      return Boolean((b.src ?? b.imageUrl ?? b.thumbnailUrl ?? "").toString().trim());
+    }
+    if (t === "button") return Boolean((b.text ?? "").toString().trim());
+    return true;
+  });
+  return Boolean(
+    (msg.subject ?? "").toString().trim() ||
+      (msg.preview_text ?? "").toString().trim() ||
+      htmlRaw ||
+      hasMeaningfulBlock,
+  );
+});
 
 const emailBodyHtml = computed(() => {
   const blocks = emailBlocks.value;
   if (Array.isArray(blocks) && blocks.length > 0)
     return emailBlocksToHtml(blocks);
-  const html = emailHtml.value;
-  if (html && html.trim()) return html;
+  const htmlRaw = emailHtml.value;
+  if (htmlRaw && htmlRaw.trim()) {
+    return hasHtmlDocument(htmlRaw) ? extractBodyContent(htmlRaw) : htmlRaw;
+  }
   return emailBlocksToHtml([]);
+});
+const canonicalEmailHtml = computed(() => {
+  const blocks = emailBlocks.value;
+  if (Array.isArray(blocks) && blocks.length > 0) {
+    return emailContentToDocument(
+      emailBlocksToHtml(blocks),
+      emailSubject.value,
+      emailPreviewText.value,
+    );
+  }
+  const htmlRaw = emailHtml.value;
+  if (htmlRaw && htmlRaw.trim()) {
+    return hasHtmlDocument(htmlRaw)
+      ? htmlRaw
+      : emailContentToDocument(htmlRaw, emailSubject.value, emailPreviewText.value);
+  }
+  return emailContentToDocument(
+    emailBlocksToHtml([]),
+    emailSubject.value,
+    emailPreviewText.value,
+  );
 });
 
 const displayEmailSubject = computed(() => {
@@ -718,7 +820,13 @@ const previewWidth = ref<"desktop" | "mobile">("desktop");
 
 function onSave() {
   if (!isValid.value) return;
-  emit("save", campaign.value);
+  emit("save", {
+    ...campaign.value,
+    message: {
+      ...campaign.value.message,
+      html: canonicalEmailHtml.value,
+    },
+  });
 }
 </script>
 
@@ -907,6 +1015,7 @@ function onSave() {
             class="kb-email-preview-frame"
             :class="{
               'kb-email-preview-frame--mobile': previewWidth === 'mobile',
+              'kb-email-preview-frame--empty': !hasEmailPreviewContent,
             }"
           >
             <div class="kb-email-inbox-strip">
@@ -1336,6 +1445,9 @@ function onSave() {
 .kb-email-preview-frame--mobile {
   max-width: 320px;
 }
+.kb-email-preview-frame--empty {
+  min-height: clamp(220px, 34vh, 320px);
+}
 .kb-preview-status {
   display: inline-flex;
   align-items: center;
@@ -1485,6 +1597,9 @@ function onSave() {
   }
   .kb-push-preview-controls {
     padding: 10px;
+  }
+  .kb-email-preview-frame--empty {
+    min-height: clamp(200px, 30vh, 280px);
   }
   .kb-preview-status {
     width: 100%;
