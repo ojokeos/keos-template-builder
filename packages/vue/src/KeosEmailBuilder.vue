@@ -1335,10 +1335,10 @@ function onSave() {
   min-width: 0;
   min-height: 0;
   overflow: visible;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(247, 250, 252, 0.86));
-  border: 1px solid #d9e2ee;
-  border-radius: 16px;
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 @media (max-width: 1023px) {
   .kb-email-canvas {
@@ -1430,7 +1430,7 @@ function onSave() {
   width: 100%;
   min-height: 200px;
   margin: 0 auto;
-  background: transparent;
+  background: #ffffff;
   border: 1px solid var(--kb-border);
   border-radius: 18px;
   box-shadow:
