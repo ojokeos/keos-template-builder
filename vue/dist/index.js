@@ -6834,7 +6834,7 @@ const example = {{ order_id }};`,
       ])) : y("", !0)
     ]));
   }
-}), Et = /* @__PURE__ */ Ce(fv, [["__scopeId", "data-v-d92eac86"]]), gv = { class: "kb-shell" }, yv = {
+}), Et = /* @__PURE__ */ Ce(fv, [["__scopeId", "data-v-b283d87d"]]), gv = { class: "kb-shell" }, yv = {
   class: "kb-shell__nav",
   role: "tablist",
   "aria-label": "Channel"
