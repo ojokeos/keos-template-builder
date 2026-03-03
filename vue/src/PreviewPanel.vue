@@ -9,14 +9,24 @@ const props = withDefaults(
     getPreview: (platform: Platform, options?: { expanded?: boolean }) => any;
     selectedPlatform: Platform;
     previewProfile?: SampleProfile | null;
+    message?: { deep_link?: string };
+    delivery?: { priority?: string; ttl?: number; silent_push?: boolean };
   }>(),
-  { previewProfile: null }
+  { previewProfile: null, message: undefined, delivery: undefined }
 );
 
-const expanded = ref(false);
+type AndroidSurface = 'heads_up' | 'shade' | 'expanded';
+type IosSurface = 'banner' | 'lock' | 'center';
+type WebSurface = 'toast' | 'center';
+
+const androidSurface = ref<AndroidSurface>('shade');
+const iosSurface = ref<IosSurface>('banner');
+const webSurface = ref<WebSurface>('toast');
+const isAndroidExpanded = computed(() => androidSurface.value === 'expanded');
+
 const preview = computed(() =>
   props.getPreview(props.selectedPlatform, {
-    expanded: props.selectedPlatform === 'android' ? expanded.value : undefined,
+    expanded: props.selectedPlatform === 'android' ? isAndroidExpanded.value : undefined,
   })
 );
 
@@ -28,6 +38,78 @@ const displayPreview = computed(() => {
     title: renderTemplatePreview(p?.title ?? '', props.previewProfile!.data),
     body: renderTemplatePreview(p?.body ?? '', props.previewProfile!.data),
   };
+});
+
+const surfaceLimits: Record<Platform, Record<string, { title: number; body: number }>> = {
+  android: {
+    heads_up: { title: 38, body: 72 },
+    shade: { title: 46, body: 132 },
+    expanded: { title: 60, body: 260 },
+  },
+  ios: {
+    banner: { title: 44, body: 92 },
+    lock: { title: 56, body: 160 },
+    center: { title: 72, body: 260 },
+  },
+  web: {
+    toast: { title: 58, body: 130 },
+    center: { title: 72, body: 260 },
+  },
+};
+
+function truncateText(input: string | undefined, limit: number) {
+  const text = (input ?? '').trim();
+  if (!text) return '';
+  if (text.length <= limit) return text;
+  return `${text.slice(0, Math.max(0, limit - 1)).trimEnd()}…`;
+}
+
+const currentSurface = computed(() => {
+  if (props.selectedPlatform === 'android') return androidSurface.value;
+  if (props.selectedPlatform === 'ios') return iosSurface.value;
+  return webSurface.value;
+});
+
+const platformLimits = computed(() => {
+  const limits = surfaceLimits[props.selectedPlatform] ?? surfaceLimits.web;
+  return limits[currentSurface.value] ?? { title: 60, body: 160 };
+});
+
+const displayTitle = computed(() =>
+  truncateText(displayPreview.value?.title, platformLimits.value.title)
+);
+const displayBody = computed(() =>
+  truncateText(displayPreview.value?.body, platformLimits.value.body)
+);
+
+const actionLimits: Record<Platform, number> = { android: 3, ios: 4, web: 2 };
+const actions = computed(() =>
+  Array.isArray(displayPreview.value?.actions) ? displayPreview.value.actions : []
+);
+const visibleActions = computed(() =>
+  actions.value.slice(0, actionLimits[props.selectedPlatform] ?? 2)
+);
+const hiddenActionCount = computed(() =>
+  Math.max(0, actions.value.length - visibleActions.value.length)
+);
+
+const deepLink = computed(() => (props.message?.deep_link ?? '').trim());
+const deepLinkValid = computed(() => {
+  if (!deepLink.value) return false;
+  return /^(https?:\/\/|[a-z][a-z0-9+.-]*:\/\/)/i.test(deepLink.value);
+});
+const deepLinkDisplay = computed(() => {
+  if (!deepLink.value) return '';
+  if (deepLink.value.length <= 40) return deepLink.value;
+  return `${deepLink.value.slice(0, 37)}…`;
+});
+
+const deliveryBadges = computed(() => {
+  const badges: string[] = [];
+  if (props.delivery?.priority) badges.push(`Priority: ${props.delivery.priority}`);
+  if (typeof props.delivery?.ttl === 'number') badges.push(`TTL: ${props.delivery.ttl}s`);
+  if (props.delivery?.silent_push) badges.push('Silent push');
+  return badges;
 });
 
 /** OpenStreetMap embed URL for preview when message has location (lat/lon). */
@@ -49,11 +131,39 @@ const hasLocation = computed(() => {
 
 <template>
   <div class="kb-preview">
-    <div v-if="selectedPlatform === 'android'" class="kb-preview__toggle">
-      <label class="kb-checkbox">
-        <input v-model="expanded" type="checkbox" />
-        <span>Expanded notification</span>
+    <div class="kb-preview__toggle">
+      <label class="kb-preview__mode">
+        <span class="kb-preview__mode-label">Surface</span>
+        <select
+          v-if="selectedPlatform === 'android'"
+          v-model="androidSurface"
+          class="kb-preview__mode-select"
+        >
+          <option value="heads_up">Heads-up</option>
+          <option value="shade">Notification shade</option>
+          <option value="expanded">Expanded style</option>
+        </select>
+        <select
+          v-else-if="selectedPlatform === 'ios'"
+          v-model="iosSurface"
+          class="kb-preview__mode-select"
+        >
+          <option value="banner">Banner</option>
+          <option value="lock">Lock screen</option>
+          <option value="center">Notification center</option>
+        </select>
+        <select
+          v-else
+          v-model="webSurface"
+          class="kb-preview__mode-select"
+        >
+          <option value="toast">Desktop toast</option>
+          <option value="center">Notification center</option>
+        </select>
       </label>
+      <div class="kb-preview__quality">
+        <span v-for="b in deliveryBadges" :key="b" class="kb-preview__badge">{{ b }}</span>
+      </div>
     </div>
 
     <!-- ANDROID PREVIEW -->
@@ -61,6 +171,7 @@ const hasLocation = computed(() => {
       v-if="selectedPlatform === 'android'"
       :id="`kb-preview-panel-android`"
       class="kb-preview__device kb-preview__device--android"
+      :class="`kb-preview__device--android-${androidSurface}`"
       role="tabpanel"
       aria-labelledby="kb-preview-tab-android"
     >
@@ -68,7 +179,7 @@ const hasLocation = computed(() => {
         <span class="kb-android-time">12:30</span>
         <span class="kb-android-icons">  </span>
       </div>
-      <div class="kb-android-notification" :class="{ 'kb-android-notification--expanded': expanded }">
+      <div class="kb-android-notification" :class="{ 'kb-android-notification--expanded': isAndroidExpanded }">
         <div class="kb-android-header">
           <div class="kb-android-app-icon">A</div>
           <div class="kb-android-app-meta">
@@ -77,30 +188,33 @@ const hasLocation = computed(() => {
           </div>
           <div class="kb-android-more">⋮</div>
         </div>
-        <div class="kb-android-body" :class="{ 'kb-android-body--expanded': expanded }">
+        <div class="kb-android-body" :class="{ 'kb-android-body--expanded': isAndroidExpanded }">
           <!-- Collapsed: title + body on left, large icon (image) on right. Expanded: image full-width at top (BigPictureStyle). -->
-          <div v-if="expanded && displayPreview.imageUrl" class="kb-android-image kb-android-image--expanded">
+          <div v-if="isAndroidExpanded && displayPreview.imageUrl" class="kb-android-image kb-android-image--expanded">
             <img :src="displayPreview.imageUrl" alt="" />
           </div>
           <div class="kb-android-body-row">
             <div class="kb-android-body-content">
-              <div v-if="displayPreview.title" class="kb-android-title">
-                {{ displayPreview.title }}
+              <div v-if="displayTitle" class="kb-android-title">
+                {{ displayTitle }}
               </div>
-              <div v-if="displayPreview.body" class="kb-android-text">
-                {{ displayPreview.body }}
+              <div v-if="displayBody" class="kb-android-text">
+                {{ displayBody }}
               </div>
               <!-- Collapsed: location as one line (no map); expanded: map strip below -->
-              <div v-if="hasLocation && !expanded && (displayPreview.location?.name || displayPreview.location?.address)" class="kb-android-location-line">
+              <div v-if="hasLocation && !isAndroidExpanded && (displayPreview.location?.name || displayPreview.location?.address)" class="kb-android-location-line">
                 <span aria-hidden="true">📍</span> {{ displayPreview.location?.name || displayPreview.location?.address }}
               </div>
+              <div v-if="deepLink" class="kb-preview-link" :class="{ 'kb-preview-link--invalid': !deepLinkValid }">
+                {{ deepLinkValid ? deepLinkDisplay : 'Invalid deep link format' }}
+              </div>
             </div>
-            <div v-if="!expanded && displayPreview.imageUrl" class="kb-android-thumb">
+            <div v-if="!isAndroidExpanded && displayPreview.imageUrl" class="kb-android-thumb">
               <img :src="displayPreview.imageUrl" alt="" />
             </div>
           </div>
           <!-- Expanded only: map strip (like rich content) -->
-          <div v-if="hasLocation && mapEmbedUrl && expanded" class="kb-preview-map kb-preview-map--android">
+          <div v-if="hasLocation && mapEmbedUrl && isAndroidExpanded" class="kb-preview-map kb-preview-map--android">
             <iframe
               :src="mapEmbedUrl"
               title="Location map"
@@ -110,9 +224,9 @@ const hasLocation = computed(() => {
               {{ displayPreview.location?.name || displayPreview.location?.address }}
             </div>
           </div>
-          <div v-if="displayPreview.actions && displayPreview.actions.length" class="kb-android-actions">
+          <div v-if="visibleActions.length" class="kb-android-actions">
             <button
-              v-for="a in displayPreview.actions"
+              v-for="a in visibleActions"
               :key="a.id"
               type="button"
               class="kb-android-action-btn"
@@ -120,6 +234,9 @@ const hasLocation = computed(() => {
               {{ a.label || 'Action' }}
             </button>
           </div>
+          <p v-if="hiddenActionCount > 0" class="kb-preview-warning">
+            Showing {{ visibleActions.length }} of {{ actions.length }} actions on {{ selectedPlatform }}.
+          </p>
         </div>
       </div>
     </div>
@@ -129,6 +246,7 @@ const hasLocation = computed(() => {
       v-else-if="selectedPlatform === 'ios'"
       :id="`kb-preview-panel-ios`"
       class="kb-preview__device kb-preview__device--ios"
+      :class="`kb-preview__device--ios-${iosSurface}`"
       role="tabpanel"
       aria-labelledby="kb-preview-tab-ios"
     >
@@ -143,11 +261,14 @@ const hasLocation = computed(() => {
             <span class="kb-ios-app-name">Your App</span>
             <span class="kb-ios-time-label">now</span>
           </div>
-          <div v-if="displayPreview.title" class="kb-ios-title">
-            {{ displayPreview.title }}
+          <div v-if="displayTitle" class="kb-ios-title">
+            {{ displayTitle }}
           </div>
-          <div v-if="displayPreview.body" class="kb-ios-text">
-            {{ displayPreview.body }}
+          <div v-if="displayBody" class="kb-ios-text">
+            {{ displayBody }}
+          </div>
+          <div v-if="deepLink" class="kb-preview-link" :class="{ 'kb-preview-link--invalid': !deepLinkValid }">
+            {{ deepLinkValid ? deepLinkDisplay : 'Invalid deep link format' }}
           </div>
           <!-- iOS: location as attachment-style strip below text (like rich notification attachment) -->
           <div v-if="hasLocation && mapEmbedUrl" class="kb-preview-map kb-preview-map--ios">
@@ -160,9 +281,9 @@ const hasLocation = computed(() => {
               {{ displayPreview.location?.name || displayPreview.location?.address }}
             </div>
           </div>
-          <div v-if="displayPreview.actions && displayPreview.actions.length" class="kb-ios-actions">
+          <div v-if="visibleActions.length" class="kb-ios-actions">
             <button
-              v-for="a in displayPreview.actions"
+              v-for="a in visibleActions"
               :key="a.id"
               type="button"
               class="kb-ios-action-btn"
@@ -170,6 +291,9 @@ const hasLocation = computed(() => {
               {{ a.label || 'Action' }}
             </button>
           </div>
+          <p v-if="hiddenActionCount > 0" class="kb-preview-warning">
+            Showing {{ visibleActions.length }} of {{ actions.length }} actions on {{ selectedPlatform }}.
+          </p>
         </div>
         <div v-if="displayPreview.imageUrl" class="kb-ios-thumb">
           <img :src="displayPreview.imageUrl" alt="" />
@@ -182,6 +306,7 @@ const hasLocation = computed(() => {
       v-else
       :id="`kb-preview-panel-web`"
       class="kb-preview__device kb-preview__device--web"
+      :class="`kb-preview__device--web-${webSurface}`"
       role="tabpanel"
       aria-labelledby="kb-preview-tab-web"
     >
@@ -205,11 +330,14 @@ const hasLocation = computed(() => {
           </div>
         </div>
         <div class="kb-web-body">
-          <div v-if="displayPreview.title" class="kb-web-title">
-            {{ displayPreview.title }}
+          <div v-if="displayTitle" class="kb-web-title">
+            {{ displayTitle }}
           </div>
-          <div v-if="displayPreview.body" class="kb-web-text">
-            {{ displayPreview.body }}
+          <div v-if="displayBody" class="kb-web-text">
+            {{ displayBody }}
+          </div>
+          <div v-if="deepLink" class="kb-preview-link" :class="{ 'kb-preview-link--invalid': !deepLinkValid }">
+            {{ deepLinkValid ? deepLinkDisplay : 'Invalid deep link format' }}
           </div>
           <div v-if="displayPreview.imageUrl" class="kb-web-image">
             <img :src="displayPreview.imageUrl" alt="" />
@@ -225,9 +353,9 @@ const hasLocation = computed(() => {
             </div>
           </div>
         </div>
-        <div v-if="displayPreview.actions && displayPreview.actions.length" class="kb-web-actions">
+        <div v-if="visibleActions.length" class="kb-web-actions">
             <button
-              v-for="(a, idx) in displayPreview.actions"
+              v-for="(a, idx) in visibleActions"
             :key="a.id || idx"
             type="button"
             class="kb-web-action-btn"
@@ -236,6 +364,9 @@ const hasLocation = computed(() => {
             {{ a.label || 'Action' }}
           </button>
         </div>
+        <p v-if="hiddenActionCount > 0" class="kb-preview-warning">
+          Showing {{ visibleActions.length }} of {{ actions.length }} actions on {{ selectedPlatform }}.
+        </p>
       </div>
     </div>
   </div>
@@ -251,7 +382,46 @@ const hasLocation = computed(() => {
   box-sizing: border-box;
 }
 .kb-preview__toggle {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.kb-preview__mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.kb-preview__mode-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 700;
+}
+.kb-preview__mode-select {
+  border: 1px solid #d7e2ee;
+  background: #fff;
+  color: #0f172a;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.45rem;
+}
+.kb-preview__quality {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.kb-preview__badge {
+  font-size: 0.68rem;
+  line-height: 1;
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #d9e4ef;
+  background: #fff;
+  color: #334155;
 }
 .kb-checkbox {
   display: inline-flex;
@@ -293,6 +463,18 @@ const hasLocation = computed(() => {
   background: #111827;
   border-radius: 12px;
   padding: 8px 10px;
+}
+.kb-preview__device--android-heads_up .kb-android-notification {
+  border: 1px solid #374151;
+}
+.kb-preview__device--android-heads_up .kb-android-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.kb-preview__device--android-expanded .kb-android-notification {
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.22);
 }
 .kb-android-notification--expanded {
   padding-bottom: 10px;
@@ -453,6 +635,13 @@ const hasLocation = computed(() => {
   align-items: flex-start;
   gap: 8px;
 }
+.kb-preview__device--ios-lock .kb-ios-banner {
+  margin-top: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+.kb-preview__device--ios-center .kb-ios-banner {
+  background: rgba(15, 23, 42, 0.82);
+}
 .kb-ios-app-icon {
   width: 28px;
   height: 28px;
@@ -609,6 +798,26 @@ const hasLocation = computed(() => {
   width: 100%;
   border-radius: 6px;
 }
+.kb-preview__device--web-center .kb-web-toast {
+  width: 100%;
+  margin-left: 0;
+}
+.kb-preview-link {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: #93c5fd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kb-preview-link--invalid {
+  color: #fda4af;
+}
+.kb-preview-warning {
+  margin: 6px 0 0;
+  font-size: 0.68rem;
+  color: #cbd5e1;
+}
 .kb-web-actions {
   margin-top: 6px;
   display: flex;
@@ -627,5 +836,20 @@ const hasLocation = computed(() => {
 .kb-web-action-btn--secondary {
   background: transparent;
   border-color: #475569;
+}
+@media (max-width: 640px) {
+  .kb-preview {
+    padding: 0.75rem;
+  }
+  .kb-preview__mode {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .kb-preview__mode-select {
+    flex: 1;
+  }
+  .kb-preview__quality {
+    width: 100%;
+  }
 }
 </style>

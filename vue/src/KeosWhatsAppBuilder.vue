@@ -289,6 +289,7 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
   } else if (templateType === "document" || headerType === "document") {
     header = {
       type: "document",
+      url: msg.media_url || undefined,
       filename: msg.document_filename || msg.media_url || "document.pdf",
     };
   } else if (headerType === "text" && msg.header) {
@@ -348,9 +349,9 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
   }
 
   const buttonsRaw = (msg.buttons as { label?: string; type?: string; value?: string }[] | undefined) ?? [];
-  if (templateType === "flow") {
+  if (templateType === "flow" && msg.flow_cta_label?.trim()) {
     buttonsRaw.push({
-      label: msg.flow_cta_label ?? "Open flow",
+      label: msg.flow_cta_label,
     });
   }
   return {
@@ -467,9 +468,37 @@ function onPresetSelect(e: Event) {
 function updateName(name: string) {
   update({
     name,
+    message: { ...campaign.value.message, template_name: name || undefined } as any,
     tracking: { ...(campaign.value.tracking ?? {}), campaign_name: name },
   });
 }
+
+function onWhatsAppMessageUpdate(partial: any) {
+  updateMessage(partial);
+  if (Object.prototype.hasOwnProperty.call(partial ?? {}, "template_name")) {
+    const nextName = String(partial?.template_name ?? "");
+    if (nextName !== campaign.value.name) {
+      update({
+        name: nextName,
+        tracking: {
+          ...(campaign.value.tracking ?? {}),
+          campaign_name: nextName,
+        },
+      });
+    }
+  }
+}
+
+watch(
+  () => campaign.value.name,
+  (name) => {
+    const currentTemplateName = String((campaign.value.message as any).template_name ?? "");
+    if ((name || "") !== currentTemplateName) {
+      updateMessage({ template_name: name || undefined } as any);
+    }
+  },
+  { immediate: true },
+);
 
 function onInsertVariable(payload: {
   variable: string;
@@ -587,7 +616,7 @@ function onSave() {
           <SectionWhatsApp
             :message="campaign.message"
             :show-reset="true"
-            @update="updateMessage"
+            @update="onWhatsAppMessageUpdate"
             @reset="resetMessage()"
           />
           <SectionPersonalization

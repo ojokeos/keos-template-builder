@@ -592,19 +592,6 @@ function removeLinkListItem(blockId: string, index: number) {
   updateBlock(blockId, { links });
 }
 
-function insertVariableIntoColumns(blockId: string, column: 'left' | 'right') {
-  const block = blocks.value.find((b) => b.id === blockId) as EmailBlockColumns | undefined;
-  if (!block || block.type !== 'columns') return;
-  const token = ` {{ ${selectedVariable.value} }}`;
-  const existingVars = ((props.message as any).variables ?? []) as string[];
-  const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
-  const key = column === 'left' ? 'leftContent' : 'rightContent';
-  const current = (block as any)[key] ?? '';
-  const next = current + token;
-  updateBlock(blockId, { [key]: next });
-  emit('update', { variables: nextVars } as any);
-}
-
 function updateRowBlock(blockId: string, patch: Partial<EmailBlockRow>) {
   const block = blocks.value.find((b) => b.id === blockId) as EmailBlockRow | undefined;
   if (!block || block.type !== 'row') return;
@@ -681,10 +668,10 @@ function removeCarouselSlide(blockId: string, index: number) {
   updateBlock(blockId, { slides: (block.slides || []).filter((_, i) => i !== index) });
 }
 
-function insertVariableInto(field: 'subject' | 'preview') {
-  const token = ` {{ ${selectedVariable.value} }}`;
+function insertVariableInto(field: 'subject' | 'preview', variable = selectedVariable.value) {
+  const token = ` {{ ${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
-  const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
+  const nextVars = Array.from(new Set([...existingVars, variable]));
 
   if (field === 'subject') {
     emit('update', {
@@ -699,12 +686,12 @@ function insertVariableInto(field: 'subject' | 'preview') {
   }
 }
 
-function insertVariableIntoBlock(blockId: string) {
+function insertVariableIntoBlock(blockId: string, variable = selectedVariable.value) {
   const block = blocks.value.find((b) => b.id === blockId);
   if (!block || (block.type !== 'paragraph' && block.type !== 'heading' && block.type !== 'footer' && block.type !== 'quote' && block.type !== 'liquid' && block.type !== 'code_block')) return;
-  const token = ` {{ ${selectedVariable.value} }}`;
+  const token = ` {{ ${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
-  const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
+  const nextVars = Array.from(new Set([...existingVars, variable]));
   const contentKey = block.type === 'footer' ? 'content' : 'content';
   const current = (block as any)[contentKey] ?? '';
   const next = current + token;
@@ -714,16 +701,47 @@ function insertVariableIntoBlock(blockId: string) {
   emit('update', { blocks: nextBlocks, variables: nextVars } as any);
 }
 
-function insertVariableIntoRow(blockId: string, cellIndex: number) {
+function insertVariableIntoRow(blockId: string, cellIndex: number, variable = selectedVariable.value) {
   const block = blocks.value.find((b) => b.id === blockId) as EmailBlockRow | undefined;
   if (!block || block.type !== 'row') return;
-  const token = ` {{ ${selectedVariable.value} }}`;
+  const token = ` {{ ${variable} }}`;
   const existingVars = ((props.message as any).variables ?? []) as string[];
-  const nextVars = Array.from(new Set([...existingVars, selectedVariable.value]));
+  const nextVars = Array.from(new Set([...existingVars, variable]));
   const cells = [...(block.cells || [])];
   cells[cellIndex] = (cells[cellIndex] || '') + token;
   updateBlock(blockId, { cells });
   emit('update', { variables: nextVars } as any);
+}
+
+function insertVariableIntoColumns(blockId: string, column: 'left' | 'right', variable = selectedVariable.value) {
+  const block = blocks.value.find((b) => b.id === blockId) as EmailBlockColumns | undefined;
+  if (!block || block.type !== 'columns') return;
+  const token = ` {{ ${variable} }}`;
+  const existingVars = ((props.message as any).variables ?? []) as string[];
+  const nextVars = Array.from(new Set([...existingVars, variable]));
+  const key = column === 'left' ? 'leftContent' : 'rightContent';
+  const current = (block as any)[key] ?? '';
+  const next = current + token;
+  updateBlock(blockId, { [key]: next });
+  emit('update', { variables: nextVars } as any);
+}
+
+const activeVarTarget = ref<string | null>(null);
+function toggleVarPicker(target: string) {
+  activeVarTarget.value = activeVarTarget.value === target ? null : target;
+}
+function applyVarChoice(target: string, variable: string) {
+  if (!variable) return;
+  if (target === 'subject') insertVariableInto('subject', variable);
+  else if (target === 'preview') insertVariableInto('preview', variable);
+  else if (target.startsWith('block:')) insertVariableIntoBlock(target.slice(6), variable);
+  else if (target.startsWith('col-left:')) insertVariableIntoColumns(target.slice(9), 'left', variable);
+  else if (target.startsWith('col-right:')) insertVariableIntoColumns(target.slice(10), 'right', variable);
+  else if (target.startsWith('row:')) {
+    const [, id, index] = target.split(':');
+    insertVariableIntoRow(id, Number(index), variable);
+  }
+  activeVarTarget.value = null;
 }
 
 function addVariable() {
@@ -739,7 +757,7 @@ const varChipLabel = '{{ var }}';
 
 <template>
   <section class="em-section">
-    <div class="em-strip">
+    <div class="em-strip kb-section">
       <div class="em-strip-head">
         <h4 class="em-strip-title">Sender & envelope</h4>
         <button
@@ -752,7 +770,7 @@ const varChipLabel = '{{ var }}';
         </button>
       </div>
       <p class="em-strip-desc">Who the email is from and how it appears in the inbox.</p>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">From name</label>
         <input
           type="text"
@@ -762,7 +780,7 @@ const varChipLabel = '{{ var }}';
           @input="updateFromName"
         />
       </div>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">From address</label>
         <input
           type="email"
@@ -772,7 +790,7 @@ const varChipLabel = '{{ var }}';
           @input="updateFromAddress"
         />
       </div>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">Reply-to <span class="em-optional">optional</span></label>
         <input
           type="email"
@@ -782,7 +800,7 @@ const varChipLabel = '{{ var }}';
           @input="updateReplyTo"
         />
       </div>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">Subject line</label>
         <div class="em-input-group">
           <input
@@ -792,14 +810,27 @@ const varChipLabel = '{{ var }}';
             :value="subject"
             @input="updateSubject"
           />
-          <button type="button" class="em-chip" @click="insertVariableInto('subject')" title="Insert variable">
-            {{ varChipLabel }}
-          </button>
+          <div class="em-var-picker-wrap">
+            <button type="button" class="em-chip" @click="toggleVarPicker('subject')" title="Insert variable">
+              {{ varChipLabel }}
+            </button>
+            <div v-if="activeVarTarget === 'subject'" class="em-var-menu" role="menu">
+              <button
+                v-for="v in localVariables"
+                :key="`subject-var-${v}`"
+                type="button"
+                class="em-var-menu-item"
+                @click="applyVarChoice('subject', v)"
+              >
+                {{ v }}
+              </button>
+            </div>
+          </div>
         </div>
         <span class="em-analyzer" :class="`em-analyzer--${subjectBucket}`">{{ getSubjectAnalyzerLabel(subjectBucket) }}</span>
         <span v-if="subjectSpammy.length" class="em-analyzer em-analyzer--spam">Spammy: {{ subjectSpammy.join(', ') }}</span>
       </div>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">Preview text <span class="em-optional">preheader</span></label>
         <div class="em-input-group">
           <input
@@ -809,9 +840,22 @@ const varChipLabel = '{{ var }}';
             :value="previewText"
             @input="updatePreviewText"
           />
-          <button type="button" class="em-chip" @click="insertVariableInto('preview')" title="Insert variable">
-            {{ varChipLabel }}
-          </button>
+          <div class="em-var-picker-wrap">
+            <button type="button" class="em-chip" @click="toggleVarPicker('preview')" title="Insert variable">
+              {{ varChipLabel }}
+            </button>
+            <div v-if="activeVarTarget === 'preview'" class="em-var-menu" role="menu">
+              <button
+                v-for="v in localVariables"
+                :key="`preview-var-${v}`"
+                type="button"
+                class="em-var-menu-item"
+                @click="applyVarChoice('preview', v)"
+              >
+                {{ v }}
+              </button>
+            </div>
+          </div>
         </div>
         <span class="em-hint">~130 characters for best display.</span>
         <span class="em-analyzer" :class="`em-analyzer--${previewBucket}`">{{ getPreviewAnalyzerLabel(previewBucket) }}</span>
@@ -819,7 +863,7 @@ const varChipLabel = '{{ var }}';
       </div>
     </div>
 
-    <div class="em-strip em-strip--library">
+    <div class="em-strip kb-section em-strip--library">
       <h4 class="em-strip-title">Block library</h4>
       <p class="em-strip-desc">Insert reusable blocks.</p>
       <div class="em-library-chips">
@@ -835,7 +879,7 @@ const varChipLabel = '{{ var }}';
       </div>
     </div>
 
-    <div class="em-strip em-strip--blocks">
+    <div class="em-strip kb-section em-strip--blocks">
       <h4 class="em-strip-title">Content blocks</h4>
       <p class="em-strip-desc">Build the body. Reorder with arrows.</p>
 
@@ -892,7 +936,12 @@ const varChipLabel = '{{ var }}';
               @input="(e) => updateBlock(block.id, { content: (e.target as HTMLInputElement).value })"
               placeholder="Heading text"
             />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoBlock(block.id)">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`block-var-heading-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
           </div>
 
           <div v-else-if="block.type === 'paragraph'" class="em-block-fields">
@@ -903,7 +952,12 @@ const varChipLabel = '{{ var }}';
               placeholder="Paragraph text"
               rows="2"
             />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoBlock(block.id)">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`block-var-paragraph-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
           </div>
 
           <div v-else-if="block.type === 'image'" class="em-block-fields">
@@ -935,7 +989,12 @@ const varChipLabel = '{{ var }}';
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).content" @input="(e) => updateBlock(block.id, { content: (e.target as HTMLTextAreaElement).value })" placeholder="Footer text" rows="2" />
             <input type="url" class="em-input" :value="(block as any).unsubscribeUrl" @input="(e) => updateBlock(block.id, { unsubscribeUrl: (e.target as HTMLInputElement).value })" placeholder="Unsubscribe URL" />
             <input type="text" class="em-input" :value="(block as any).companyAddress" @input="(e) => updateBlock(block.id, { companyAddress: (e.target as HTMLInputElement).value })" placeholder="Company address" />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoBlock(block.id)">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`block-var-footer-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
           </div>
 
           <div v-else-if="block.type === 'list'" class="em-block-fields">
@@ -980,7 +1039,12 @@ const varChipLabel = '{{ var }}';
               placeholder="Quote or callout text"
               rows="3"
             />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoBlock(block.id)">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`block-var-quote-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
           </div>
 
           <div v-else-if="block.type === 'social'" class="em-block-fields">
@@ -1033,10 +1097,20 @@ const varChipLabel = '{{ var }}';
           <div v-else-if="block.type === 'columns'" class="em-block-fields">
             <label class="em-inline-label">Left column</label>
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).leftContent" @input="(e) => updateBlock(block.id, { leftContent: (e.target as HTMLTextAreaElement).value })" placeholder="Left column text" rows="2" />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoColumns(block.id, 'left')">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`col-left:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `col-left:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`col-left-var-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`col-left:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
             <label class="em-inline-label">Right column</label>
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).rightContent" @input="(e) => updateBlock(block.id, { rightContent: (e.target as HTMLTextAreaElement).value })" placeholder="Right column text" rows="2" />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoColumns(block.id, 'right')">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`col-right:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `col-right:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`col-right-var-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`col-right:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
           </div>
 
           <div v-else-if="block.type === 'divider'" class="em-block-fields">
@@ -1075,7 +1149,12 @@ const varChipLabel = '{{ var }}';
             <div v-for="(cell, ci) in ((block as any).cells || [])" :key="ci" class="em-row-cell">
               <label class="em-inline-label">Column {{ ci + 1 }}</label>
               <textarea class="em-textarea em-textarea--sm" :value="cell" @input="(e) => updateRowCell(block.id, ci, (e.target as HTMLTextAreaElement).value)" placeholder="Cell content" rows="2" />
-              <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoRow(block.id, ci)">{{ varChipLabel }}</button>
+              <div class="em-var-picker-wrap">
+                <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`row:${block.id}:${ci}`)">{{ varChipLabel }}</button>
+                <div v-if="activeVarTarget === `row:${block.id}:${ci}`" class="em-var-menu" role="menu">
+                  <button v-for="v in localVariables" :key="`row-var-${block.id}-${ci}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`row:${block.id}:${ci}`, v)">{{ v }}</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1126,14 +1205,24 @@ const varChipLabel = '{{ var }}';
 
           <div v-else-if="block.type === 'liquid'" class="em-block-fields">
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).content" @input="(e) => updateBlock(block.id, { content: (e.target as HTMLTextAreaElement).value })" placeholder="Liquid / conditional code (e.g. {% if %})" rows="4" />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoBlock(block.id)">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`block-var-liquid-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
             <span class="em-hint">Advanced: conditional content. Rendered server-side at send.</span>
           </div>
 
           <div v-else-if="block.type === 'code_block'" class="em-block-fields">
             <input type="text" class="em-input" :value="(block as any).caption" @input="(e) => updateBlock(block.id, { caption: (e.target as HTMLInputElement).value })" placeholder="Caption (optional)" />
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).content" @input="(e) => updateBlock(block.id, { content: (e.target as HTMLTextAreaElement).value })" placeholder="Code or snippet to display to the recipient" rows="5" />
-            <button type="button" class="em-chip em-chip--sm" @click="insertVariableIntoBlock(block.id)">{{ varChipLabel }}</button>
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`block-var-code-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+            </div>
             <span class="em-hint">Display formatted code/snippets (e.g. order ID, API key). Supports merge tags.</span>
           </div>
 
@@ -1153,16 +1242,38 @@ const varChipLabel = '{{ var }}';
           </div>
 
           <div v-if="blockLayoutTypes.includes(block.type)" class="em-block-fields em-block-fields--row em-block-fields--layout">
-            <label class="em-inline-label">Alignment</label>
-            <select
-              :value="(block as any).alignment ?? 'left'"
-              class="em-select em-select--sm"
-              @change="(e) => updateBlock(block.id, { alignment: (e.target as HTMLSelectElement).value as BlockAlignment })"
-            >
-              <option value="left">Left</option>
-              <option value="center">Center</option>
-              <option value="right">Right</option>
-            </select>
+            <div class="em-align-group" role="group" aria-label="Block alignment">
+              <button
+                type="button"
+                class="em-align-btn"
+                :class="{ 'em-align-btn--active': ((block as any).alignment ?? 'left') === 'left' }"
+                title="Align left"
+                aria-label="Align left"
+                @click="updateBlock(block.id, { alignment: 'left' as BlockAlignment })"
+              >
+                <span aria-hidden="true">≡</span>
+              </button>
+              <button
+                type="button"
+                class="em-align-btn"
+                :class="{ 'em-align-btn--active': ((block as any).alignment ?? 'left') === 'center' }"
+                title="Align center"
+                aria-label="Align center"
+                @click="updateBlock(block.id, { alignment: 'center' as BlockAlignment })"
+              >
+                <span aria-hidden="true">≣</span>
+              </button>
+              <button
+                type="button"
+                class="em-align-btn"
+                :class="{ 'em-align-btn--active': ((block as any).alignment ?? 'left') === 'right' }"
+                title="Align right"
+                aria-label="Align right"
+                @click="updateBlock(block.id, { alignment: 'right' as BlockAlignment })"
+              >
+                <span aria-hidden="true">☰</span>
+              </button>
+            </div>
             <label class="em-check-row">
               <input type="checkbox" :checked="(block as any).fullWidth" @change="(e) => updateBlock(block.id, { fullWidth: (e.target as HTMLInputElement).checked })" />
               <span>Full width</span>
@@ -1171,7 +1282,7 @@ const varChipLabel = '{{ var }}';
         </div>
       </div>
 
-      <div class="em-add-bar">
+      <div class="em-add-bar kb-field kb-field--add-bar">
         <span class="em-add-bar-label">Add block</span>
         <div class="em-add-bar-btns">
           <button type="button" class="em-add-btn" @click="addBlock('heading')" title="Heading">H</button>
@@ -1201,10 +1312,10 @@ const varChipLabel = '{{ var }}';
       </div>
     </div>
 
-    <div class="em-strip em-strip--personalize">
+    <div class="em-strip kb-section em-strip--personalize">
       <h4 class="em-strip-title">Personalization</h4>
       <p class="em-strip-desc">Merge tags for subject, preheader, and text blocks.</p>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">Variable</label>
         <div class="em-input-group">
           <select v-model="selectedVariable" class="em-select em-select--flex">
@@ -1212,7 +1323,7 @@ const varChipLabel = '{{ var }}';
           </select>
         </div>
       </div>
-      <div class="em-field">
+      <div class="em-field kb-field">
         <label class="em-label">Add custom</label>
         <div class="em-input-group">
           <input v-model="newVariable" type="text" class="em-input em-input--flex" placeholder="e.g. plan_name" />
@@ -1227,73 +1338,97 @@ const varChipLabel = '{{ var }}';
 .em-section {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 1rem;
 }
+.kb-section,
 .em-strip {
-  padding-bottom: 24px;
-  border-bottom: 1px solid #f1f5f9;
-}
-.em-strip:last-of-type {
-  border-bottom: none;
-  padding-bottom: 0;
+  --wa-surface: var(--kb-surface, #ffffff);
+  --wa-border: var(--kb-border, #d6e0eb);
+  --wa-text: var(--kb-text-strong, #0f172a);
+  --wa-text-muted: var(--kb-text-muted, #56657a);
+  margin-bottom: 0;
+  border: 1px solid var(--wa-border);
+  border-radius: 16px;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
 }
 .em-strip--blocks {
-  padding-top: 8px;
+  padding-top: 1rem;
 }
 .em-strip--personalize {
-  padding-top: 8px;
+  padding-top: 1rem;
 }
 .em-strip-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 0.3rem;
 }
 .em-strip-title {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #0f172a;
+  font-size: 1.04rem;
+  font-weight: 750;
+  color: var(--wa-text);
   margin: 0;
   letter-spacing: 0.01em;
 }
 .em-section-reset {
   font-size: 0.75rem;
-  color: #64748b;
-  background: none;
-  border: none;
+  color: #334155;
+  background: var(--wa-surface);
+  border: 1px solid #e2e8f0;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 0.36rem 0.62rem;
+  border-radius: 999px;
+  font-weight: 600;
 }
 .em-section-reset:hover {
   color: #0f172a;
-  background: #f1f5f9;
+  background: #eef2f7;
 }
 .em-strip-desc {
-  font-size: 0.8125rem;
-  color: #64748b;
-  margin: 0 0 20px 0;
+  font-size: 0.875rem;
+  color: var(--wa-text-muted);
+  margin: 0 0 0.75rem 0;
   line-height: 1.45;
 }
+.kb-field,
 .em-field {
-  margin-bottom: 18px;
+  margin-bottom: 0.88rem;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface);
+  border-radius: 12px;
+  padding: 0.82rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 0 rgba(15, 23, 42, 0.02);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.kb-field:focus-within,
+.em-field:focus-within {
+  border-color: #bad0ea;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 .em-field:last-child {
   margin-bottom: 0;
 }
 .em-label {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #475569;
-  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 720;
+  color: var(--wa-text);
+  margin-bottom: 0.46rem;
+  letter-spacing: 0.02em;
 }
 .em-optional { font-weight: 400; color: #94a3b8; }
 .em-hint {
   font-size: 0.75rem;
-  color: #94a3b8;
-  margin-top: 6px;
+  color: var(--wa-text-muted);
+  margin-top: 0.38rem;
+  line-height: 1.35;
   display: block;
 }
 .em-analyzer {
@@ -1393,6 +1528,43 @@ const varChipLabel = '{{ var }}';
   padding: 8px 12px;
   font-size: 0.6875rem;
 }
+.em-var-picker-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.em-var-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 25;
+  min-width: 180px;
+  max-width: 260px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid #d1dbe8;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+.em-var-menu-item {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: #334155;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.em-var-menu-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
 .em-block-list {
   display: flex;
   flex-direction: column;
@@ -1464,6 +1636,13 @@ const varChipLabel = '{{ var }}';
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background: linear-gradient(180deg, #f8fbff 0%, #f3f8ff 100%);
+  border: 1px solid #dbe7f4;
+  border-radius: 10px;
+  padding: 0.75rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 1px 2px rgba(15, 23, 42, 0.035);
 }
 .em-block-fields .em-input {
   margin-bottom: 0;
@@ -1472,6 +1651,40 @@ const varChipLabel = '{{ var }}';
   flex-direction: row;
   align-items: center;
   gap: 10px;
+}
+.em-block-fields--layout {
+  margin-top: 0.55rem;
+  background: #f7fbff;
+  border-color: #cfdeef;
+}
+.em-align-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.em-align-btn {
+  width: 34px;
+  height: 30px;
+  border: 1px solid #c9d9ec;
+  border-radius: 8px;
+  background: #fff;
+  color: #365372;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.em-align-btn:hover {
+  border-color: #9db9db;
+  background: #f5f9ff;
+  color: #1e3a5f;
+}
+.em-align-btn--active {
+  border-color: #7fa5d1;
+  background: #e8f0ff;
+  color: #163a63;
 }
 .em-inline-label {
   font-size: 0.8125rem;
@@ -1485,32 +1698,46 @@ const varChipLabel = '{{ var }}';
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-top: 0.25rem;
+}
+.kb-field--add-bar,
+.em-add-bar.kb-field {
+  background:
+    linear-gradient(180deg, #f8fbff 0%, #f2f8ff 100%),
+    var(--wa-surface);
+  border-color: #cfe0f3;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 10px 20px rgba(37, 99, 235, 0.08);
 }
 .em-add-bar-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 .em-add-bar-btns {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: 10px;
 }
 .em-add-btn {
-  padding: 10px 14px;
+  padding: 0.58rem 0.72rem;
   font-size: 0.75rem;
-  font-weight: 500;
-  color: #475569;
-  background: #fff;
-  border: 1px dashed #cbd5e1;
+  font-weight: 700;
+  color: #28425f;
+  background: #ffffff;
+  border: 1px solid #c9d9ec;
   border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 .em-add-btn:hover {
-  border-color: #94a3b8;
-  background: #f8fafc;
+  border-color: #9ab8db;
+  background: #f5f9ff;
   color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .em-add-btn--sm {
   align-self: flex-start;

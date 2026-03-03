@@ -7,17 +7,45 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     }) => any;
     selectedPlatform: Platform;
     previewProfile?: SampleProfile | null;
+    message?: {
+        deep_link?: string;
+    };
+    delivery?: {
+        priority?: string;
+        ttl?: number;
+        silent_push?: boolean;
+    };
 }>, {
     previewProfile: null;
+    message: undefined;
+    delivery: undefined;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {}, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
     getPreview: (platform: Platform, options?: {
         expanded?: boolean;
     }) => any;
     selectedPlatform: Platform;
     previewProfile?: SampleProfile | null;
+    message?: {
+        deep_link?: string;
+    };
+    delivery?: {
+        priority?: string;
+        ttl?: number;
+        silent_push?: boolean;
+    };
 }>, {
     previewProfile: null;
+    message: undefined;
+    delivery: undefined;
 }>>> & Readonly<{}>, {
+    message: {
+        deep_link?: string;
+    };
+    delivery: {
+        priority?: string;
+        ttl?: number;
+        silent_push?: boolean;
+    };
     previewProfile: SampleProfile | null;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;

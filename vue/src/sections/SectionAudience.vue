@@ -130,36 +130,64 @@ function onTopicChange(e: Event) {
 
 <style scoped>
 .kb-section {
-  margin-bottom: 1.25rem;
+  --wa-surface: var(--kb-surface, #ffffff);
+  --wa-border: var(--kb-border, #d6e0eb);
+  --wa-text: var(--kb-text-strong, #0f172a);
+  --wa-text-muted: var(--kb-text-muted, #56657a);
+  margin-bottom: 1rem;
+  border: 1px solid var(--wa-border);
+  border-radius: 16px;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
 }
 .kb-section__title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
+  font-size: 1.04rem;
+  font-weight: 750;
+  margin: 0;
+  color: var(--wa-text);
+  letter-spacing: 0.01em;
 }
 .kb-section__desc {
   font-size: 0.875rem;
-  color: #64748b;
-  margin: 0 0 0.75rem 0;
+  color: var(--wa-text-muted);
+  margin: 0;
+  line-height: 1.45;
 }
 .kb-field {
-  margin-bottom: 18px;
+  margin-bottom: 0.88rem;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface);
+  border-radius: 12px;
+  padding: 0.82rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 0 rgba(15, 23, 42, 0.02);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.kb-field:focus-within {
+  border-color: #bad0ea;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 .kb-field:last-child {
   margin-bottom: 0;
 }
 .kb-label {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #475569;
-  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 720;
+  color: var(--wa-text);
+  margin-bottom: 0.46rem;
+  letter-spacing: 0.02em;
 }
 .kb-helper {
   display: block;
   font-size: 0.75rem;
-  color: #94a3b8;
-  margin-top: 6px;
+  color: var(--wa-text-muted);
+  margin-top: 0.38rem;
+  line-height: 1.35;
 }
 .kb-input,
 .kb-textarea {

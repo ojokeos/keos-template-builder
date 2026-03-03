@@ -172,41 +172,6 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
     },
   },
   {
-    id: 'location-store',
-    label: 'Store location',
-    campaign: {
-      message: {
-        title: '',
-        body: 'Hi {{ first_name }}, here is the location of our nearest store.',
-        variables: ['first_name'],
-        template_type: 'location',
-        template_category: 'utility',
-        template_name: 'store_location',
-        location: {
-          lat: 6.5244,
-          lon: 3.3792,
-          name: 'Lagos Flagship Store',
-          address: '12 Marina Rd, Lagos',
-        },
-      } as any,
-    },
-  },
-  {
-    id: 'coupon-offer',
-    label: 'Coupon offer',
-    campaign: {
-      message: {
-        title: '',
-        body: 'Hi {{ first_name }}, use this code at checkout for a discount.',
-        variables: ['first_name'],
-        template_type: 'coupon',
-        template_category: 'marketing',
-        template_name: 'coupon_offer',
-        coupon_code: 'SAVE20',
-      } as any,
-    },
-  },
-  {
     id: 'limited-time-offer',
     label: 'Limited time offer',
     campaign: {
