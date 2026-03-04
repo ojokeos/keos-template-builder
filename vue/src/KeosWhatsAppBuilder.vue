@@ -94,12 +94,32 @@ function validateWhatsAppTemplate(c: Campaign): string[] {
   return errors;
 }
 
+function validateDisabledWhatsAppOptions(
+  c: Campaign,
+  disabledCategories: string[],
+  disabledFormats: string[],
+): string[] {
+  const msg = c.message as any;
+  const category = String(msg.template_category ?? "").trim();
+  const format = String(msg.template_type ?? "text").trim();
+  const errors: string[] = [];
+  if (category && disabledCategories.includes(category)) {
+    errors.push(`WhatsApp category "${category}" is disabled in this builder configuration`);
+  }
+  if (format && disabledFormats.includes(format)) {
+    errors.push(`WhatsApp format "${format}" is disabled in this builder configuration`);
+  }
+  return errors;
+}
+
 const props = withDefaults(
   defineProps<{
     modelValue?: Partial<Campaign>;
     hooks?: BuilderExtensionHooks;
     disabledSections?: string[];
     variableOptions?: string[];
+    disabledTemplateCategories?: string[];
+    disabledTemplateFormats?: string[];
     /** Footer button visibility controls */
     showSave?: boolean;
     showClose?: boolean;
@@ -120,6 +140,8 @@ const props = withDefaults(
   {
     disabledSections: () => [],
     variableOptions: () => [],
+    disabledTemplateCategories: () => [],
+    disabledTemplateFormats: () => [],
     showSave: true,
     showClose: true,
     showDuplicate: true,
@@ -158,7 +180,14 @@ const {
   hooks: {
     ...props.hooks,
     customValidators: async (c) => {
-      const errors = validateWhatsAppTemplate(c);
+      const errors = [
+        ...validateWhatsAppTemplate(c),
+        ...validateDisabledWhatsAppOptions(
+          c,
+          props.disabledTemplateCategories,
+          props.disabledTemplateFormats,
+        ),
+      ];
       const fromHost = props.hooks?.customValidators
         ? await props.hooks.customValidators(c)
         : [];
@@ -596,6 +625,8 @@ function onSave() {
           <SectionWhatsApp
             :message="campaign.message"
             :show-reset="true"
+            :disabled-categories="disabledTemplateCategories"
+            :disabled-formats="disabledTemplateFormats"
             @update="onWhatsAppMessageUpdate"
             @reset="resetMessage()"
           />

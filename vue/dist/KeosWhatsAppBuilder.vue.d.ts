@@ -5,6 +5,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     hooks?: BuilderExtensionHooks;
     disabledSections?: string[];
     variableOptions?: string[];
+    disabledTemplateCategories?: string[];
+    disabledTemplateFormats?: string[];
     /** Footer button visibility controls */
     showSave?: boolean;
     showClose?: boolean;
@@ -24,6 +26,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
+    disabledTemplateCategories: () => never[];
+    disabledTemplateFormats: () => never[];
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
@@ -44,6 +48,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     hooks?: BuilderExtensionHooks;
     disabledSections?: string[];
     variableOptions?: string[];
+    disabledTemplateCategories?: string[];
+    disabledTemplateFormats?: string[];
     /** Footer button visibility controls */
     showSave?: boolean;
     showClose?: boolean;
@@ -63,6 +69,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
+    disabledTemplateCategories: () => never[];
+    disabledTemplateFormats: () => never[];
     showSave: boolean;
     showClose: boolean;
     showDuplicate: boolean;
@@ -87,6 +95,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     actionsNote: string;
     designOnly: boolean;
     enforceSlugName: boolean;
+    disabledTemplateCategories: string[];
+    disabledTemplateFormats: string[];
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

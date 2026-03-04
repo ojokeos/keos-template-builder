@@ -6,8 +6,14 @@ const props = withDefaults(
   defineProps<{
     message: CampaignMessage;
     showReset?: boolean;
+    disabledCategories?: string[];
+    disabledFormats?: string[];
   }>(),
-  { showReset: false }
+  {
+    showReset: false,
+    disabledCategories: () => [],
+    disabledFormats: () => [],
+  }
 );
 
 const emit = defineEmits<{
@@ -26,6 +32,12 @@ const FORMAT_OPTIONS = [
   { value: 'catalog', label: 'Catalog', hint: 'Open WhatsApp catalog or product list.' },
   { value: 'mpm', label: 'Multi-product', hint: 'Show multiple products in one template.' },
   { value: 'auth', label: 'Authentication', hint: 'OTP/login verification template.' },
+] as const;
+
+const CATEGORY_OPTIONS = [
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'utility', label: 'Utility' },
+  { value: 'authentication', label: 'Authentication' },
 ] as const;
 
 const HEADER_LIMIT = 60;
@@ -62,6 +74,8 @@ const setupProgressLabel = computed(() => {
   if (!bodyText.value.trim()) return 'Draft';
   return 'Ready to validate';
 });
+const disabledCategorySet = computed(() => new Set((props.disabledCategories ?? []).map((v) => String(v).trim())));
+const disabledFormatSet = computed(() => new Set((props.disabledFormats ?? []).map((v) => String(v).trim())));
 
 function extractPlaceholders(text: string): string[] {
   if (!text || typeof text !== 'string') return [];
@@ -210,9 +224,14 @@ function addCard() {
         @change="onCategoryChange(($event.target as HTMLSelectElement).value)"
       >
         <option value="">Select category</option>
-        <option value="marketing">Marketing</option>
-        <option value="utility">Utility</option>
-        <option value="authentication">Authentication</option>
+        <option
+          v-for="opt in CATEGORY_OPTIONS"
+          :key="opt.value"
+          :value="opt.value"
+          :disabled="disabledCategorySet.has(opt.value)"
+        >
+          {{ opt.label }}{{ disabledCategorySet.has(opt.value) ? ' (Disabled)' : '' }}
+        </option>
       </select>
     </div>
 
@@ -230,8 +249,9 @@ function addCard() {
           v-for="opt in FORMAT_OPTIONS"
           :key="opt.value"
           :value="opt.value"
+          :disabled="disabledFormatSet.has(opt.value)"
         >
-          {{ opt.label }}
+          {{ opt.label }}{{ disabledFormatSet.has(opt.value) ? ' (Disabled)' : '' }}
         </option>
       </select>
     </div>
