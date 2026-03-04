@@ -3,21 +3,31 @@ import { CampaignMessage } from '@keos/notification-builder-core';
 declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
     message: CampaignMessage;
     showReset?: boolean;
+    disabledCategories?: string[];
+    disabledFormats?: string[];
 }>, {
     showReset: boolean;
+    disabledCategories: () => never[];
+    disabledFormats: () => never[];
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     reset: () => void;
     update: (partial: any) => void;
 }, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
     message: CampaignMessage;
     showReset?: boolean;
+    disabledCategories?: string[];
+    disabledFormats?: string[];
 }>, {
     showReset: boolean;
+    disabledCategories: () => never[];
+    disabledFormats: () => never[];
 }>>> & Readonly<{
     onReset?: (() => any) | undefined;
     onUpdate?: ((partial: any) => any) | undefined;
 }>, {
     showReset: boolean;
+    disabledCategories: string[];
+    disabledFormats: string[];
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

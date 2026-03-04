@@ -197,6 +197,14 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        disabledTemplateCategories: {
+            type: import('vue').PropType<string[]>;
+            default: () => never[];
+        };
+        disabledTemplateFormats: {
+            type: import('vue').PropType<string[]>;
+            default: () => never[];
+        };
     }>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
         change: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         "update:modelValue": (campaign: import('@keos/notification-builder-core').Campaign) => void;
@@ -245,6 +253,14 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        disabledTemplateCategories: {
+            type: import('vue').PropType<string[]>;
+            default: () => never[];
+        };
+        disabledTemplateFormats: {
+            type: import('vue').PropType<string[]>;
+            default: () => never[];
+        };
     }>> & Readonly<{
         onChange?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         "onUpdate:modelValue"?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
@@ -263,6 +279,8 @@ declare const _default: {
         actionsNote: string;
         designOnly: boolean;
         enforceSlugName: boolean;
+        disabledTemplateCategories: string[];
+        disabledTemplateFormats: string[];
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
     KeosSmsBuilder: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
         variableOptions: {
