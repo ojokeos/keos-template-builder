@@ -1,4 +1,4 @@
-import { Campaign, BuilderExtensionHooks } from '@keos/notification-builder-core';
+import { Campaign, BuilderExtensionHooks, GupshupWhatsAppTemplateCreatePayload } from '@keos/notification-builder-core';
 
 declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
     modelValue?: Partial<Campaign>;
@@ -43,6 +43,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     schedule: (campaign: Campaign) => void;
     send: (campaign: Campaign) => void;
     duplicate: (campaign: Campaign) => void;
+    "save-gupshup-template": (payload: GupshupWhatsAppTemplateCreatePayload, warnings: string[], campaign: Campaign) => void;
 }, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
     modelValue?: Partial<Campaign>;
     hooks?: BuilderExtensionHooks;
@@ -86,6 +87,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     onSchedule?: ((campaign: Campaign) => any) | undefined;
     onSend?: ((campaign: Campaign) => any) | undefined;
     onDuplicate?: ((campaign: Campaign) => any) | undefined;
+    "onSave-gupshup-template"?: ((payload: GupshupWhatsAppTemplateCreatePayload, warnings: string[], campaign: Campaign) => any) | undefined;
 }>, {
     variableOptions: string[];
     disabledSections: string[];

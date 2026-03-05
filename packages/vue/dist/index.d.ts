@@ -214,6 +214,7 @@ declare const _default: {
         schedule: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         send: (campaign: import('@keos/notification-builder-core').Campaign) => void;
         duplicate: (campaign: import('@keos/notification-builder-core').Campaign) => void;
+        "save-gupshup-template": (payload: import('@keos/notification-builder-core').GupshupWhatsAppTemplateCreatePayload, warnings: string[], campaign: import('@keos/notification-builder-core').Campaign) => void;
     }, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<{
         variableOptions: {
             type: import('vue').PropType<string[]>;
@@ -270,6 +271,7 @@ declare const _default: {
         onSchedule?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         onSend?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
         onDuplicate?: ((campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
+        "onSave-gupshup-template"?: ((payload: import('@keos/notification-builder-core').GupshupWhatsAppTemplateCreatePayload, warnings: string[], campaign: import('@keos/notification-builder-core').Campaign) => any) | undefined;
     }>, {
         variableOptions: string[];
         disabledSections: string[];
