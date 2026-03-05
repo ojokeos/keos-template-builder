@@ -114,6 +114,12 @@ function onFormatChange(value: string) {
   if (value === 'auth') partial.template_category = 'authentication';
   if (value === 'image' || value === 'video' || value === 'document') {
     partial.header_type = value;
+  } else if (
+    headerType.value === 'image' ||
+    headerType.value === 'video' ||
+    headerType.value === 'document'
+  ) {
+    partial.header_type = 'none';
   }
   emitUpdate(partial);
 }
