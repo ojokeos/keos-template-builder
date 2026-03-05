@@ -4,6 +4,8 @@ import type {
   Campaign,
   BuilderExtensionHooks,
 } from "@keos/notification-builder-core";
+import type { GupshupWhatsAppTemplateCreatePayload } from "@keos/notification-builder-core";
+import { toGupshupWhatsAppTemplate } from "@keos/notification-builder-core";
 import { spacing, colors, radius } from "@keos/notification-builder-ui-tokens";
 import { useCampaignState } from "./composables/useCampaignState";
 import { useAutosave } from "./composables/useAutosave";
@@ -151,16 +153,86 @@ const props = withDefaults(
   },
 );
 
+function hydrateMessageFromGupshup(message: Record<string, unknown> | undefined): Record<string, unknown> {
+  if (!message) return {};
+  const metaTemplate = message.metaTemplate as Record<string, unknown> | undefined;
+  const firstBody = Array.isArray(metaTemplate?.components)
+    ? (metaTemplate?.components as any[]).find((c) => c?.type === "BODY")
+    : undefined;
+  const firstFooter = Array.isArray(metaTemplate?.components)
+    ? (metaTemplate?.components as any[]).find((c) => c?.type === "FOOTER")
+    : undefined;
+  const firstHeader = Array.isArray(metaTemplate?.components)
+    ? (metaTemplate?.components as any[]).find((c) => c?.type === "HEADER")
+    : undefined;
+
+  const content = String(message.content ?? "").trim();
+  const templateName = String(message.elementName ?? "").trim();
+  const languageCode = String(message.languageCode ?? "").trim();
+  const category = String(message.category ?? "").trim().toLowerCase();
+  const templateType = String(message.templateType ?? "").trim().toLowerCase();
+  const footer = String(message.footer ?? "").trim();
+  const headerText = String(message.header ?? "").trim();
+
+  return {
+    ...message,
+    ...(templateName && !message.template_name ? { template_name: templateName } : {}),
+    ...(languageCode && !message.template_language ? { template_language: languageCode } : {}),
+    ...(category && !message.template_category ? { template_category: category } : {}),
+    ...(templateType && !message.template_type ? { template_type: templateType } : {}),
+    ...(content && !message.body ? { body: content } : {}),
+    ...(footer && !message.footer ? { footer } : {}),
+    ...(headerText && !message.header ? { header: headerText } : {}),
+    ...(!message.body && firstBody?.text ? { body: String(firstBody.text) } : {}),
+    ...(!message.footer && firstFooter?.text ? { footer: String(firstFooter.text) } : {}),
+    ...(!message.header && firstHeader?.text ? { header: String(firstHeader.text) } : {}),
+  };
+}
+
+function hydrateCampaignFromGupshup(source?: Partial<Campaign>): Partial<Campaign> | undefined {
+  if (!source) return source;
+  const msg = hydrateMessageFromGupshup(source.message as Record<string, unknown> | undefined);
+  return { ...source, message: msg as any };
+}
+
 const emit = defineEmits<{
   "update:modelValue": [campaign: Campaign];
   change: [campaign: Campaign];
   save: [campaign: Campaign];
+  "save-gupshup-template": [
+    payload: GupshupWhatsAppTemplateCreatePayload,
+    warnings: string[],
+    campaign: Campaign,
+  ];
   edit: [];
   "send-test": [campaign: Campaign];
   schedule: [campaign: Campaign];
   send: [campaign: Campaign];
   duplicate: [campaign: Campaign];
 }>();
+
+function withGupshupMessage(c: Campaign): Campaign {
+  const mapped = toGupshupWhatsAppTemplate(c, {
+    exampleData: previewProfile.value?.data,
+  });
+  return {
+    ...c,
+    message: {
+      ...(c.message as any),
+      elementName: mapped.payload.elementName,
+      languageCode: mapped.payload.languageCode,
+      category: mapped.payload.category,
+      templateType: mapped.payload.templateType,
+      content: mapped.payload.content,
+      ...(mapped.payload.header ? { header: mapped.payload.header } : {}),
+      ...(mapped.payload.footer ? { footer: mapped.payload.footer } : {}),
+      ...(mapped.payload.buttons ? { buttons: mapped.payload.buttons } : {}),
+      ...(mapped.payload.example ? { example: mapped.payload.example } : {}),
+      metaTemplate: mapped.payload.metaTemplate,
+      ...(mapped.payload.advanced ? { advanced: mapped.payload.advanced } : {}),
+    } as any,
+  };
+}
 
 const {
   campaign,
@@ -176,7 +248,7 @@ const {
   resetMessage,
   hooks,
 } = useCampaignState({
-  initial: props.modelValue,
+  initial: hydrateCampaignFromGupshup(props.modelValue),
   hooks: {
     ...props.hooks,
     customValidators: async (c) => {
@@ -194,7 +266,7 @@ const {
       return [...errors, ...fromHost];
     },
   },
-  onDirty: () => emit("change", campaign.value),
+  onDirty: () => emit("change", withGupshupMessage(campaign.value)),
 });
 
 const { lastSavedAt } = useAutosave(campaign, { channel: "whatsapp" });
@@ -214,7 +286,9 @@ onUnmounted(() => {
   window.removeEventListener("keydown", onKeydown);
 });
 
-watch(campaign, (c) => emit("update:modelValue", c), { deep: true });
+watch(campaign, (c) => emit("update:modelValue", withGupshupMessage(c)), {
+  deep: true,
+});
 
 const estimatedReach = ref<number | undefined>();
 const canSend = ref(true);
@@ -553,7 +627,12 @@ function onInsertVariable(payload: {
 
 function onSave() {
   if (!isValid.value) return;
-  emit("save", campaign.value);
+  const mapped = toGupshupWhatsAppTemplate(campaign.value, {
+    exampleData: previewProfile.value?.data,
+  });
+  const hostCampaign = withGupshupMessage(campaign.value);
+  emit("save-gupshup-template", mapped.payload, mapped.warnings, hostCampaign);
+  emit("save", hostCampaign);
 }
 </script>
 
