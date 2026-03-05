@@ -25,6 +25,52 @@ const WA_BODY_LIMIT = 1024;
 const WA_FOOTER_LIMIT = 60;
 const WA_MAX_BUTTONS = 10;
 const WA_MAX_CAROUSEL_CARDS = 10;
+const WA_MEDIA_TYPES = new Set(["image", "video", "document"]);
+
+function normalizeWhatsAppMessage(message: Record<string, unknown>): Record<string, unknown> {
+  const next = { ...message } as Record<string, unknown>;
+  const templateType = String(next.template_type ?? "text").trim().toLowerCase();
+  const headerType = String(next.header_type ?? "none").trim().toLowerCase();
+  const hasMedia = WA_MEDIA_TYPES.has(templateType) || WA_MEDIA_TYPES.has(headerType);
+
+  if (!hasMedia) {
+    next.media_url = undefined;
+    next.media_caption = undefined;
+    next.document_filename = undefined;
+    next.document_size = undefined;
+  }
+
+  if (templateType !== "carousel") {
+    next.cards = undefined;
+  }
+  if (templateType !== "catalog" && templateType !== "mpm") {
+    next.products = undefined;
+  }
+  if (templateType !== "flow") {
+    next.flow_id = undefined;
+    next.flow_cta_label = undefined;
+  }
+  if (templateType !== "lto") {
+    next.lto_expiry = undefined;
+  }
+  if (templateType !== "auth") {
+    next.auth_type = undefined;
+    next.auth_label = undefined;
+    next.auth_code = undefined;
+    next.otp_code = undefined;
+  }
+  if (templateType !== "document" && headerType !== "document") {
+    next.document_filename = undefined;
+    next.document_size = undefined;
+  }
+  if (templateType !== "location") {
+    next.location = undefined;
+  }
+
+  const buttons = Array.isArray(next.buttons) ? next.buttons : [];
+  next.buttons = buttons;
+  return next;
+}
 
 function validateWhatsAppTemplate(c: Campaign): string[] {
   const errors: string[] = [];
@@ -354,6 +400,22 @@ const hasWaPreviewContent = computed(() => {
 const selectedPreviewProfileId = ref<string>("");
 const presetConfirmOpen = ref(false);
 const pendingPreset = ref<(typeof WHATSAPP_PRESETS)[0] | null>(null);
+const disabledCategorySet = computed(
+  () => new Set((props.disabledTemplateCategories ?? []).map((v) => String(v).trim().toLowerCase())),
+);
+const disabledFormatSet = computed(
+  () => new Set((props.disabledTemplateFormats ?? []).map((v) => String(v).trim().toLowerCase())),
+);
+const availablePresets = computed(() =>
+  WHATSAPP_PRESETS.filter((p) => {
+    const msg = (p.campaign?.message ?? {}) as Record<string, unknown>;
+    const cat = String(msg.template_category ?? '').trim().toLowerCase();
+    const fmt = String(msg.template_type ?? '').trim().toLowerCase();
+    if (cat && disabledCategorySet.value.has(cat)) return false;
+    if (fmt && disabledFormatSet.value.has(fmt)) return false;
+    return true;
+  }),
+);
 
 const previewProfile = computed(() => {
   const id = selectedPreviewProfileId.value;
@@ -543,12 +605,19 @@ const waPreviewTemplate = computed((): WaPreviewTemplate => {
 
 function applyPreset(preset: (typeof WHATSAPP_PRESETS)[0]) {
   const c = campaign.value;
-  const msg = preset.campaign.message
-    ? { ...c.message, ...preset.campaign.message }
-    : c.message;
+  const msg = normalizeWhatsAppMessage({
+    ...(preset.campaign.message
+      ? (preset.campaign.message as unknown as Record<string, unknown>)
+      : (c.message as unknown as Record<string, unknown>)),
+    template_name:
+      (preset.campaign.message as any)?.template_name ??
+      (preset.campaign.name as string | undefined) ??
+      c.name ??
+      undefined,
+  });
   update({
     ...preset.campaign,
-    message: msg,
+    message: msg as any,
   });
   pendingPreset.value = null;
   presetConfirmOpen.value = false;
@@ -557,7 +626,7 @@ function applyPreset(preset: (typeof WHATSAPP_PRESETS)[0]) {
 function onPresetSelect(e: Event) {
   const value = (e.target as HTMLSelectElement).value;
   if (!value) return;
-  const preset = WHATSAPP_PRESETS.find((p) => p.id === value);
+  const preset = availablePresets.value.find((p) => p.id === value);
   if (!preset) return;
   if (dirty.value) {
     pendingPreset.value = preset;
@@ -577,7 +646,12 @@ function updateName(name: string) {
 }
 
 function onWhatsAppMessageUpdate(partial: any) {
-  updateMessage(partial);
+  const current = campaign.value.message as Record<string, unknown>;
+  const merged = normalizeWhatsAppMessage({
+    ...current,
+    ...(partial ?? {}),
+  });
+  updateMessage(merged as any);
   if (Object.prototype.hasOwnProperty.call(partial ?? {}, "template_name")) {
     const nextName = String(partial?.template_name ?? "");
     if (nextName !== campaign.value.name) {
@@ -686,7 +760,7 @@ function onSave() {
                 @change="onPresetSelect"
               >
                 <option value="">Presets…</option>
-                <option v-for="p in WHATSAPP_PRESETS" :key="p.id" :value="p.id">
+                <option v-for="p in availablePresets" :key="p.id" :value="p.id">
                   {{ p.label }}
                 </option>
               </select>
