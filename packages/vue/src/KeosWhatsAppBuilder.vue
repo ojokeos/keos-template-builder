@@ -26,6 +26,48 @@ const WA_FOOTER_LIMIT = 60;
 const WA_MAX_BUTTONS = 10;
 const WA_MAX_CAROUSEL_CARDS = 10;
 const WA_MEDIA_TYPES = new Set(["image", "video", "document"]);
+const REQUIRED_GUPSHUP_KEYS = new Set([
+  "elementName",
+  "languageCode",
+  "category",
+  "templateType",
+  "content",
+  "metaTemplate",
+  "metaWhatsApp",
+]);
+
+function hasContentValue(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "object") return Object.keys(value as Record<string, unknown>).length > 0;
+  return true;
+}
+
+function buildCompactGupshupMessage(
+  payload: GupshupWhatsAppTemplateCreatePayload,
+): Record<string, unknown> {
+  const compact: Record<string, unknown> = {
+    elementName: payload.elementName,
+    languageCode: payload.languageCode,
+    category: payload.category,
+    templateType: payload.templateType,
+    content: payload.content,
+    metaTemplate: payload.metaTemplate,
+    metaWhatsApp: payload.metaWhatsApp ?? payload.metaTemplate,
+    header: payload.header,
+    footer: payload.footer,
+    buttons: payload.buttons,
+    example: payload.example,
+    advanced: payload.advanced,
+  };
+  return Object.fromEntries(
+    Object.entries(compact).filter(([key, value]) => {
+      if (REQUIRED_GUPSHUP_KEYS.has(key)) return true;
+      return hasContentValue(value);
+    }),
+  );
+}
 
 function normalizeWhatsAppMessage(message: Record<string, unknown>): Record<string, unknown> {
   const next = { ...message } as Record<string, unknown>;
@@ -201,7 +243,9 @@ const props = withDefaults(
 
 function hydrateMessageFromGupshup(message: Record<string, unknown> | undefined): Record<string, unknown> {
   if (!message) return {};
-  const metaTemplate = message.metaTemplate as Record<string, unknown> | undefined;
+  const metaTemplate =
+    (message.metaTemplate as Record<string, unknown> | undefined) ??
+    (message.metaWhatsApp as Record<string, unknown> | undefined);
   const firstBody = Array.isArray(metaTemplate?.components)
     ? (metaTemplate?.components as any[]).find((c) => c?.type === "BODY")
     : undefined;
@@ -263,20 +307,7 @@ function withGupshupMessage(c: Campaign): Campaign {
   });
   return {
     ...c,
-    message: {
-      ...(c.message as any),
-      elementName: mapped.payload.elementName,
-      languageCode: mapped.payload.languageCode,
-      category: mapped.payload.category,
-      templateType: mapped.payload.templateType,
-      content: mapped.payload.content,
-      ...(mapped.payload.header ? { header: mapped.payload.header } : {}),
-      ...(mapped.payload.footer ? { footer: mapped.payload.footer } : {}),
-      ...(mapped.payload.buttons ? { buttons: mapped.payload.buttons } : {}),
-      ...(mapped.payload.example ? { example: mapped.payload.example } : {}),
-      metaTemplate: mapped.payload.metaTemplate,
-      ...(mapped.payload.advanced ? { advanced: mapped.payload.advanced } : {}),
-    } as any,
+    message: buildCompactGupshupMessage(mapped.payload) as any,
   };
 }
 
@@ -679,7 +710,7 @@ watch(
 
 function onInsertVariable(payload: {
   variable: string;
-  field: "title" | "body";
+  field: "title" | "body" | "footer";
 }) {
   const token = ` {{ .${payload.variable} }}`;
   const existingVars = campaign.value.message.variables ?? [];
@@ -689,6 +720,12 @@ function onInsertVariable(payload: {
     updateMessage({
       variables: nextVars,
       header: currentHeader + token,
+    } as any);
+  } else if (payload.field === "footer") {
+    const currentFooter = (campaign.value.message as any).footer ?? "";
+    updateMessage({
+      variables: nextVars,
+      footer: currentFooter + token,
     } as any);
   } else {
     const currentBody = (campaign.value.message as any).body ?? "";
@@ -786,6 +823,7 @@ function onSave() {
           <SectionPersonalization
             :message="campaign.message"
             :variable-options="variableOptions"
+            :targets="['title', 'body', 'footer']"
             @update="updateMessage"
             @insert-variable="onInsertVariable"
           />

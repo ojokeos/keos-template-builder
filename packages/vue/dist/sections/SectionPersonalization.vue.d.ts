@@ -3,20 +3,22 @@ import { CampaignMessage } from '@keos/notification-builder-core';
 declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<__VLS_TypePropsToRuntimeProps<{
     message: CampaignMessage;
     variableOptions?: string[];
+    targets?: Array<"title" | "body" | "footer">;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     update: (partial: Partial<CampaignMessage>) => void;
     insertVariable: (payload: {
         variable: string;
-        field: "title" | "body";
+        field: "title" | "body" | "footer";
     }) => void;
 }, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_TypePropsToRuntimeProps<{
     message: CampaignMessage;
     variableOptions?: string[];
+    targets?: Array<"title" | "body" | "footer">;
 }>>> & Readonly<{
     onUpdate?: ((partial: Partial<CampaignMessage>) => any) | undefined;
     onInsertVariable?: ((payload: {
         variable: string;
-        field: "title" | "body";
+        field: "title" | "body" | "footer";
     }) => any) | undefined;
 }>, {}, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;

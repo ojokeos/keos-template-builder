@@ -52,6 +52,8 @@ export interface GupshupWhatsAppTemplateCreatePayload {
     example?: string[];
     /** For providers/accounts that accept Meta-style structure via Gupshup */
     metaTemplate: MetaWhatsAppTemplateCreatePayload;
+    /** Explicit Meta payload mirror for downstream integrations. */
+    metaWhatsApp?: MetaWhatsAppTemplateCreatePayload;
     /** Best-effort pass-through of advanced builder data not universally standardized. */
     advanced?: Record<string, unknown>;
 }
