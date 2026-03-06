@@ -64,6 +64,8 @@ export interface GupshupWhatsAppTemplateCreatePayload {
   example?: string[];
   /** For providers/accounts that accept Meta-style structure via Gupshup */
   metaTemplate: MetaWhatsAppTemplateCreatePayload;
+  /** Explicit Meta payload mirror for downstream integrations. */
+  metaWhatsApp?: MetaWhatsAppTemplateCreatePayload;
   /** Best-effort pass-through of advanced builder data not universally standardized. */
   advanced?: Record<string, unknown>;
 }
@@ -175,6 +177,40 @@ function mapButtonsToMeta(
   return { buttons: mapped, varOrder, warnings };
 }
 
+function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): Array<{
+  type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'OPT_OUT';
+  title: string;
+  url?: string;
+  phoneNumber?: string;
+}> {
+  return buttonsRaw
+    .slice(0, 10)
+    .map((b) => {
+      const btn = b as Record<string, unknown>;
+      const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
+      const title = String(btn.label ?? '').trim() || 'Button';
+      if (type === 'url') {
+        return {
+          type: 'URL' as const,
+          title,
+          ...(String(btn.url ?? '').trim() ? { url: String(btn.url).trim() } : {}),
+        };
+      }
+      if (type === 'call') {
+        return {
+          type: 'PHONE_NUMBER' as const,
+          title,
+          ...(String(btn.phone ?? '').trim() ? { phoneNumber: String(btn.phone).trim() } : {}),
+        };
+      }
+      if (type === 'opt_out') {
+        return { type: 'OPT_OUT' as const, title };
+      }
+      return { type: 'QUICK_REPLY' as const, title };
+    })
+    .filter((b) => Boolean(b.title));
+}
+
 function collectAdvancedFields(msg: Record<string, unknown>): Record<string, unknown> | undefined {
   const advanced: Record<string, unknown> = {};
   const keys = [
@@ -242,9 +278,11 @@ export function toMetaWhatsAppTemplate(
 
   const footerRaw = String(msg.footer ?? '').trim();
   if (footerRaw) {
+    const footerTransformed = transformGoPlaceholdersToPositional(footerRaw, globalVarOrder);
+    globalVarOrder = footerTransformed.varOrder;
     components.push({
       type: 'FOOTER',
-      text: footerRaw,
+      text: footerTransformed.text,
     });
   }
 
@@ -290,9 +328,11 @@ export function toGupshupWhatsAppTemplate(
   const footer = meta.payload.components.find((c) => c.type === 'FOOTER') as
     | Extract<MetaTemplateComponent, { type: 'FOOTER' }>
     | undefined;
-  const buttonComp = meta.payload.components.find((c) => c.type === 'BUTTONS') as
-    | Extract<MetaTemplateComponent, { type: 'BUTTONS' }>
-    | undefined;
+  const bodyRaw = String(msg.body ?? '').trim();
+  const headerRaw = String(msg.header ?? '').trim();
+  const footerRaw = String(msg.footer ?? '').trim();
+  const buttonsRaw = Array.isArray(msg.buttons) ? (msg.buttons as unknown[]) : [];
+  const gupshupButtons = mapButtonsToGupshupCanonical(buttonsRaw);
 
   const templateType = (() => {
     const v = String(msg.template_type ?? '').trim().toLowerCase();
@@ -307,21 +347,13 @@ export function toGupshupWhatsAppTemplate(
     languageCode: meta.payload.language,
     category: meta.payload.category,
     templateType,
-    content: body?.text ?? '',
-    ...(header?.format === 'TEXT' && header.text ? { header: header.text } : {}),
-    ...(footer?.text ? { footer: footer.text } : {}),
-    ...(buttonComp?.buttons?.length
-      ? {
-          buttons: buttonComp.buttons.map((b) => ({
-            type: b.type,
-            title: b.text,
-            ...(b.url ? { url: b.url } : {}),
-            ...(b.phone_number ? { phoneNumber: b.phone_number } : {}),
-          })),
-        }
-      : {}),
+    content: bodyRaw || body?.text || '',
+    ...(header?.format === 'TEXT' && (headerRaw || header.text) ? { header: headerRaw || header.text } : {}),
+    ...(footerRaw || footer?.text ? { footer: footerRaw || footer?.text } : {}),
+    ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
     ...(body?.example?.body_text?.[0]?.length ? { example: body.example.body_text[0] } : {}),
     metaTemplate: meta.payload,
+    metaWhatsApp: meta.payload,
     ...(collectAdvancedFields(msg) ? { advanced: collectAdvancedFields(msg) } : {}),
   };
 

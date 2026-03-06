@@ -275,7 +275,7 @@ function updateName(name: string) {
 
 function onInsertVariable(payload: {
   variable: string;
-  field: "title" | "body";
+  field: "title" | "body" | "footer";
 }) {
   const token = ` {{ .${payload.variable} }}`;
   const existingVars = campaign.value.message.variables ?? [];

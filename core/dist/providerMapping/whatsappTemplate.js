@@ -87,6 +87,34 @@ function mapButtonsToMeta(buttonsRaw, varOrderSeed) {
         .filter((b) => Boolean(b.text));
     return { buttons: mapped, varOrder, warnings };
 }
+function mapButtonsToGupshupCanonical(buttonsRaw) {
+    return buttonsRaw
+        .slice(0, 10)
+        .map((b) => {
+        const btn = b;
+        const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
+        const title = String(btn.label ?? '').trim() || 'Button';
+        if (type === 'url') {
+            return {
+                type: 'URL',
+                title,
+                ...(String(btn.url ?? '').trim() ? { url: String(btn.url).trim() } : {}),
+            };
+        }
+        if (type === 'call') {
+            return {
+                type: 'PHONE_NUMBER',
+                title,
+                ...(String(btn.phone ?? '').trim() ? { phoneNumber: String(btn.phone).trim() } : {}),
+            };
+        }
+        if (type === 'opt_out') {
+            return { type: 'OPT_OUT', title };
+        }
+        return { type: 'QUICK_REPLY', title };
+    })
+        .filter((b) => Boolean(b.title));
+}
 function collectAdvancedFields(msg) {
     const advanced = {};
     const keys = [
@@ -146,9 +174,11 @@ export function toMetaWhatsAppTemplate(campaign, options = {}) {
     });
     const footerRaw = String(msg.footer ?? '').trim();
     if (footerRaw) {
+        const footerTransformed = transformGoPlaceholdersToPositional(footerRaw, globalVarOrder);
+        globalVarOrder = footerTransformed.varOrder;
         components.push({
             type: 'FOOTER',
-            text: footerRaw,
+            text: footerTransformed.text,
         });
     }
     const buttonsRaw = Array.isArray(msg.buttons) ? msg.buttons : [];
@@ -179,7 +209,11 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
     const header = meta.payload.components.find((c) => c.type === 'HEADER');
     const body = meta.payload.components.find((c) => c.type === 'BODY');
     const footer = meta.payload.components.find((c) => c.type === 'FOOTER');
-    const buttonComp = meta.payload.components.find((c) => c.type === 'BUTTONS');
+    const bodyRaw = String(msg.body ?? '').trim();
+    const headerRaw = String(msg.header ?? '').trim();
+    const footerRaw = String(msg.footer ?? '').trim();
+    const buttonsRaw = Array.isArray(msg.buttons) ? msg.buttons : [];
+    const gupshupButtons = mapButtonsToGupshupCanonical(buttonsRaw);
     const templateType = (() => {
         const v = String(msg.template_type ?? '').trim().toLowerCase();
         if (v === 'image')
@@ -195,21 +229,13 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
         languageCode: meta.payload.language,
         category: meta.payload.category,
         templateType,
-        content: body?.text ?? '',
-        ...(header?.format === 'TEXT' && header.text ? { header: header.text } : {}),
-        ...(footer?.text ? { footer: footer.text } : {}),
-        ...(buttonComp?.buttons?.length
-            ? {
-                buttons: buttonComp.buttons.map((b) => ({
-                    type: b.type,
-                    title: b.text,
-                    ...(b.url ? { url: b.url } : {}),
-                    ...(b.phone_number ? { phoneNumber: b.phone_number } : {}),
-                })),
-            }
-            : {}),
+        content: bodyRaw || body?.text || '',
+        ...(header?.format === 'TEXT' && (headerRaw || header.text) ? { header: headerRaw || header.text } : {}),
+        ...(footerRaw || footer?.text ? { footer: footerRaw || footer?.text } : {}),
+        ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
         ...(body?.example?.body_text?.[0]?.length ? { example: body.example.body_text[0] } : {}),
         metaTemplate: meta.payload,
+        metaWhatsApp: meta.payload,
         ...(collectAdvancedFields(msg) ? { advanced: collectAdvancedFields(msg) } : {}),
     };
     return { payload, warnings: meta.warnings };

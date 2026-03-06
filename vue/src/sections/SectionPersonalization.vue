@@ -5,11 +5,12 @@ import type { CampaignMessage } from '@keos/notification-builder-core';
 const props = defineProps<{
   message: CampaignMessage;
   variableOptions?: string[];
+  targets?: Array<'title' | 'body' | 'footer'>;
 }>();
 
 const emit = defineEmits<{
   update: [partial: Partial<CampaignMessage>];
-  insertVariable: [payload: { variable: string; field: 'title' | 'body' }];
+  insertVariable: [payload: { variable: string; field: 'title' | 'body' | 'footer' }];
 }>();
 
 const defaultVariables = ['first_name', 'last_name', 'order_id', 'city'];
@@ -31,8 +32,12 @@ watch(
 );
 
 const allVariables = computed(() => localVariables.value);
+const insertTargets = computed<Array<'title' | 'body' | 'footer'>>(() => {
+  const targets = props.targets?.length ? props.targets : ['title', 'body'];
+  return targets as Array<'title' | 'body' | 'footer'>;
+});
 
-function insertInto(field: 'title' | 'body') {
+function insertInto(field: 'title' | 'body' | 'footer') {
   emit('insertVariable', { variable: selectedVariable.value, field });
 }
 
@@ -58,8 +63,15 @@ function addVariable() {
         <select v-model="selectedVariable" class="kb-select">
           <option v-for="v in allVariables" :key="v" :value="v">{{ v }}</option>
         </select>
-        <button type="button" class="kb-btn-insert" @click="insertInto('title')">Into title</button>
-        <button type="button" class="kb-btn-insert" @click="insertInto('body')">Into message</button>
+        <button v-if="insertTargets.includes('title')" type="button" class="kb-btn-insert" @click="insertInto('title')">
+          Into title
+        </button>
+        <button v-if="insertTargets.includes('body')" type="button" class="kb-btn-insert" @click="insertInto('body')">
+          Into message
+        </button>
+        <button v-if="insertTargets.includes('footer')" type="button" class="kb-btn-insert" @click="insertInto('footer')">
+          Into footer
+        </button>
       </div>
     </div>
 
