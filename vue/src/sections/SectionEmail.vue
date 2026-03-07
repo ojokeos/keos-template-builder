@@ -727,6 +727,15 @@ function insertVariableIntoColumns(blockId: string, column: 'left' | 'right', va
 }
 
 const activeVarTarget = ref<string | null>(null);
+const activeEmojiTarget = ref<string | null>(null);
+const BLOCK_EMOJIS = [
+  '😀', '😃', '😄', '😁', '😂', '🤣', '😊', '😍', '🤩', '😉', '🙌', '👏',
+  '👍', '👎', '🙏', '🔥', '✨', '⭐', '💯', '✅', '⚠️', '❌', '⚡', '💡',
+  '🎉', '🎁', '🏷️', '💸', '💳', '📦', '🛍️', '🚚', '📣', '📢', '📈', '📉',
+  '🆕', '⏰', '🕒', '⌛', '📅', '📌', '🔒', '🔓', '🛡️', '🧾', '📎', '✉️',
+  '📧', '📱', '💬', '📝', '🔗', '📍', '🌐', '❤️', '💙', '💚', '🧡', '💜',
+  '🙂', '🤔', '😎', '😇', '🤝', '🚀',
+];
 function toggleVarPicker(target: string) {
   activeVarTarget.value = activeVarTarget.value === target ? null : target;
 }
@@ -742,6 +751,184 @@ function applyVarChoice(target: string, variable: string) {
     insertVariableIntoRow(id, Number(index), variable);
   }
   activeVarTarget.value = null;
+}
+
+function toggleEmojiPicker(target: string) {
+  activeEmojiTarget.value = activeEmojiTarget.value === target ? null : target;
+}
+
+function appendEmoji(value: unknown, emoji: string): string {
+  return `${String(value ?? '')}${emoji}`;
+}
+
+function applyEmojiToBlock(blockId: string, emoji: string) {
+  if (!emoji) return;
+  const block = blocks.value.find((b) => b.id === blockId) as any;
+  if (!block) return;
+
+  switch (block.type) {
+    case 'heading':
+    case 'paragraph':
+    case 'footer':
+    case 'quote':
+    case 'liquid':
+    case 'code_block':
+      updateBlock(blockId, { content: `${String(block.content ?? '')}${emoji}` });
+      break;
+    case 'button':
+      updateBlock(blockId, { text: `${String(block.text ?? '')}${emoji}` });
+      break;
+    case 'image':
+      updateBlock(blockId, { alt: `${String(block.alt ?? '')}${emoji}` });
+      break;
+    case 'video':
+      updateBlock(blockId, { caption: `${String(block.caption ?? '')}${emoji}` });
+      break;
+    case 'columns':
+      updateBlock(blockId, { leftContent: `${String(block.leftContent ?? '')}${emoji}` });
+      break;
+    case 'row': {
+      const cells = (Array.isArray(block.cells) ? [...block.cells] : []).map((c) => String(c ?? ''));
+      if (cells.length === 0) cells.push('');
+      cells[0] = `${String(cells[0] ?? '')}${emoji}`;
+      updateBlock(blockId, { cells });
+      break;
+    }
+    case 'navbar':
+    case 'link_list': {
+      const links = Array.isArray(block.links) ? [...block.links] : [];
+      if (!links.length) links.push({ text: '', url: '' });
+      links[0] = { ...links[0], text: `${String(links[0]?.text ?? '')}${emoji}` };
+      updateBlock(blockId, { links });
+      break;
+    }
+    case 'accordion': {
+      const items = Array.isArray(block.items) ? [...block.items] : [];
+      if (!items.length) items.push({ title: '', content: '' });
+      items[0] = { ...items[0], title: `${String(items[0]?.title ?? '')}${emoji}` };
+      updateBlock(blockId, { items });
+      break;
+    }
+    case 'countdown':
+      updateBlock(blockId, { label: `${String(block.label ?? '')}${emoji}` });
+      break;
+    case 'product_card':
+      updateBlock(blockId, { title: `${String(block.title ?? '')}${emoji}` });
+      break;
+    case 'dynamic_image':
+      updateBlock(blockId, { alt: `${String(block.alt ?? '')}${emoji}` });
+      break;
+    default:
+      break;
+  }
+  activeEmojiTarget.value = null;
+}
+
+function applyEmojiChoice(target: string, emoji: string) {
+  if (!emoji) return;
+  if (target === 'subject') {
+    emit('update', { subject: appendEmoji(subject.value, emoji) } as any);
+  } else if (target === 'preview') {
+    emit('update', { preview_text: appendEmoji(previewText.value, emoji) } as any);
+  } else if (target === 'from-name') {
+    emit('update', { from_name: appendEmoji((props.message as any).from_name, emoji) } as any);
+  } else if (target.startsWith('block:')) {
+    applyEmojiToBlock(target.slice(6), emoji);
+    return;
+  } else if (target.startsWith('col-left:')) {
+    const id = target.slice(9);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockColumns | undefined;
+    if (block?.type === 'columns') updateBlock(id, { leftContent: appendEmoji(block.leftContent, emoji) });
+  } else if (target.startsWith('col-right:')) {
+    const id = target.slice(10);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockColumns | undefined;
+    if (block?.type === 'columns') updateBlock(id, { rightContent: appendEmoji(block.rightContent, emoji) });
+  } else if (target.startsWith('row:')) {
+    const [, id, indexRaw] = target.split(':');
+    const index = Number(indexRaw);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockRow | undefined;
+    if (block?.type === 'row' && Number.isFinite(index)) {
+      const cells = [...(block.cells || [])].map((v) => String(v ?? ''));
+      cells[index] = appendEmoji(cells[index], emoji);
+      updateBlock(id, { cells });
+    }
+  } else if (target.startsWith('button-text:')) {
+    const id = target.slice(12);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockButton | undefined;
+    if (block?.type === 'button') updateBlock(id, { text: appendEmoji(block.text, emoji) });
+  } else if (target.startsWith('image-alt:')) {
+    const id = target.slice(10);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockImage | undefined;
+    if (block?.type === 'image') updateBlock(id, { alt: appendEmoji(block.alt, emoji) });
+  } else if (target.startsWith('video-caption:')) {
+    const id = target.slice(14);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockVideo | undefined;
+    if (block?.type === 'video') updateBlock(id, { caption: appendEmoji(block.caption, emoji) });
+  } else if (target.startsWith('dynamic-alt:')) {
+    const id = target.slice(12);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockDynamicImage | undefined;
+    if (block?.type === 'dynamic_image') updateBlock(id, { alt: appendEmoji(block.alt, emoji) });
+  } else if (target.startsWith('countdown-label:')) {
+    const id = target.slice(16);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockCountdown | undefined;
+    if (block?.type === 'countdown') updateBlock(id, { label: appendEmoji(block.label, emoji) });
+  } else if (target.startsWith('product-title:')) {
+    const id = target.slice(14);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockProductCard | undefined;
+    if (block?.type === 'product_card') updateBlock(id, { title: appendEmoji(block.title, emoji) });
+  } else if (target.startsWith('product-price:')) {
+    const id = target.slice(14);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockProductCard | undefined;
+    if (block?.type === 'product_card') updateBlock(id, { price: appendEmoji(block.price, emoji) });
+  } else if (target.startsWith('product-button:')) {
+    const id = target.slice(15);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockProductCard | undefined;
+    if (block?.type === 'product_card') updateBlock(id, { buttonText: appendEmoji(block.buttonText, emoji) });
+  } else if (target.startsWith('footer-address:')) {
+    const id = target.slice(15);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockFooter | undefined;
+    if (block?.type === 'footer') updateBlock(id, { companyAddress: appendEmoji(block.companyAddress, emoji) });
+  } else if (target.startsWith('code-caption:')) {
+    const id = target.slice(13);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockCodeBlock | undefined;
+    if (block?.type === 'code_block') updateBlock(id, { caption: appendEmoji(block.caption, emoji) });
+  } else if (target.startsWith('list-item:')) {
+    const [, id, indexRaw] = target.split(':');
+    const index = Number(indexRaw);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockList | undefined;
+    if (block?.type === 'list' && Number.isFinite(index)) {
+      updateListBlockItem(id, index, appendEmoji(block.items?.[index], emoji));
+    }
+  } else if (target.startsWith('link-list-item:')) {
+    const [, id, indexRaw] = target.split(':');
+    const index = Number(indexRaw);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockLinkList | undefined;
+    if (block?.type === 'link_list' && Number.isFinite(index)) {
+      updateLinkListItem(id, index, 'text', appendEmoji(block.links?.[index]?.text, emoji));
+    }
+  } else if (target.startsWith('navbar-item:')) {
+    const [, id, indexRaw] = target.split(':');
+    const index = Number(indexRaw);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockNavbar | undefined;
+    if (block?.type === 'navbar' && Number.isFinite(index)) {
+      updateNavbarLink(id, index, 'text', appendEmoji(block.links?.[index]?.text, emoji));
+    }
+  } else if (target.startsWith('accordion-title:')) {
+    const [, id, indexRaw] = target.split(':');
+    const index = Number(indexRaw);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockAccordion | undefined;
+    if (block?.type === 'accordion' && Number.isFinite(index)) {
+      updateAccordionItem(id, index, 'title', appendEmoji(block.items?.[index]?.title, emoji));
+    }
+  } else if (target.startsWith('accordion-content:')) {
+    const [, id, indexRaw] = target.split(':');
+    const index = Number(indexRaw);
+    const block = blocks.value.find((b) => b.id === id) as EmailBlockAccordion | undefined;
+    if (block?.type === 'accordion' && Number.isFinite(index)) {
+      updateAccordionItem(id, index, 'content', appendEmoji(block.items?.[index]?.content, emoji));
+    }
+  }
+  activeEmojiTarget.value = null;
 }
 
 function addVariable() {
@@ -772,13 +959,21 @@ const varChipLabel = '{{ .var }}';
       <p class="em-strip-desc">Who the email is from and how it appears in the inbox.</p>
       <div class="em-field kb-field">
         <label class="em-label">From name</label>
-        <input
-          type="text"
-          class="em-input"
-          placeholder="e.g. Your Brand"
-          :value="(message as any).from_name ?? ''"
-          @input="updateFromName"
-        />
+        <div class="em-input-group">
+          <input
+            type="text"
+            class="em-input em-input--flex"
+            placeholder="e.g. Your Brand"
+            :value="(message as any).from_name ?? ''"
+            @input="updateFromName"
+          />
+          <div class="em-var-picker-wrap">
+            <button type="button" class="em-chip" @click="toggleEmojiPicker('from-name')" title="Insert emoji">😊</button>
+            <div v-if="activeEmojiTarget === 'from-name'" class="em-emoji-menu" role="menu">
+              <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-from-name-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice('from-name', emoji)">{{ emoji }}</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="em-field kb-field">
         <label class="em-label">From address</label>
@@ -814,6 +1009,7 @@ const varChipLabel = '{{ .var }}';
             <button type="button" class="em-chip" @click="toggleVarPicker('subject')" title="Insert variable">
               {{ varChipLabel }}
             </button>
+            <button type="button" class="em-chip" @click="toggleEmojiPicker('subject')" title="Insert emoji">😊</button>
             <div v-if="activeVarTarget === 'subject'" class="em-var-menu" role="menu">
               <button
                 v-for="v in localVariables"
@@ -824,6 +1020,9 @@ const varChipLabel = '{{ .var }}';
               >
                 {{ v }}
               </button>
+            </div>
+            <div v-if="activeEmojiTarget === 'subject'" class="em-emoji-menu" role="menu">
+              <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-subject-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice('subject', emoji)">{{ emoji }}</button>
             </div>
           </div>
         </div>
@@ -844,6 +1043,7 @@ const varChipLabel = '{{ .var }}';
             <button type="button" class="em-chip" @click="toggleVarPicker('preview')" title="Insert variable">
               {{ varChipLabel }}
             </button>
+            <button type="button" class="em-chip" @click="toggleEmojiPicker('preview')" title="Insert emoji">😊</button>
             <div v-if="activeVarTarget === 'preview'" class="em-var-menu" role="menu">
               <button
                 v-for="v in localVariables"
@@ -854,6 +1054,9 @@ const varChipLabel = '{{ .var }}';
               >
                 {{ v }}
               </button>
+            </div>
+            <div v-if="activeEmojiTarget === 'preview'" class="em-emoji-menu" role="menu">
+              <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-preview-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice('preview', emoji)">{{ emoji }}</button>
             </div>
           </div>
         </div>
@@ -938,8 +1141,12 @@ const varChipLabel = '{{ .var }}';
             />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:block:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`block-var-heading-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:block:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-heading-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`block:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
           </div>
@@ -954,8 +1161,12 @@ const varChipLabel = '{{ .var }}';
             />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:block:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`block-var-paragraph-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:block:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-paragraph-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`block:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
           </div>
@@ -963,11 +1174,23 @@ const varChipLabel = '{{ .var }}';
           <div v-else-if="block.type === 'image'" class="em-block-fields">
             <input type="url" class="em-input" :value="(block as any).src" @input="(e) => updateBlock(block.id, { src: (e.target as HTMLInputElement).value })" placeholder="Image URL" />
             <input type="text" class="em-input" :value="(block as any).alt" @input="(e) => updateBlock(block.id, { alt: (e.target as HTMLInputElement).value })" placeholder="Alt text" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`image-alt:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `image-alt:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-image-alt-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`image-alt:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="url" class="em-input" :value="(block as any).linkUrl" @input="(e) => updateBlock(block.id, { linkUrl: (e.target as HTMLInputElement).value })" placeholder="Link URL (optional)" />
           </div>
 
           <div v-else-if="block.type === 'button'" class="em-block-fields">
             <input type="text" class="em-input" :value="(block as any).text" @input="(e) => updateBlock(block.id, { text: (e.target as HTMLInputElement).value })" placeholder="Button text" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`button-text:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `button-text:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-button-text-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`button-text:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="url" class="em-input" :value="(block as any).url" @input="(e) => updateBlock(block.id, { url: (e.target as HTMLInputElement).value })" placeholder="Button URL" />
             <div class="em-block-fields--row">
               <label class="em-inline-label">Border radius</label>
@@ -990,9 +1213,19 @@ const varChipLabel = '{{ .var }}';
             <input type="url" class="em-input" :value="(block as any).unsubscribeUrl" @input="(e) => updateBlock(block.id, { unsubscribeUrl: (e.target as HTMLInputElement).value })" placeholder="Unsubscribe URL" />
             <input type="text" class="em-input" :value="(block as any).companyAddress" @input="(e) => updateBlock(block.id, { companyAddress: (e.target as HTMLInputElement).value })" placeholder="Company address" />
             <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`footer-address:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `footer-address:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-footer-address-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`footer-address:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
+            <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:block:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`block-var-footer-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:block:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-footer-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`block:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
           </div>
@@ -1015,6 +1248,12 @@ const varChipLabel = '{{ .var }}';
                   @input="(e) => updateListBlockItem(block.id, i, (e.target as HTMLInputElement).value)"
                   :placeholder="`Item ${i + 1}`"
                 />
+                <div class="em-var-picker-wrap">
+                  <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`list-item:${block.id}:${i}`)" title="Insert emoji">😊</button>
+                  <div v-if="activeEmojiTarget === `list-item:${block.id}:${i}`" class="em-emoji-menu" role="menu">
+                    <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-list-item-${block.id}-${i}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`list-item:${block.id}:${i}`, emoji)">{{ emoji }}</button>
+                  </div>
+                </div>
                 <button type="button" class="em-block-btn em-block-btn--remove" @click="removeListBlockItem(block.id, i)" title="Remove" aria-label="Remove">×</button>
               </div>
             </div>
@@ -1041,8 +1280,12 @@ const varChipLabel = '{{ .var }}';
             />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:block:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`block-var-quote-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:block:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-quote-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`block:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
           </div>
@@ -1080,6 +1323,12 @@ const varChipLabel = '{{ .var }}';
             <input type="url" class="em-input" :value="(block as any).thumbnailUrl" @input="(e) => updateBlock(block.id, { thumbnailUrl: (e.target as HTMLInputElement).value })" placeholder="Thumbnail image URL" />
             <input type="url" class="em-input" :value="(block as any).videoUrl" @input="(e) => updateBlock(block.id, { videoUrl: (e.target as HTMLInputElement).value })" placeholder="Video URL (click destination)" />
             <input type="text" class="em-input" :value="(block as any).caption" @input="(e) => updateBlock(block.id, { caption: (e.target as HTMLInputElement).value })" placeholder="Caption (optional)" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`video-caption:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `video-caption:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-video-caption-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`video-caption:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
           </div>
 
           <div v-else-if="block.type === 'link_list'" class="em-block-fields">
@@ -1087,6 +1336,12 @@ const varChipLabel = '{{ .var }}';
             <div class="em-link-list-items">
               <div v-for="(link, i) in ((block as any).links || [])" :key="i" class="em-link-list-row">
                 <input type="text" class="em-input em-input--flex" :value="link.text" @input="(e) => updateLinkListItem(block.id, i, 'text', (e.target as HTMLInputElement).value)" placeholder="Label" />
+                <div class="em-var-picker-wrap">
+                  <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`link-list-item:${block.id}:${i}`)" title="Insert emoji">😊</button>
+                  <div v-if="activeEmojiTarget === `link-list-item:${block.id}:${i}`" class="em-emoji-menu" role="menu">
+                    <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-link-list-item-${block.id}-${i}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`link-list-item:${block.id}:${i}`, emoji)">{{ emoji }}</button>
+                  </div>
+                </div>
                 <input type="url" class="em-input em-input--flex" :value="link.url" @input="(e) => updateLinkListItem(block.id, i, 'url', (e.target as HTMLInputElement).value)" placeholder="URL" />
                 <button type="button" class="em-block-btn em-block-btn--remove" @click="removeLinkListItem(block.id, i)" title="Remove" aria-label="Remove">×</button>
               </div>
@@ -1099,16 +1354,24 @@ const varChipLabel = '{{ .var }}';
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).leftContent" @input="(e) => updateBlock(block.id, { leftContent: (e.target as HTMLTextAreaElement).value })" placeholder="Left column text" rows="2" />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`col-left:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:col-left:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `col-left:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`col-left-var-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`col-left:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:col-left:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-col-left-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`col-left:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
             <label class="em-inline-label">Right column</label>
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).rightContent" @input="(e) => updateBlock(block.id, { rightContent: (e.target as HTMLTextAreaElement).value })" placeholder="Right column text" rows="2" />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`col-right:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:col-right:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `col-right:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`col-right-var-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`col-right:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:col-right:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-col-right-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`col-right:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
           </div>
@@ -1151,8 +1414,12 @@ const varChipLabel = '{{ .var }}';
               <textarea class="em-textarea em-textarea--sm" :value="cell" @input="(e) => updateRowCell(block.id, ci, (e.target as HTMLTextAreaElement).value)" placeholder="Cell content" rows="2" />
               <div class="em-var-picker-wrap">
                 <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`row:${block.id}:${ci}`)">{{ varChipLabel }}</button>
+                <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:row:${block.id}:${ci}`)" title="Insert emoji">😊</button>
                 <div v-if="activeVarTarget === `row:${block.id}:${ci}`" class="em-var-menu" role="menu">
                   <button v-for="v in localVariables" :key="`row-var-${block.id}-${ci}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`row:${block.id}:${ci}`, v)">{{ v }}</button>
+                </div>
+                <div v-if="activeEmojiTarget === `emoji:row:${block.id}:${ci}`" class="em-emoji-menu" role="menu">
+                  <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-row-${block.id}-${ci}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`row:${block.id}:${ci}`, emoji)">{{ emoji }}</button>
                 </div>
               </div>
             </div>
@@ -1163,6 +1430,12 @@ const varChipLabel = '{{ .var }}';
             <div class="em-link-list-items">
               <div v-for="(link, i) in ((block as any).links || [])" :key="i" class="em-link-list-row">
                 <input type="text" class="em-input em-input--flex" :value="link.text" @input="(e) => updateNavbarLink(block.id, i, 'text', (e.target as HTMLInputElement).value)" placeholder="Label" />
+                <div class="em-var-picker-wrap">
+                  <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`navbar-item:${block.id}:${i}`)" title="Insert emoji">😊</button>
+                  <div v-if="activeEmojiTarget === `navbar-item:${block.id}:${i}`" class="em-emoji-menu" role="menu">
+                    <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-navbar-item-${block.id}-${i}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`navbar-item:${block.id}:${i}`, emoji)">{{ emoji }}</button>
+                  </div>
+                </div>
                 <input type="url" class="em-input em-input--flex" :value="link.url" @input="(e) => updateNavbarLink(block.id, i, 'url', (e.target as HTMLInputElement).value)" placeholder="URL" />
                 <button type="button" class="em-block-btn em-block-btn--remove" @click="removeNavbarLink(block.id, i)" title="Remove" aria-label="Remove">×</button>
               </div>
@@ -1173,7 +1446,19 @@ const varChipLabel = '{{ .var }}';
           <div v-else-if="block.type === 'accordion'" class="em-block-fields">
             <div v-for="(item, ai) in ((block as any).items || [])" :key="ai" class="em-accordion-item">
               <input type="text" class="em-input" :value="item.title" @input="(e) => updateAccordionItem(block.id, ai, 'title', (e.target as HTMLInputElement).value)" placeholder="Section title" />
+              <div class="em-var-picker-wrap">
+                <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`accordion-title:${block.id}:${ai}`)" title="Insert emoji">😊</button>
+                <div v-if="activeEmojiTarget === `accordion-title:${block.id}:${ai}`" class="em-emoji-menu" role="menu">
+                  <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-accordion-title-${block.id}-${ai}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`accordion-title:${block.id}:${ai}`, emoji)">{{ emoji }}</button>
+                </div>
+              </div>
               <textarea class="em-textarea em-textarea--sm" :value="item.content" @input="(e) => updateAccordionItem(block.id, ai, 'content', (e.target as HTMLTextAreaElement).value)" placeholder="Expandable content" rows="2" />
+              <div class="em-var-picker-wrap">
+                <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`accordion-content:${block.id}:${ai}`)" title="Insert emoji">😊</button>
+                <div v-if="activeEmojiTarget === `accordion-content:${block.id}:${ai}`" class="em-emoji-menu" role="menu">
+                  <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-accordion-content-${block.id}-${ai}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`accordion-content:${block.id}:${ai}`, emoji)">{{ emoji }}</button>
+                </div>
+              </div>
               <button type="button" class="em-block-btn em-block-btn--remove" @click="removeAccordionItem(block.id, ai)" title="Remove" aria-label="Remove">×</button>
             </div>
             <button type="button" class="em-add-btn em-add-btn--sm" @click="addAccordionItem(block.id)">+ Add section</button>
@@ -1191,6 +1476,12 @@ const varChipLabel = '{{ .var }}';
 
           <div v-else-if="block.type === 'countdown'" class="em-block-fields">
             <input type="text" class="em-input" :value="(block as any).label" @input="(e) => updateBlock(block.id, { label: (e.target as HTMLInputElement).value })" placeholder="Label (e.g. Offer ends in)" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`countdown-label:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `countdown-label:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-countdown-label-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`countdown-label:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="datetime-local" class="em-input" :value="(block as any).endDateTime ? (block as any).endDateTime.slice(0, 16) : ''" @input="(e) => updateBlock(block.id, { endDateTime: (e.target as HTMLInputElement).value ? new Date((e.target as HTMLInputElement).value).toISOString() : '' })" placeholder="End date & time" />
             <span class="em-hint">Preview shows placeholder; real countdown uses dynamic GIF in send.</span>
           </div>
@@ -1198,8 +1489,26 @@ const varChipLabel = '{{ .var }}';
           <div v-else-if="block.type === 'product_card'" class="em-block-fields">
             <input type="url" class="em-input" :value="(block as any).imageUrl" @input="(e) => updateBlock(block.id, { imageUrl: (e.target as HTMLInputElement).value })" placeholder="Product image URL" />
             <input type="text" class="em-input" :value="(block as any).title" @input="(e) => updateBlock(block.id, { title: (e.target as HTMLInputElement).value })" placeholder="Product title" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`product-title:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `product-title:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-product-title-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`product-title:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="text" class="em-input" :value="(block as any).price" @input="(e) => updateBlock(block.id, { price: (e.target as HTMLInputElement).value })" placeholder="Price (e.g. €29.99)" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`product-price:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `product-price:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-product-price-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`product-price:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="text" class="em-input" :value="(block as any).buttonText" @input="(e) => updateBlock(block.id, { buttonText: (e.target as HTMLInputElement).value })" placeholder="Button text" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`product-button:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `product-button:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-product-button-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`product-button:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="url" class="em-input" :value="(block as any).buttonUrl" @input="(e) => updateBlock(block.id, { buttonUrl: (e.target as HTMLInputElement).value })" placeholder="Button URL" />
           </div>
 
@@ -1207,8 +1516,12 @@ const varChipLabel = '{{ .var }}';
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).content" @input="(e) => updateBlock(block.id, { content: (e.target as HTMLTextAreaElement).value })" placeholder="Liquid / conditional code (e.g. {% if %})" rows="4" />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:block:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`block-var-liquid-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:block:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-liquid-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`block:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
             <span class="em-hint">Advanced: conditional content. Rendered server-side at send.</span>
@@ -1216,11 +1529,21 @@ const varChipLabel = '{{ .var }}';
 
           <div v-else-if="block.type === 'code_block'" class="em-block-fields">
             <input type="text" class="em-input" :value="(block as any).caption" @input="(e) => updateBlock(block.id, { caption: (e.target as HTMLInputElement).value })" placeholder="Caption (optional)" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`code-caption:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `code-caption:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-code-caption-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`code-caption:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <textarea class="em-textarea em-textarea--sm" :value="(block as any).content" @input="(e) => updateBlock(block.id, { content: (e.target as HTMLTextAreaElement).value })" placeholder="Code or snippet to display to the recipient" rows="5" />
             <div class="em-var-picker-wrap">
               <button type="button" class="em-chip em-chip--sm" @click="toggleVarPicker(`block:${block.id}`)">{{ varChipLabel }}</button>
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`emoji:block:${block.id}`)" title="Insert emoji">😊</button>
               <div v-if="activeVarTarget === `block:${block.id}`" class="em-var-menu" role="menu">
                 <button v-for="v in localVariables" :key="`block-var-code-${block.id}-${v}`" type="button" class="em-var-menu-item" @click="applyVarChoice(`block:${block.id}`, v)">{{ v }}</button>
+              </div>
+              <div v-if="activeEmojiTarget === `emoji:block:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-code-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`block:${block.id}`, emoji)">{{ emoji }}</button>
               </div>
             </div>
             <span class="em-hint">Display formatted code/snippets (e.g. order ID, API key). Supports merge tags.</span>
@@ -1238,6 +1561,12 @@ const varChipLabel = '{{ .var }}';
           <div v-else-if="block.type === 'dynamic_image'" class="em-block-fields">
             <input type="url" class="em-input" :value="(block as any).imageUrl" @input="(e) => updateBlock(block.id, { imageUrl: (e.target as HTMLInputElement).value })" placeholder="Image URL (use {{ .var }} for per-recipient)" />
             <input type="text" class="em-input" :value="(block as any).alt" @input="(e) => updateBlock(block.id, { alt: (e.target as HTMLInputElement).value })" placeholder="Alt text" />
+            <div class="em-var-picker-wrap">
+              <button type="button" class="em-chip em-chip--sm" @click="toggleEmojiPicker(`dynamic-alt:${block.id}`)" title="Insert emoji">😊</button>
+              <div v-if="activeEmojiTarget === `dynamic-alt:${block.id}`" class="em-emoji-menu" role="menu">
+                <button v-for="emoji in BLOCK_EMOJIS" :key="`emoji-dynamic-alt-${block.id}-${emoji}`" type="button" class="em-emoji-menu-item" @click="applyEmojiChoice(`dynamic-alt:${block.id}`, emoji)">{{ emoji }}</button>
+              </div>
+            </div>
             <input type="url" class="em-input" :value="(block as any).fallbackUrl" @input="(e) => updateBlock(block.id, { fallbackUrl: (e.target as HTMLInputElement).value })" placeholder="Fallback URL (optional)" />
           </div>
 
@@ -1600,6 +1929,41 @@ const varChipLabel = '{{ .var }}';
 .em-block-actions {
   display: flex;
   gap: 6px;
+}
+.em-emoji-wrap {
+  position: relative;
+}
+.em-emoji-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 168px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #dbe7f4;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+.em-emoji-menu-item {
+  width: 24px;
+  height: 24px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.em-emoji-menu-item:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 .em-block-btn {
   width: 30px;
