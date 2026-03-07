@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { CampaignMessage } from '@keos/notification-builder-core';
 
 const props = withDefaults(
@@ -94,9 +94,54 @@ const templateFields = computed(() => {
   const uniq = Array.from(new Set(placeholders));
   return uniq.map((name) => ({ name, configured: vars.has(name) }));
 });
+const defaultVariables = [
+  'first_name',
+  'last_name',
+  'full_name',
+  'order_id',
+  'order_status',
+  'tracking_url',
+  'delivery_date',
+  'appointment_date',
+  'appointment_time',
+  'otp_code',
+  'coupon_code',
+  'product_name',
+  'store_name',
+  'support_phone',
+  'city',
+  'country',
+];
+const localVariables = computed(() => {
+  const vars = ((props.message.variables ?? []) as string[]).filter(Boolean);
+  return vars.length ? Array.from(new Set(vars)) : defaultVariables;
+});
+const activeVarTarget = ref<string | null>(null);
 
 function emitUpdate(partial: Record<string, unknown>) {
   emit('update', partial);
+}
+
+function toggleVarPicker(target: string) {
+  activeVarTarget.value = activeVarTarget.value === target ? null : target;
+}
+
+function applyVar(target: string, variable: string) {
+  const token = ` {{ .${variable} }}`;
+  const existingVars = ((props.message.variables ?? []) as string[]).filter(Boolean);
+  const nextVars = Array.from(new Set([...existingVars, variable]));
+  if (target === 'header') {
+    emitUpdate({ header: `${headerText.value || ''}${token}`, variables: nextVars });
+  } else if (target === 'body') {
+    emitUpdate({ body: `${bodyText.value || ''}${token}`, variables: nextVars });
+  } else if (target === 'footer') {
+    emitUpdate({ footer: `${footerText.value || ''}${token}`, variables: nextVars });
+  } else if (target.startsWith('btn-label:')) {
+    const idx = Number(target.split(':')[1]);
+    if (Number.isFinite(idx)) updateButton(idx, { label: `${String(buttons.value[idx]?.label ?? '')}${token}` });
+    emitUpdate({ variables: nextVars });
+  }
+  activeVarTarget.value = null;
 }
 
 function onCategoryChange(value: string) {
@@ -336,18 +381,26 @@ function addCard() {
           {{ headerText.length }}/{{ HEADER_LIMIT }}
         </span>
       </label>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="e.g. Order update"
-        :value="headerText"
-        @input="
-          (e) =>
-            emitUpdate({
-              header: (e.target as HTMLInputElement).value || undefined,
-            })
-        "
-      />
+      <div class="kb-input-with-var">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="e.g. Order update"
+          :value="headerText"
+          @input="
+            (e) =>
+              emitUpdate({
+                header: (e.target as HTMLInputElement).value || undefined,
+              })
+          "
+        />
+        <div class="kb-var-picker-wrap">
+          <button type="button" class="kb-btn-insert" @click="toggleVarPicker('header')">&#123;&#123; .var &#125;&#125;</button>
+          <div v-if="activeVarTarget === 'header'" class="kb-var-menu" role="menu">
+            <button v-for="v in localVariables" :key="`wa-header-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVar('header', v)">{{ v }}</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div
@@ -617,18 +670,26 @@ function addCard() {
           {{ bodyText.length }}/{{ BODY_LIMIT }}
         </span>
       </label>
-      <textarea
-        class="kb-textarea"
-        rows="4"
-        placeholder="Hi {{ .first_name }}, your order {{ .order_id }} has been shipped..."
-        :value="bodyText"
-        @input="
-          (e) =>
-            emitUpdate({
-              body: (e.target as HTMLTextAreaElement).value || undefined,
-            })
-        "
-      />
+      <div class="kb-input-with-var">
+        <textarea
+          class="kb-textarea"
+          rows="4"
+          placeholder="Hi {{ .first_name }}, your order {{ .order_id }} has been shipped..."
+          :value="bodyText"
+          @input="
+            (e) =>
+              emitUpdate({
+                body: (e.target as HTMLTextAreaElement).value || undefined,
+              })
+          "
+        />
+        <div class="kb-var-picker-wrap">
+          <button type="button" class="kb-btn-insert" @click="toggleVarPicker('body')">&#123;&#123; .var &#125;&#125;</button>
+          <div v-if="activeVarTarget === 'body'" class="kb-var-menu" role="menu">
+            <button v-for="v in localVariables" :key="`wa-body-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVar('body', v)">{{ v }}</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-if="templateFields.length > 0" class="kb-field kb-wa-template-fields">
@@ -647,18 +708,26 @@ function addCard() {
         Footer (optional)
         <span class="kb-helper">Small, muted line shown at the bottom of the message.</span>
       </label>
-      <input
-        type="text"
-        class="kb-input"
-        placeholder="e.g. Reply STOP to unsubscribe"
-        :value="footerText"
-        @input="
-          (e) =>
-            emitUpdate({
-              footer: (e.target as HTMLInputElement).value || undefined,
-            })
-        "
-      />
+      <div class="kb-input-with-var">
+        <input
+          type="text"
+          class="kb-input"
+          placeholder="e.g. Reply STOP to unsubscribe"
+          :value="footerText"
+          @input="
+            (e) =>
+              emitUpdate({
+                footer: (e.target as HTMLInputElement).value || undefined,
+              })
+          "
+        />
+        <div class="kb-var-picker-wrap">
+          <button type="button" class="kb-btn-insert" @click="toggleVarPicker('footer')">&#123;&#123; .var &#125;&#125;</button>
+          <div v-if="activeVarTarget === 'footer'" class="kb-var-menu" role="menu">
+            <button v-for="v in localVariables" :key="`wa-footer-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVar('footer', v)">{{ v }}</button>
+          </div>
+        </div>
+      </div>
       <div
         class="kb-counter kb-counter--inline"
         :class="{ 'kb-counter--warn': footerText.length > FOOTER_LIMIT }"
@@ -680,13 +749,21 @@ function addCard() {
           :key="btn.id || index"
           class="kb-wa-button-row"
         >
-          <input
-            type="text"
-            class="kb-input kb-input--btn-label"
-            placeholder="Button label (e.g. View order)"
-            :value="btn.label"
-            @input="updateButton(Number(index), { label: ($event.target as HTMLInputElement).value })"
-          />
+          <div class="kb-input-with-var kb-input-with-var--btn">
+            <input
+              type="text"
+              class="kb-input kb-input--btn-label"
+              placeholder="Button label (e.g. View order)"
+              :value="btn.label"
+              @input="updateButton(Number(index), { label: ($event.target as HTMLInputElement).value })"
+            />
+            <div class="kb-var-picker-wrap">
+              <button type="button" class="kb-btn-insert" @click="toggleVarPicker(`btn-label:${index}`)">&#123;&#123; .var &#125;&#125;</button>
+              <div v-if="activeVarTarget === `btn-label:${index}`" class="kb-var-menu" role="menu">
+                <button v-for="v in localVariables" :key="`wa-btn-label-var-${index}-${v}`" type="button" class="kb-var-menu-item" @click="applyVar(`btn-label:${index}`, v)">{{ v }}</button>
+              </div>
+            </div>
+          </div>
           <select
             class="kb-select kb-select--btn-type"
             :value="btn.type ?? 'quick_reply'"
@@ -939,6 +1016,68 @@ function addCard() {
   flex-direction: column;
   gap: 0.68rem;
 }
+.kb-btn-insert {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+.kb-btn-insert:hover {
+  background: #f1f5f9;
+}
+.kb-input-with-var {
+  position: relative;
+  min-width: 0;
+  width: stretch;
+  width: 100%;
+}
+.kb-input-with-var .kb-input,
+.kb-input-with-var .kb-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 104px;
+}
+.kb-input-with-var--btn .kb-input {
+  padding-right: 98px;
+}
+.kb-var-picker-wrap {
+  display: inline-flex;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+}
+.kb-var-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 170px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid #d1dbe8;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+.kb-var-menu-item {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: #334155;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.kb-var-menu-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
 .kb-card-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
@@ -961,6 +1100,10 @@ function addCard() {
 }
 .kb-wa-button-row .kb-input--btn-label {
   flex: 1 1 220px;
+}
+.kb-wa-button-row .kb-input-with-var--btn {
+  flex: 1 1 220px;
+  min-width: 0;
 }
 .kb-wa-button-row .kb-select--btn-type {
   flex: 0 0 170px;
@@ -1109,6 +1252,14 @@ function addCard() {
 @media (max-width: 720px) {
   .kb-section {
     padding: 0.75rem;
+  }
+  .kb-input-with-var .kb-input,
+  .kb-input-with-var .kb-textarea {
+    padding-right: 90px;
+  }
+  .kb-btn-insert {
+    padding: 0.28rem 0.54rem;
+    font-size: 0.73rem;
   }
   .kb-opt-out-note {
     width: 100%;

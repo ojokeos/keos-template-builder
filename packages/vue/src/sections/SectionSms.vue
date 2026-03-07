@@ -16,7 +16,20 @@ const emit = defineEmits<{
   reset: [];
 }>();
 
-const defaultVariables = ['first_name', 'last_name', 'order_id', 'city'];
+const defaultVariables = [
+  'first_name',
+  'last_name',
+  'full_name',
+  'phone',
+  'order_id',
+  'order_status',
+  'tracking_url',
+  'appointment_date',
+  'appointment_time',
+  'otp_code',
+  'support_phone',
+  'city',
+];
 
 const localVariables = ref<string[]>(props.variableOptions && props.variableOptions.length ? [...props.variableOptions] : defaultVariables);
 const selectedVariable = ref<string>(localVariables.value[0] ?? defaultVariables[0]);
@@ -35,6 +48,7 @@ watch(
 );
 
 const bodyText = computed(() => ((props.message as any).body ?? '') as string);
+const activeVarTarget = ref<'body' | null>(null);
 const charCount = computed(() => bodyText.value.length);
 const segmentCount = computed(() => {
   if (!charCount.value) return 0;
@@ -73,6 +87,23 @@ function insertVariable() {
     body: currentBody + token,
     variables: nextVars,
   } as any);
+}
+
+function toggleVarPicker(target: 'body') {
+  activeVarTarget.value = activeVarTarget.value === target ? null : target;
+}
+
+function applyVarChoice(target: 'body', variable: string) {
+  if (target !== 'body') return;
+  const token = ` {{ .${variable} }}`;
+  const currentBody = bodyText.value || '';
+  const existingVars = ((props.message as any).variables ?? []) as string[];
+  const nextVars = Array.from(new Set([...existingVars, variable]));
+  emit('update', {
+    body: currentBody + token,
+    variables: nextVars,
+  } as any);
+  activeVarTarget.value = null;
 }
 
 function addVariable() {
@@ -129,13 +160,23 @@ function addVariable() {
           <span v-else>{{ segmentCount }} segments</span>
         </span>
       </label>
-      <textarea
-        class="kb-textarea"
-        rows="4"
-        placeholder="Hi {{ .first_name }}, your order {{ .order_id }} is out for delivery."
-        :value="bodyText"
-        @input="updateBody"
-      />
+      <div class="kb-field-with-var">
+        <textarea
+          class="kb-textarea"
+          rows="4"
+          placeholder="Hi {{ .first_name }}, your order {{ .order_id }} is out for delivery."
+          :value="bodyText"
+          @input="updateBody"
+        />
+        <div class="kb-var-picker-wrap">
+          <button type="button" class="kb-btn-insert" @click="toggleVarPicker('body')">&#123;&#123; .var &#125;&#125;</button>
+          <div v-if="activeVarTarget === 'body'" class="kb-var-menu" role="menu">
+            <button v-for="v in localVariables" :key="`sms-body-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVarChoice('body', v)">
+              {{ v }}
+            </button>
+          </div>
+        </div>
+      </div>
       <p class="kb-hint">
         Standard GSM messages are up to 160 characters. Longer messages are sent as multi-part SMS (153
         characters per segment).
@@ -295,6 +336,62 @@ function addVariable() {
 .kb-textarea {
   resize: vertical;
   min-height: 64px;
+}
+.kb-field-with-var {
+  position: relative;
+  width: stretch;
+  width: 100%;
+  min-width: 0;
+}
+.kb-field-with-var .kb-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 104px;
+}
+.kb-var-picker-wrap {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  display: inline-flex;
+}
+.kb-var-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 160px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid #d1dbe8;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+.kb-var-menu-item {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: #334155;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.kb-var-menu-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+@media (max-width: 720px) {
+  .kb-field-with-var .kb-textarea {
+    padding-right: 90px;
+  }
+  .kb-btn-insert {
+    padding: 0.28rem 0.54rem;
+    font-size: 0.73rem;
+  }
 }
 .kb-truncation-hint {
   margin-top: 6px;

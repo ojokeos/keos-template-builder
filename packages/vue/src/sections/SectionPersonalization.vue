@@ -13,10 +13,48 @@ const emit = defineEmits<{
   insertVariable: [payload: { variable: string; field: 'title' | 'body' | 'footer' }];
 }>();
 
-const defaultVariables = ['first_name', 'last_name', 'order_id', 'city'];
+const PUSH_DEFAULT_VARIABLES = [
+  'first_name',
+  'last_name',
+  'full_name',
+  'user_id',
+  'app_name',
+  'order_id',
+  'order_status',
+  'tracking_url',
+  'coupon_code',
+  'cart_total',
+  'city',
+  'country',
+];
+const WHATSAPP_DEFAULT_VARIABLES = [
+  'first_name',
+  'last_name',
+  'full_name',
+  'order_id',
+  'order_status',
+  'tracking_url',
+  'delivery_date',
+  'appointment_date',
+  'appointment_time',
+  'otp_code',
+  'coupon_code',
+  'product_name',
+  'store_name',
+  'support_phone',
+  'city',
+  'country',
+];
+const defaultVariables = computed(() =>
+  (props.targets ?? []).includes('footer')
+    ? WHATSAPP_DEFAULT_VARIABLES
+    : PUSH_DEFAULT_VARIABLES
+);
 
-const localVariables = ref<string[]>(props.variableOptions ?? defaultVariables);
-const selectedVariable = ref(localVariables.value[0] ?? defaultVariables[0]);
+const localVariables = ref<string[]>(
+  props.variableOptions?.length ? [...props.variableOptions] : [...defaultVariables.value]
+);
+const selectedVariable = ref(localVariables.value[0] ?? defaultVariables.value[0]);
 const newVariable = ref('');
 
 watch(
@@ -27,6 +65,22 @@ watch(
       if (!localVariables.value.includes(selectedVariable.value)) {
         selectedVariable.value = localVariables.value[0];
       }
+    } else {
+      localVariables.value = [...defaultVariables.value];
+      if (!localVariables.value.includes(selectedVariable.value)) {
+        selectedVariable.value = localVariables.value[0];
+      }
+    }
+  }
+);
+
+watch(
+  defaultVariables,
+  (nextDefaults) => {
+    if (props.variableOptions?.length) return;
+    localVariables.value = [...nextDefaults];
+    if (!localVariables.value.includes(selectedVariable.value)) {
+      selectedVariable.value = localVariables.value[0];
     }
   }
 );
