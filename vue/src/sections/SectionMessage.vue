@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import type { CampaignMessage } from '@keos/notification-builder-core';
 import type { Platform } from '@keos/notification-builder-core';
 
@@ -20,10 +21,46 @@ const props = withDefaults(
   { showReset: false }
 );
 
-defineEmits<{
+const emit = defineEmits<{
   update: [partial: any];
   reset: [];
 }>();
+
+const defaultVariables = [
+  'first_name',
+  'last_name',
+  'full_name',
+  'user_id',
+  'app_name',
+  'order_id',
+  'order_status',
+  'tracking_url',
+  'coupon_code',
+  'cart_total',
+  'city',
+  'country',
+];
+const localVariables = computed(() => {
+  const vars = (((props.message as any).variables ?? []) as string[]).filter(Boolean);
+  return vars.length ? Array.from(new Set(vars)) : defaultVariables;
+});
+const activeVarTarget = ref<'title' | 'body' | null>(null);
+
+function toggleVarPicker(target: 'title' | 'body') {
+  activeVarTarget.value = activeVarTarget.value === target ? null : target;
+}
+
+function applyVarChoice(target: 'title' | 'body', variable: string) {
+  const token = ` {{ .${variable} }}`;
+  const existingVars = (((props.message as any).variables ?? []) as string[]).filter(Boolean);
+  const nextVars = Array.from(new Set([...existingVars, variable]));
+  if (target === 'title') {
+    emit('update', { title: `${props.message.title || ''}${token}`, variables: nextVars });
+  } else {
+    emit('update', { body: `${props.message.body || ''}${token}`, variables: nextVars });
+  }
+  activeVarTarget.value = null;
+}
 </script>
 
 <template>
@@ -60,6 +97,14 @@ defineEmits<{
           :aria-describedby="titleError ? 'title-error' : undefined"
           @input="(e) => $emit('update', { title: (e.target as HTMLInputElement).value })"
         />
+        <div class="kb-var-picker-wrap">
+          <button type="button" class="kb-var-chip" @click="toggleVarPicker('title')">&#123;&#123; .var &#125;&#125;</button>
+          <div v-if="activeVarTarget === 'title'" class="kb-var-menu" role="menu">
+            <button v-for="v in localVariables" :key="`push-title-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVarChoice('title', v)">
+              {{ v }}
+            </button>
+          </div>
+        </div>
         <div class="kb-char-rail" role="presentation" :style="{ '--pct': Math.min(100, (titleCount / titleLimit) * 100) + '%' }">
           <div class="kb-char-rail__fill" />
         </div>
@@ -84,6 +129,14 @@ defineEmits<{
           :aria-describedby="bodyError ? 'body-error' : undefined"
           @input="(e) => $emit('update', { body: (e.target as HTMLTextAreaElement).value })"
         />
+        <div class="kb-var-picker-wrap">
+          <button type="button" class="kb-var-chip" @click="toggleVarPicker('body')">&#123;&#123; .var &#125;&#125;</button>
+          <div v-if="activeVarTarget === 'body'" class="kb-var-menu" role="menu">
+            <button v-for="v in localVariables" :key="`push-body-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVarChoice('body', v)">
+              {{ v }}
+            </button>
+          </div>
+        </div>
         <div class="kb-char-rail" role="presentation" :style="{ '--pct': Math.min(100, (bodyCount / bodyLimit) * 100) + '%' }">
           <div class="kb-char-rail__fill" />
         </div>
@@ -396,6 +449,49 @@ defineEmits<{
 }
 .kb-field-with-rail {
   position: relative;
+}
+.kb-var-picker-wrap {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+}
+.kb-var-chip {
+  padding: 6px 10px;
+  border: 1px solid #d1dbe8;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.kb-var-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid #d1dbe8;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+.kb-var-menu-item {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: #334155;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.kb-var-menu-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
 }
 .kb-char-rail {
   height: 3px;

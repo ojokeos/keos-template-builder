@@ -402,7 +402,28 @@ const emit = defineEmits<{
   reset: [];
 }>();
 
-const defaultVariables = ['first_name', 'last_name', 'order_id', 'city', 'email'];
+const defaultVariables = [
+  'first_name',
+  'last_name',
+  'full_name',
+  'email',
+  'company_name',
+  'plan_name',
+  'order_id',
+  'order_status',
+  'tracking_url',
+  'invoice_id',
+  'due_date',
+  'amount_due',
+  'appointment_date',
+  'appointment_time',
+  'otp_code',
+  'cta_url',
+  'support_email',
+  'unsubscribe_url',
+  'city',
+  'country',
+];
 const localVariables = ref<string[]>(
   props.variableOptions?.length ? [...props.variableOptions] : defaultVariables
 );
@@ -959,7 +980,7 @@ const varChipLabel = '{{ .var }}';
       <p class="em-strip-desc">Who the email is from and how it appears in the inbox.</p>
       <div class="em-field kb-field">
         <label class="em-label">From name</label>
-        <div class="em-input-group">
+        <div class="em-input-group em-input-group--overlay">
           <input
             type="text"
             class="em-input em-input--flex"
@@ -997,7 +1018,7 @@ const varChipLabel = '{{ .var }}';
       </div>
       <div class="em-field kb-field">
         <label class="em-label">Subject line</label>
-        <div class="em-input-group">
+        <div class="em-input-group em-input-group--overlay">
             <input
               type="text"
               class="em-input em-input--flex"
@@ -1805,7 +1826,8 @@ const varChipLabel = '{{ .var }}';
 .em-input,
 .em-textarea,
 .em-select {
-  width: stretch;
+  width: 100%;
+  box-sizing: border-box;
   padding: 12px 14px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
@@ -1837,6 +1859,42 @@ const varChipLabel = '{{ .var }}';
   align-items: center;
   flex-wrap: wrap;
 }
+.em-input-group--overlay {
+  position: relative;
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+.em-input-group--overlay .em-input--flex {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 168px;
+}
+.em-input-group--overlay .em-var-picker-wrap {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  gap: 6px;
+}
+.em-input-group--overlay .em-var-menu,
+.em-input-group--overlay .em-emoji-menu {
+  top: calc(100% + 6px);
+  right: 0;
+  transform: none;
+}
+@media (max-width: 760px) {
+  .em-input-group--overlay .em-input--flex {
+    padding-right: 122px;
+  }
+  .em-input-group--overlay .em-var-picker-wrap {
+    gap: 4px;
+  }
+  .em-input-group--overlay .em-chip {
+    padding: 6px 8px;
+    font-size: 0.69rem;
+  }
+}
 .em-chip {
   padding: 10px 14px;
   font-size: 0.75rem;
@@ -1861,7 +1919,8 @@ const varChipLabel = '{{ .var }}';
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
   position: relative;
 }
 .em-var-menu {
@@ -2008,8 +2067,16 @@ const varChipLabel = '{{ .var }}';
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     0 1px 2px rgba(15, 23, 42, 0.035);
 }
+.em-block-fields > * {
+  min-width: 0;
+}
 .em-block-fields .em-input {
   margin-bottom: 0;
+}
+.em-block-fields .em-input,
+.em-block-fields .em-textarea,
+.em-block-fields .em-select {
+  max-width: 100%;
 }
 .em-block-fields--row {
   flex-direction: row;
@@ -2122,11 +2189,17 @@ const varChipLabel = '{{ .var }}';
 }
 .em-row-cell {
   margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .em-accordion-item {
   margin-bottom: 12px;
   padding: 8px 0;
   border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .em-accordion-item .em-block-btn--remove {
   margin-top: 4px;
@@ -2135,6 +2208,9 @@ const varChipLabel = '{{ .var }}';
   margin-bottom: 12px;
   padding: 8px 0;
   border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .em-carousel-slide .em-block-btn--remove {
   margin-top: 4px;
@@ -2144,11 +2220,18 @@ const varChipLabel = '{{ .var }}';
 .em-link-list-row {
   display: flex;
   gap: 8px;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 .em-list-item-row .em-input--flex,
 .em-social-row .em-input--flex,
 .em-link-list-row .em-input--flex {
   min-width: 0;
+  flex: 1 1 220px;
+}
+.em-list-item-row .em-var-picker-wrap,
+.em-social-row .em-var-picker-wrap,
+.em-link-list-row .em-var-picker-wrap {
+  flex: 0 0 auto;
 }
 </style>
