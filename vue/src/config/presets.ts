@@ -663,7 +663,6 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
         auth_label: 'Secure sign-in code',
         add_security_recommendation: true,
         code_expiration_minutes: 5,
-        footer: 'Do not share this code',
         enable_sample: true,
         buttons: [
           {

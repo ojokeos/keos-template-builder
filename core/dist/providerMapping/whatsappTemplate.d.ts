@@ -22,12 +22,31 @@ type MetaTemplateComponent = {
     text: string;
 } | {
     type: 'BUTTONS';
-    buttons: Array<{
-        type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER';
-        text: string;
-        url?: string;
-        phone_number?: string;
-    }>;
+    buttons: MetaButton[];
+};
+type MetaButton = {
+    type: 'QUICK_REPLY';
+    text: string;
+} | {
+    type: 'URL';
+    text: string;
+    url?: string;
+    example?: string[];
+} | {
+    type: 'PHONE_NUMBER';
+    text: string;
+    phone_number?: string;
+} | {
+    type: 'COPY_CODE';
+    text: string;
+    example?: string;
+} | {
+    type: 'OTP';
+    text: string;
+    otp_type?: 'COPY_CODE' | 'ONE_TAP';
+    autofill_text?: string;
+    package_name?: string;
+    signature_hash?: string;
 };
 type GupshupButton = {
     type: 'QUICK_REPLY';

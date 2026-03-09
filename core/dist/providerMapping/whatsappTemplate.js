@@ -99,7 +99,13 @@ function mapButtonsToMeta(buttonsRaw, varOrderSeed) {
         if (type === 'url') {
             const transformed = transformGoPlaceholdersToPositional(String(btn.url ?? ''), varOrder);
             varOrder = transformed.varOrder;
-            return { type: 'URL', text, url: transformed.text || undefined };
+            const urlExample = String(btn.url_example ?? '').trim() || undefined;
+            return {
+                type: 'URL',
+                text,
+                url: transformed.text || undefined,
+                ...(urlExample ? { example: [urlExample] } : {}),
+            };
         }
         if (type === 'call') {
             return {
@@ -108,13 +114,28 @@ function mapButtonsToMeta(buttonsRaw, varOrderSeed) {
                 phone_number: String(btn.phone ?? '').trim() || undefined,
             };
         }
+        if (type === 'copy_code') {
+            const example = String(btn.example ?? '').trim() || undefined;
+            return { type: 'COPY_CODE', text, ...(example ? { example } : {}) };
+        }
+        if (type === 'otp') {
+            const otpType = String(btn.otp_type ?? 'COPY_CODE').toUpperCase();
+            return {
+                type: 'OTP',
+                text,
+                otp_type: otpType,
+                ...(String(btn.autofill_text ?? '').trim() ? { autofill_text: String(btn.autofill_text).trim() } : {}),
+                ...(String(btn.package_name ?? '').trim() ? { package_name: String(btn.package_name).trim() } : {}),
+                ...(String(btn.signature_hash ?? '').trim() ? { signature_hash: String(btn.signature_hash).trim() } : {}),
+            };
+        }
         if (type === 'opt_out') {
-            warnings.push('Opt-out button is provider-specific; mapped as QUICK_REPLY.');
+            // Meta has no OPT_OUT type; use QUICK_REPLY as the closest equivalent in the meta payload.
             return { type: 'QUICK_REPLY', text };
         }
         return { type: 'QUICK_REPLY', text };
     })
-        .filter((b) => Boolean(b.text));
+        .filter((b) => Boolean(b?.text));
     return { buttons: mapped, varOrder, warnings };
 }
 function mapButtonsToGupshupCanonical(buttonsRaw) {
@@ -266,17 +287,70 @@ export function toMetaWhatsAppTemplate(campaign, options = {}) {
         warnings,
     };
 }
+/** Button types permitted per category — enforced at payload-build time. */
+const ALLOWED_BUTTON_TYPES_BY_CATEGORY = {
+    MARKETING: new Set(['quick_reply', 'url', 'call', 'copy_code', 'opt_out']),
+    UTILITY: new Set(['quick_reply', 'url', 'call']),
+    AUTHENTICATION: new Set(['otp']),
+};
 export function toGupshupWhatsAppTemplate(campaign, options = {}) {
     const meta = toMetaWhatsAppTemplate(campaign, options);
     const msg = campaign.message;
-    const header = meta.payload.components.find((c) => c.type === 'HEADER');
-    const body = meta.payload.components.find((c) => c.type === 'BODY');
-    const footer = meta.payload.components.find((c) => c.type === 'FOOTER');
+    const warnings = [...meta.warnings];
+    // ── Category enforcement ───────────────────────────────────────────────────
+    // Enforce at payload-build time regardless of what the UI allowed through.
+    const resolvedCategory = meta.payload.category; // 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
+    const isAuth = resolvedCategory === 'AUTHENTICATION';
+    const allowedBtnTypes = ALLOWED_BUTTON_TYPES_BY_CATEGORY[resolvedCategory] ?? ALLOWED_BUTTON_TYPES_BY_CATEGORY.MARKETING;
+    const allButtonsRaw = Array.isArray(msg.buttons) ? msg.buttons : [];
+    const buttonsRaw = allButtonsRaw.filter((b) => {
+        const t = String(b.type ?? 'quick_reply').trim().toLowerCase();
+        if (!allowedBtnTypes.has(t)) {
+            warnings.push(`Button type "${t}" is not allowed for ${resolvedCategory}; removed from payload.`);
+            return false;
+        }
+        return true;
+    });
+    // Authentication allows at most 1 button.
+    const maxBtns = isAuth ? 1 : 10;
+    if (buttonsRaw.length > maxBtns) {
+        warnings.push(`${resolvedCategory} allows at most ${maxBtns} button(s); extra buttons removed.`);
+    }
+    const filteredButtonsRaw = buttonsRaw.slice(0, maxBtns);
+    const gupshupButtons = mapButtonsToGupshupCanonical(filteredButtonsRaw);
+    // Rebuild meta template with the filtered buttons so the embedded payload is consistent.
+    const metaComponents = meta.payload.components.filter((c) => {
+        if (isAuth && c.type === 'HEADER')
+            return false;
+        if (isAuth && c.type === 'FOOTER')
+            return false;
+        return true;
+    });
+    if (filteredButtonsRaw.length) {
+        // Replace the BUTTONS component with one built from the filtered set.
+        const btnIdx = metaComponents.findIndex((c) => c.type === 'BUTTONS');
+        const { buttons: metaBtns, varOrder } = mapButtonsToMeta(filteredButtonsRaw, []);
+        void varOrder; // used internally
+        const buttonsComponent = { type: 'BUTTONS', buttons: metaBtns };
+        if (btnIdx >= 0)
+            metaComponents[btnIdx] = buttonsComponent;
+        else if (metaBtns.length)
+            metaComponents.push(buttonsComponent);
+    }
+    else {
+        // Remove buttons component if no buttons remain.
+        const btnIdx = metaComponents.findIndex((c) => c.type === 'BUTTONS');
+        if (btnIdx >= 0)
+            metaComponents.splice(btnIdx, 1);
+    }
+    const cleanMetaPayload = { ...meta.payload, components: metaComponents };
+    // ── End enforcement ────────────────────────────────────────────────────────
+    const header = metaComponents.find((c) => c.type === 'HEADER');
+    const body = metaComponents.find((c) => c.type === 'BODY');
+    const footer = metaComponents.find((c) => c.type === 'FOOTER');
     const bodyRaw = String(msg.body ?? '').trim();
     const headerRaw = String(msg.header ?? '').trim();
     const footerRaw = String(msg.footer ?? '').trim();
-    const buttonsRaw = Array.isArray(msg.buttons) ? msg.buttons : [];
-    const gupshupButtons = mapButtonsToGupshupCanonical(buttonsRaw);
     const templateType = (() => {
         const v = String(msg.template_type ?? '').trim().toLowerCase();
         if (v === 'image')
@@ -293,29 +367,33 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
     const templateExample = String(msg.template_example ?? '').trim() || undefined;
     const mediaHandle = String(msg.media_handle ?? '').trim() || undefined;
     const enableSample = typeof msg.enable_sample === 'boolean' ? msg.enable_sample : undefined;
-    const allowCategoryChange = typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
+    const allowCategoryChange = !isAuth && typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
     const addSecurityRec = typeof msg.add_security_recommendation === 'boolean' ? msg.add_security_recommendation : undefined;
     const codeExpiry = typeof msg.code_expiration_minutes === 'number' ? msg.code_expiration_minutes : undefined;
     const payload = {
-        elementName: meta.payload.name,
-        languageCode: meta.payload.language,
-        category: meta.payload.category,
+        elementName: cleanMetaPayload.name,
+        languageCode: cleanMetaPayload.language,
+        category: cleanMetaPayload.category,
         templateType,
         content: bodyRaw || body?.text || '',
         ...(vertical ? { vertical } : {}),
         ...(templateExample ? { example: templateExample } : {}),
         ...(mediaHandle ? { exampleMedia: mediaHandle } : {}),
-        ...(header?.format === 'TEXT' && (headerRaw || header.text) ? { header: headerRaw || header.text } : {}),
-        ...(footerRaw || footer?.text ? { footer: footerRaw || footer?.text } : {}),
+        // Header and footer are forbidden for AUTHENTICATION templates.
+        ...(!isAuth && header?.format === 'TEXT' && (headerRaw || header.text)
+            ? { header: headerRaw || header.text }
+            : {}),
+        ...(!isAuth && (footerRaw || footer?.text) ? { footer: footerRaw || footer?.text } : {}),
         ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
         ...(enableSample !== undefined ? { enableSample } : {}),
+        // allowTemplateCategoryChange is forbidden for AUTHENTICATION templates.
         ...(allowCategoryChange !== undefined ? { allowTemplateCategoryChange: allowCategoryChange } : {}),
         ...(addSecurityRec !== undefined ? { addSecurityRecommendation: addSecurityRec } : {}),
         ...(codeExpiry !== undefined ? { codeExpirationMinutes: codeExpiry } : {}),
-        metaTemplate: meta.payload,
-        metaWhatsApp: meta.payload,
+        metaTemplate: cleanMetaPayload,
+        metaWhatsApp: cleanMetaPayload,
         ...(collectAdvancedFields(msg) ? { advanced: collectAdvancedFields(msg) } : {}),
     };
-    return { payload, warnings: meta.warnings };
+    return { payload, warnings };
 }
 //# sourceMappingURL=whatsappTemplate.js.map
