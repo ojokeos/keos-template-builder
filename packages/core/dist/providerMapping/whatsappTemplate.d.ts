@@ -29,6 +29,33 @@ type MetaTemplateComponent = {
         phone_number?: string;
     }>;
 };
+type GupshupButton = {
+    type: 'QUICK_REPLY';
+    title: string;
+} | {
+    type: 'URL';
+    title: string;
+    url?: string;
+    example?: string[];
+} | {
+    type: 'PHONE_NUMBER';
+    title: string;
+    phoneNumber?: string;
+} | {
+    type: 'OPT_OUT';
+    title: string;
+} | {
+    type: 'COPY_CODE';
+    title: string;
+    example?: string;
+} | {
+    type: 'OTP';
+    title: string;
+    otp_type: 'COPY_CODE' | 'ONE_TAP';
+    autofill_text?: string;
+    package_name?: string;
+    signature_hash?: string;
+};
 export interface MetaWhatsAppTemplateCreatePayload {
     name: string;
     category: MetaTemplateCategory;
@@ -39,17 +66,25 @@ export interface GupshupWhatsAppTemplateCreatePayload {
     elementName: string;
     languageCode: string;
     category: MetaTemplateCategory;
-    templateType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+    templateType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'CAROUSEL';
     content: string;
+    /** Use-case label shown during Meta review (e.g. "Order Updates", "Promotions"). Required by Gupshup. */
+    vertical?: string;
+    /** Body text with placeholders filled with real sample values. Required for Meta approval. */
+    example?: string;
+    /** Media handle ID from Gupshup media upload. Required for IMAGE/VIDEO/DOCUMENT templates. */
+    exampleMedia?: string;
     header?: string;
     footer?: string;
-    buttons?: Array<{
-        type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'OPT_OUT';
-        title: string;
-        url?: string;
-        phoneNumber?: string;
-    }>;
-    example?: string[];
+    buttons?: GupshupButton[];
+    /** Include sample data in Meta review submission. */
+    enableSample?: boolean;
+    /** Allow Meta to change the template category during review. */
+    allowTemplateCategoryChange?: boolean;
+    /** Add OTP security recommendation text (AUTHENTICATION templates only). */
+    addSecurityRecommendation?: boolean;
+    /** OTP code expiry time in minutes (AUTHENTICATION templates only). */
+    codeExpirationMinutes?: number;
     /** For providers/accounts that accept Meta-style structure via Gupshup */
     metaTemplate: MetaWhatsAppTemplateCreatePayload;
     /** Explicit Meta payload mirror for downstream integrations. */

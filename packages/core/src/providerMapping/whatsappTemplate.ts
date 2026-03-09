@@ -40,6 +40,21 @@ type MetaTemplateComponent =
 
 type MetaButton = Extract<MetaTemplateComponent, { type: 'BUTTONS' }>['buttons'][number];
 
+type GupshupButton =
+  | { type: 'QUICK_REPLY'; title: string }
+  | { type: 'URL'; title: string; url?: string; example?: string[] }
+  | { type: 'PHONE_NUMBER'; title: string; phoneNumber?: string }
+  | { type: 'OPT_OUT'; title: string }
+  | { type: 'COPY_CODE'; title: string; example?: string }
+  | {
+      type: 'OTP';
+      title: string;
+      otp_type: 'COPY_CODE' | 'ONE_TAP';
+      autofill_text?: string;
+      package_name?: string;
+      signature_hash?: string;
+    };
+
 export interface MetaWhatsAppTemplateCreatePayload {
   name: string;
   category: MetaTemplateCategory;
@@ -51,17 +66,25 @@ export interface GupshupWhatsAppTemplateCreatePayload {
   elementName: string;
   languageCode: string;
   category: MetaTemplateCategory;
-  templateType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+  templateType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'CAROUSEL';
   content: string;
+  /** Use-case label shown during Meta review (e.g. "Order Updates", "Promotions"). Required by Gupshup. */
+  vertical?: string;
+  /** Body text with placeholders filled with real sample values. Required for Meta approval. */
+  example?: string;
+  /** Media handle ID from Gupshup media upload. Required for IMAGE/VIDEO/DOCUMENT templates. */
+  exampleMedia?: string;
   header?: string;
   footer?: string;
-  buttons?: Array<{
-    type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'OPT_OUT';
-    title: string;
-    url?: string;
-    phoneNumber?: string;
-  }>;
-  example?: string[];
+  buttons?: GupshupButton[];
+  /** Include sample data in Meta review submission. */
+  enableSample?: boolean;
+  /** Allow Meta to change the template category during review. */
+  allowTemplateCategoryChange?: boolean;
+  /** Add OTP security recommendation text (AUTHENTICATION templates only). */
+  addSecurityRecommendation?: boolean;
+  /** OTP code expiry time in minutes (AUTHENTICATION templates only). */
+  codeExpirationMinutes?: number;
   /** For providers/accounts that accept Meta-style structure via Gupshup */
   metaTemplate: MetaWhatsAppTemplateCreatePayload;
   /** Explicit Meta payload mirror for downstream integrations. */
@@ -141,6 +164,37 @@ function exampleValues(varOrder: string[], sample?: Record<string, string>): str
   });
 }
 
+/**
+ * Attempts to extract per-variable example values by matching a filled example
+ * string against a positional body template (e.g. "Hi {{1}}, order {{2}}").
+ * Returns a partial map of varName → real value; empty object on failure.
+ */
+function deriveExampleDataFromPositional(
+  positionalBody: string,
+  exampleText: string,
+  varOrder: string[],
+): Record<string, string> {
+  if (!positionalBody || !exampleText || varOrder.length === 0) return {};
+  try {
+    // Split on {{N}} tokens, escape literal segments, rejoin with capture groups.
+    const parts = positionalBody.split(/\{\{\d+\}\}/);
+    const regexStr = parts
+      .map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('(.+?)');
+    const regex = new RegExp(`^${regexStr}$`, 's');
+    const match = exampleText.match(regex);
+    if (!match) return {};
+    const result: Record<string, string> = {};
+    varOrder.forEach((varName, idx) => {
+      const captured = match[idx + 1];
+      if (captured) result[varName] = captured.trim();
+    });
+    return result;
+  } catch {
+    return {};
+  }
+}
+
 function mapButtonsToMeta(
   buttonsRaw: unknown[],
   varOrderSeed: string[],
@@ -177,12 +231,7 @@ function mapButtonsToMeta(
   return { buttons: mapped, varOrder, warnings };
 }
 
-function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): Array<{
-  type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'OPT_OUT';
-  title: string;
-  url?: string;
-  phoneNumber?: string;
-}> {
+function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): GupshupButton[] {
   return buttonsRaw
     .slice(0, 10)
     .map((b) => {
@@ -190,10 +239,13 @@ function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): Array<{
       const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
       const title = String(btn.label ?? '').trim() || 'Button';
       if (type === 'url') {
+        const url = String(btn.url ?? '').trim() || undefined;
+        const urlExample = String(btn.url_example ?? '').trim() || undefined;
         return {
           type: 'URL' as const,
           title,
-          ...(String(btn.url ?? '').trim() ? { url: String(btn.url).trim() } : {}),
+          ...(url ? { url } : {}),
+          ...(urlExample ? { example: [urlExample] } : {}),
         };
       }
       if (type === 'call') {
@@ -205,6 +257,24 @@ function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): Array<{
       }
       if (type === 'opt_out') {
         return { type: 'OPT_OUT' as const, title };
+      }
+      if (type === 'copy_code') {
+        return {
+          type: 'COPY_CODE' as const,
+          title,
+          ...(String(btn.example ?? '').trim() ? { example: String(btn.example).trim() } : {}),
+        };
+      }
+      if (type === 'otp') {
+        const otpType = String(btn.otp_type ?? 'COPY_CODE').toUpperCase() as 'COPY_CODE' | 'ONE_TAP';
+        return {
+          type: 'OTP' as const,
+          title,
+          otp_type: otpType,
+          ...(String(btn.autofill_text ?? '').trim() ? { autofill_text: String(btn.autofill_text).trim() } : {}),
+          ...(String(btn.package_name ?? '').trim() ? { package_name: String(btn.package_name).trim() } : {}),
+          ...(String(btn.signature_hash ?? '').trim() ? { signature_hash: String(btn.signature_hash).trim() } : {}),
+        };
       }
       return { type: 'QUICK_REPLY' as const, title };
     })
@@ -224,6 +294,9 @@ function collectAdvancedFields(msg: Record<string, unknown>): Record<string, unk
     'auth_code',
     'document_filename',
     'media_url',
+    'media_handle',
+    'media_caption',
+    'coupon_code',
   ];
   for (const key of keys) {
     if (msg[key] !== undefined && msg[key] !== null && msg[key] !== '') {
@@ -247,12 +320,28 @@ export function toMetaWhatsAppTemplate(
 
   let globalVarOrder: string[] = [];
 
+  // Pre-compute body positional form so we can derive example values from
+  // template_example before building components (used for both body and header).
+  const bodyRawEarly = String(msg.body ?? '').trim();
+  const bodyTransformedEarly = transformGoPlaceholdersToPositional(bodyRawEarly, []);
+  const templateExampleText = String(msg.template_example ?? '').trim();
+  const derivedExampleData: Record<string, string> =
+    !options.exampleData && templateExampleText
+      ? deriveExampleDataFromPositional(
+          bodyTransformedEarly.text,
+          templateExampleText,
+          bodyTransformedEarly.varOrder,
+        )
+      : {};
+  const resolvedExampleData: Record<string, string> | undefined =
+    options.exampleData ?? (Object.keys(derivedExampleData).length ? derivedExampleData : undefined);
+
   const headerFormat = inferHeaderFormat(msg);
   const headerTextRaw = String(msg.header ?? '').trim();
   if (headerFormat === 'TEXT' && headerTextRaw) {
     const transformed = transformGoPlaceholdersToPositional(headerTextRaw, globalVarOrder);
     globalVarOrder = transformed.varOrder;
-    const headerExamples = exampleValues(globalVarOrder, options.exampleData);
+    const headerExamples = exampleValues(globalVarOrder, resolvedExampleData);
     components.push({
       type: 'HEADER',
       format: 'TEXT',
@@ -269,7 +358,7 @@ export function toMetaWhatsAppTemplate(
   const bodyRaw = String(msg.body ?? '').trim();
   const bodyTransformed = transformGoPlaceholdersToPositional(bodyRaw, globalVarOrder);
   globalVarOrder = bodyTransformed.varOrder;
-  const bodyExample = exampleValues(globalVarOrder, options.exampleData);
+  const bodyExample = exampleValues(globalVarOrder, resolvedExampleData);
   components.push({
     type: 'BODY',
     text: bodyTransformed.text,
@@ -339,8 +428,17 @@ export function toGupshupWhatsAppTemplate(
     if (v === 'image') return 'IMAGE' as const;
     if (v === 'video') return 'VIDEO' as const;
     if (v === 'document') return 'DOCUMENT' as const;
+    if (v === 'carousel') return 'CAROUSEL' as const;
     return 'TEXT' as const;
   })();
+
+  const vertical = String(msg.vertical ?? '').trim() || undefined;
+  const templateExample = String(msg.template_example ?? '').trim() || undefined;
+  const mediaHandle = String(msg.media_handle ?? '').trim() || undefined;
+  const enableSample = typeof msg.enable_sample === 'boolean' ? msg.enable_sample : undefined;
+  const allowCategoryChange = typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
+  const addSecurityRec = typeof msg.add_security_recommendation === 'boolean' ? msg.add_security_recommendation : undefined;
+  const codeExpiry = typeof msg.code_expiration_minutes === 'number' ? msg.code_expiration_minutes : undefined;
 
   const payload: GupshupWhatsAppTemplateCreatePayload = {
     elementName: meta.payload.name,
@@ -348,10 +446,16 @@ export function toGupshupWhatsAppTemplate(
     category: meta.payload.category,
     templateType,
     content: bodyRaw || body?.text || '',
+    ...(vertical ? { vertical } : {}),
+    ...(templateExample ? { example: templateExample } : {}),
+    ...(mediaHandle ? { exampleMedia: mediaHandle } : {}),
     ...(header?.format === 'TEXT' && (headerRaw || header.text) ? { header: headerRaw || header.text } : {}),
     ...(footerRaw || footer?.text ? { footer: footerRaw || footer?.text } : {}),
     ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
-    ...(body?.example?.body_text?.[0]?.length ? { example: body.example.body_text[0] } : {}),
+    ...(enableSample !== undefined ? { enableSample } : {}),
+    ...(allowCategoryChange !== undefined ? { allowTemplateCategoryChange: allowCategoryChange } : {}),
+    ...(addSecurityRec !== undefined ? { addSecurityRecommendation: addSecurityRec } : {}),
+    ...(codeExpiry !== undefined ? { codeExpirationMinutes: codeExpiry } : {}),
     metaTemplate: meta.payload,
     metaWhatsApp: meta.payload,
     ...(collectAdvancedFields(msg) ? { advanced: collectAdvancedFields(msg) } : {}),

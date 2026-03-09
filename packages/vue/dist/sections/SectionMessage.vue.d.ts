@@ -8,7 +8,6 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     bodyLimit: number;
     selectedPlatform: Platform;
     showReset?: boolean;
-    /** Inline validation messages (optional) */
     titleError?: string;
     bodyError?: string;
     imageUrlError?: string;
@@ -26,7 +25,6 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     bodyLimit: number;
     selectedPlatform: Platform;
     showReset?: boolean;
-    /** Inline validation messages (optional) */
     titleError?: string;
     bodyError?: string;
     imageUrlError?: string;

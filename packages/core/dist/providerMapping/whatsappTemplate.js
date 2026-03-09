@@ -57,6 +57,36 @@ function exampleValues(varOrder, sample) {
         return `sample_${v}`;
     });
 }
+/**
+ * Attempts to extract per-variable example values by matching a filled example
+ * string against a positional body template (e.g. "Hi {{1}}, order {{2}}").
+ * Returns a partial map of varName → real value; empty object on failure.
+ */
+function deriveExampleDataFromPositional(positionalBody, exampleText, varOrder) {
+    if (!positionalBody || !exampleText || varOrder.length === 0)
+        return {};
+    try {
+        // Split on {{N}} tokens, escape literal segments, rejoin with capture groups.
+        const parts = positionalBody.split(/\{\{\d+\}\}/);
+        const regexStr = parts
+            .map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+            .join('(.+?)');
+        const regex = new RegExp(`^${regexStr}$`, 's');
+        const match = exampleText.match(regex);
+        if (!match)
+            return {};
+        const result = {};
+        varOrder.forEach((varName, idx) => {
+            const captured = match[idx + 1];
+            if (captured)
+                result[varName] = captured.trim();
+        });
+        return result;
+    }
+    catch {
+        return {};
+    }
+}
 function mapButtonsToMeta(buttonsRaw, varOrderSeed) {
     const warnings = [];
     let varOrder = [...varOrderSeed];
@@ -95,10 +125,13 @@ function mapButtonsToGupshupCanonical(buttonsRaw) {
         const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
         const title = String(btn.label ?? '').trim() || 'Button';
         if (type === 'url') {
+            const url = String(btn.url ?? '').trim() || undefined;
+            const urlExample = String(btn.url_example ?? '').trim() || undefined;
             return {
                 type: 'URL',
                 title,
-                ...(String(btn.url ?? '').trim() ? { url: String(btn.url).trim() } : {}),
+                ...(url ? { url } : {}),
+                ...(urlExample ? { example: [urlExample] } : {}),
             };
         }
         if (type === 'call') {
@@ -110,6 +143,24 @@ function mapButtonsToGupshupCanonical(buttonsRaw) {
         }
         if (type === 'opt_out') {
             return { type: 'OPT_OUT', title };
+        }
+        if (type === 'copy_code') {
+            return {
+                type: 'COPY_CODE',
+                title,
+                ...(String(btn.example ?? '').trim() ? { example: String(btn.example).trim() } : {}),
+            };
+        }
+        if (type === 'otp') {
+            const otpType = String(btn.otp_type ?? 'COPY_CODE').toUpperCase();
+            return {
+                type: 'OTP',
+                title,
+                otp_type: otpType,
+                ...(String(btn.autofill_text ?? '').trim() ? { autofill_text: String(btn.autofill_text).trim() } : {}),
+                ...(String(btn.package_name ?? '').trim() ? { package_name: String(btn.package_name).trim() } : {}),
+                ...(String(btn.signature_hash ?? '').trim() ? { signature_hash: String(btn.signature_hash).trim() } : {}),
+            };
         }
         return { type: 'QUICK_REPLY', title };
     })
@@ -128,6 +179,9 @@ function collectAdvancedFields(msg) {
         'auth_code',
         'document_filename',
         'media_url',
+        'media_handle',
+        'media_caption',
+        'coupon_code',
     ];
     for (const key of keys) {
         if (msg[key] !== undefined && msg[key] !== null && msg[key] !== '') {
@@ -144,12 +198,21 @@ export function toMetaWhatsAppTemplate(campaign, options = {}) {
     const category = toProviderCategory(msg.template_category);
     const language = String(msg.template_language ?? 'en_US').trim() || 'en_US';
     let globalVarOrder = [];
+    // Pre-compute body positional form so we can derive example values from
+    // template_example before building components (used for both body and header).
+    const bodyRawEarly = String(msg.body ?? '').trim();
+    const bodyTransformedEarly = transformGoPlaceholdersToPositional(bodyRawEarly, []);
+    const templateExampleText = String(msg.template_example ?? '').trim();
+    const derivedExampleData = !options.exampleData && templateExampleText
+        ? deriveExampleDataFromPositional(bodyTransformedEarly.text, templateExampleText, bodyTransformedEarly.varOrder)
+        : {};
+    const resolvedExampleData = options.exampleData ?? (Object.keys(derivedExampleData).length ? derivedExampleData : undefined);
     const headerFormat = inferHeaderFormat(msg);
     const headerTextRaw = String(msg.header ?? '').trim();
     if (headerFormat === 'TEXT' && headerTextRaw) {
         const transformed = transformGoPlaceholdersToPositional(headerTextRaw, globalVarOrder);
         globalVarOrder = transformed.varOrder;
-        const headerExamples = exampleValues(globalVarOrder, options.exampleData);
+        const headerExamples = exampleValues(globalVarOrder, resolvedExampleData);
         components.push({
             type: 'HEADER',
             format: 'TEXT',
@@ -166,7 +229,7 @@ export function toMetaWhatsAppTemplate(campaign, options = {}) {
     const bodyRaw = String(msg.body ?? '').trim();
     const bodyTransformed = transformGoPlaceholdersToPositional(bodyRaw, globalVarOrder);
     globalVarOrder = bodyTransformed.varOrder;
-    const bodyExample = exampleValues(globalVarOrder, options.exampleData);
+    const bodyExample = exampleValues(globalVarOrder, resolvedExampleData);
     components.push({
         type: 'BODY',
         text: bodyTransformed.text,
@@ -222,18 +285,33 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
             return 'VIDEO';
         if (v === 'document')
             return 'DOCUMENT';
+        if (v === 'carousel')
+            return 'CAROUSEL';
         return 'TEXT';
     })();
+    const vertical = String(msg.vertical ?? '').trim() || undefined;
+    const templateExample = String(msg.template_example ?? '').trim() || undefined;
+    const mediaHandle = String(msg.media_handle ?? '').trim() || undefined;
+    const enableSample = typeof msg.enable_sample === 'boolean' ? msg.enable_sample : undefined;
+    const allowCategoryChange = typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
+    const addSecurityRec = typeof msg.add_security_recommendation === 'boolean' ? msg.add_security_recommendation : undefined;
+    const codeExpiry = typeof msg.code_expiration_minutes === 'number' ? msg.code_expiration_minutes : undefined;
     const payload = {
         elementName: meta.payload.name,
         languageCode: meta.payload.language,
         category: meta.payload.category,
         templateType,
         content: bodyRaw || body?.text || '',
+        ...(vertical ? { vertical } : {}),
+        ...(templateExample ? { example: templateExample } : {}),
+        ...(mediaHandle ? { exampleMedia: mediaHandle } : {}),
         ...(header?.format === 'TEXT' && (headerRaw || header.text) ? { header: headerRaw || header.text } : {}),
         ...(footerRaw || footer?.text ? { footer: footerRaw || footer?.text } : {}),
         ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
-        ...(body?.example?.body_text?.[0]?.length ? { example: body.example.body_text[0] } : {}),
+        ...(enableSample !== undefined ? { enableSample } : {}),
+        ...(allowCategoryChange !== undefined ? { allowTemplateCategoryChange: allowCategoryChange } : {}),
+        ...(addSecurityRec !== undefined ? { addSecurityRecommendation: addSecurityRec } : {}),
+        ...(codeExpiry !== undefined ? { codeExpirationMinutes: codeExpiry } : {}),
         metaTemplate: meta.payload,
         metaWhatsApp: meta.payload,
         ...(collectAdvancedFields(msg) ? { advanced: collectAdvancedFields(msg) } : {}),

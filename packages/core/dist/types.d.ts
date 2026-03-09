@@ -47,6 +47,30 @@ export interface CampaignMessage {
         name?: string;
         address?: string;
     };
+    /** Emoji shortcode tags shown with the notification (e.g. ["warning", "computer"]). */
+    tags?: string[];
+    /** Enable Markdown formatting in the notification body. */
+    markdown?: boolean;
+    /** Notification icon URL (JPEG/PNG). */
+    icon?: string;
+    /** External file URL to attach to the notification. */
+    attach?: string;
+    /** Filename override for the attachment. */
+    attachment_filename?: string;
+    /** Forward notification to this email address. */
+    email_forward?: string;
+    /** Initiate a phone call to this number when notification is received. */
+    call?: string;
+    /** Scheduled delivery delay (e.g. "30min", "1h", "tomorrow, 3pm", Unix timestamp). */
+    delay?: string;
+    /** Enable server-side message caching. */
+    cache?: boolean;
+    /** Enable Firebase Cloud Messaging delivery. */
+    firebase?: boolean;
+    /** Enable UnifiedPush delivery. */
+    unified_push?: boolean;
+    /** ntfy.sh-compatible action buttons (up to 3). */
+    actions?: NtfyAction[];
     subject?: string;
     preview_text?: string;
     from_name?: string;
@@ -55,23 +79,72 @@ export interface CampaignMessage {
     blocks?: unknown[];
     html?: string;
     header?: string;
+    header_type?: string;
     footer?: string;
     template_type?: string;
+    template_category?: string;
+    template_language?: string;
     template_name?: string;
+    template_example?: string;
+    vertical?: string;
     media_url?: string;
+    media_handle?: string;
     document_filename?: string;
     media_caption?: string;
     coupon_code?: string;
     lto_expiry?: string;
+    enable_sample?: boolean;
+    allow_category_change?: boolean;
+    add_security_recommendation?: boolean;
+    code_expiration_minutes?: number;
     products?: unknown[];
-    buttons?: {
+    cards?: unknown[];
+    buttons?: Array<{
+        id?: string;
         label?: string;
+        type?: string;
         url?: string;
-    }[];
+        url_example?: string;
+        phone?: string;
+        example?: string;
+        otp_type?: string;
+        autofill_text?: string;
+        package_name?: string;
+        signature_hash?: string;
+    }>;
     auth_type?: string;
     auth_label?: string;
     auth_code?: string;
+    flow_id?: string;
+    flow_cta_label?: string;
     sender_id?: string;
+}
+/**
+ * ntfy.sh-compatible notification action button (up to 3 per notification).
+ * Supports view, http, broadcast, and copy action types.
+ */
+export interface NtfyAction {
+    id?: string;
+    /** Action type */
+    action: 'view' | 'http' | 'broadcast' | 'copy';
+    /** Button label shown to the user */
+    label: string;
+    /** Dismiss notification after action is triggered */
+    clear?: boolean;
+    /** view / http: URL to open or send request to */
+    url?: string;
+    /** http: HTTP method (default: POST) */
+    method?: string;
+    /** http: Request headers as key-value pairs */
+    headers?: Record<string, string>;
+    /** http: Request body */
+    body?: string;
+    /** broadcast: Android intent action name */
+    intent?: string;
+    /** broadcast: Intent extras as key-value string pairs */
+    extras?: Record<string, string>;
+    /** copy: Value to copy to clipboard */
+    value?: string;
 }
 export interface NotificationAction {
     /** Stable identifier used in clients / handlers */
