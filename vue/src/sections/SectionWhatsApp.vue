@@ -233,11 +233,38 @@ function addCard() {
   const next = [...cards.value];
   next.push({
     id: `card_${next.length + 1}`,
-    title: '',
-    media_url: '',
-    button_label: '',
-    button_url: '',
+    headerType: 'IMAGE',
+    mediaId: '',
+    body: '',
+    sampleText: '',
+    buttons: [],
   });
+  emitUpdate({ cards: next });
+}
+
+function addCardButton(cardIndex: number) {
+  const next = [...cards.value];
+  const card = { ...(next[cardIndex] as any) };
+  card.buttons = [...(card.buttons ?? []), { type: 'QUICK_REPLY', label: '' }];
+  next[cardIndex] = card;
+  emitUpdate({ cards: next });
+}
+
+function removeCardButton(cardIndex: number, btnIndex: number) {
+  const next = [...cards.value];
+  const card = { ...(next[cardIndex] as any) };
+  card.buttons = [...(card.buttons ?? [])];
+  card.buttons.splice(btnIndex, 1);
+  next[cardIndex] = card;
+  emitUpdate({ cards: next });
+}
+
+function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<string, unknown>) {
+  const next = [...cards.value];
+  const card = { ...(next[cardIndex] as any) };
+  card.buttons = [...(card.buttons ?? [])];
+  card.buttons[btnIndex] = { ...card.buttons[btnIndex], ...patch };
+  next[cardIndex] = card;
   emitUpdate({ cards: next });
 }
 </script>
@@ -355,6 +382,47 @@ function addCard() {
 
     <div class="kb-field">
       <label class="kb-label">
+        Vertical (use-case label)
+        <span class="kb-helper">Describes the business use-case shown during Meta review. Required by Gupshup (e.g. "Order Updates", "Promotions", "Authentication").</span>
+      </label>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="e.g. Order Updates"
+        :value="messageAny.vertical ?? ''"
+        @input="
+          (e) =>
+            emitUpdate({
+              vertical: (e.target as HTMLInputElement).value || undefined,
+            })
+        "
+      />
+    </div>
+
+    <div class="kb-field kb-field--toggles">
+      <label class="kb-label">Submission options</label>
+      <label class="kb-toggle-row">
+        <input
+          type="checkbox"
+          class="kb-toggle"
+          :checked="!!messageAny.enable_sample"
+          @change="(e) => emitUpdate({ enable_sample: (e.target as HTMLInputElement).checked || undefined })"
+        />
+        <span class="kb-toggle-label">Include sample data in Meta review</span>
+      </label>
+      <label class="kb-toggle-row">
+        <input
+          type="checkbox"
+          class="kb-toggle"
+          :checked="!!messageAny.allow_category_change"
+          @change="(e) => emitUpdate({ allow_category_change: (e.target as HTMLInputElement).checked || undefined })"
+        />
+        <span class="kb-toggle-label">Allow Meta to re-categorize this template</span>
+      </label>
+    </div>
+
+    <div class="kb-field">
+      <label class="kb-label">
         Header component (optional)
         <span class="kb-helper">Header can be text or rich media.</span>
       </label>
@@ -420,6 +488,27 @@ function addCard() {
           (e) =>
             emitUpdate({
               media_url: (e.target as HTMLInputElement).value || undefined,
+            })
+        "
+      />
+    </div>
+    <div
+      v-if="['image', 'video', 'document'].includes(headerType) || ['image', 'video', 'document'].includes(currentFormat)"
+      class="kb-field"
+    >
+      <label class="kb-label">
+        Media handle (exampleMedia)
+        <span class="kb-helper">Gupshup media handle ID obtained after uploading via the media upload API. Required for template approval with rich media.</span>
+      </label>
+      <input
+        type="text"
+        class="kb-input"
+        placeholder="e.g. 6462811350485912"
+        :value="messageAny.media_handle ?? ''"
+        @input="
+          (e) =>
+            emitUpdate({
+              media_handle: (e.target as HTMLInputElement).value || undefined,
             })
         "
       />
@@ -523,43 +612,110 @@ function addCard() {
     <div v-if="currentFormat === 'carousel'" class="kb-field">
       <label class="kb-label">
         Carousel cards
-        <span class="kb-helper">Each card can include media and one CTA. Max {{ MAX_CAROUSEL_CARDS }} cards.</span>
+        <span class="kb-helper">MARKETING only. Each card requires a media header (IMAGE or VIDEO), body text, and can have URL + quick-reply buttons. Max {{ MAX_CAROUSEL_CARDS }} cards.</span>
       </label>
       <div class="kb-wa-buttons">
         <div
           v-for="(card, index) in cards"
-          :key="card.id || index"
-          class="kb-card-row"
+          :key="(card as any).id || index"
+          class="kb-carousel-card"
         >
-          <input
-            type="text"
-            class="kb-input"
-            placeholder="Card title"
-            :value="card.title ?? ''"
-            @input="updateCard(Number(index), { title: ($event.target as HTMLInputElement).value })"
-          />
-          <input
-            type="url"
-            class="kb-input"
-            placeholder="Card media URL"
-            :value="card.media_url ?? ''"
-            @input="updateCard(Number(index), { media_url: ($event.target as HTMLInputElement).value })"
-          />
-          <input
-            type="text"
-            class="kb-input"
-            placeholder="Button label"
-            :value="card.button_label ?? ''"
-            @input="updateCard(Number(index), { button_label: ($event.target as HTMLInputElement).value })"
-          />
-          <input
-            type="url"
-            class="kb-input"
-            placeholder="Button URL"
-            :value="card.button_url ?? ''"
-            @input="updateCard(Number(index), { button_url: ($event.target as HTMLInputElement).value })"
-          />
-          <button type="button" class="kb-wa-btn-remove" @click="removeCard(Number(index))">Remove</button>
+          <div class="kb-carousel-card__head">
+            <span class="kb-carousel-card__num">Card {{ index + 1 }}</span>
+            <button type="button" class="kb-wa-btn-remove" @click="removeCard(Number(index))">Remove</button>
+          </div>
+          <div class="kb-field-inline-2">
+            <div>
+              <label class="kb-label kb-label--sm">Header type</label>
+              <select
+                class="kb-select"
+                :value="(card as any).headerType ?? 'IMAGE'"
+                @change="updateCard(Number(index), { headerType: ($event.target as HTMLSelectElement).value })"
+              >
+                <option value="IMAGE">Image</option>
+                <option value="VIDEO">Video</option>
+              </select>
+            </div>
+            <div>
+              <label class="kb-label kb-label--sm">Media handle ID</label>
+              <input
+                type="text"
+                class="kb-input"
+                placeholder="e.g. 6462811350485912"
+                :value="(card as any).mediaId ?? ''"
+                @input="updateCard(Number(index), { mediaId: ($event.target as HTMLInputElement).value })"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="kb-label kb-label--sm">Card body</label>
+            <textarea
+              class="kb-textarea"
+              rows="2"
+              placeholder="Card body text with {{1}} variables"
+              :value="(card as any).body ?? ''"
+              @input="updateCard(Number(index), { body: ($event.target as HTMLTextAreaElement).value })"
+            />
+          </div>
+          <div>
+            <label class="kb-label kb-label--sm">Sample text (body with real values for Meta approval)</label>
+            <textarea
+              class="kb-textarea"
+              rows="2"
+              placeholder="Card body with real values filled in"
+              :value="(card as any).sampleText ?? ''"
+              @input="updateCard(Number(index), { sampleText: ($event.target as HTMLTextAreaElement).value })"
+            />
+          </div>
+          <div class="kb-carousel-card__btns">
+            <label class="kb-label kb-label--sm">Card buttons</label>
+            <div
+              v-for="(cbtn, bi) in ((card as any).buttons ?? [])"
+              :key="bi"
+              class="kb-wa-button-row kb-wa-button-row--sm"
+            >
+              <input
+                type="text"
+                class="kb-input kb-input--btn-label"
+                placeholder="Button label"
+                :value="cbtn.label ?? ''"
+                @input="updateCardButton(Number(index), Number(bi), { label: ($event.target as HTMLInputElement).value })"
+              />
+              <select
+                class="kb-select kb-select--btn-type"
+                :value="cbtn.type ?? 'QUICK_REPLY'"
+                @change="updateCardButton(Number(index), Number(bi), { type: ($event.target as HTMLSelectElement).value })"
+              >
+                <option value="QUICK_REPLY">Quick reply</option>
+                <option value="URL">Visit URL</option>
+              </select>
+              <template v-if="cbtn.type === 'URL'">
+                <input
+                  type="url"
+                  class="kb-input kb-input--btn-target"
+                  placeholder="https://example.com/shop?promo={{1}}"
+                  :value="cbtn.url ?? ''"
+                  @input="updateCardButton(Number(index), Number(bi), { url: ($event.target as HTMLInputElement).value })"
+                />
+                <input
+                  type="url"
+                  class="kb-input kb-input--btn-target"
+                  placeholder="Example URL (e.g. https://example.com/shop?promo=SUMMER23)"
+                  :value="cbtn.url_example ?? ''"
+                  @input="updateCardButton(Number(index), Number(bi), { url_example: ($event.target as HTMLInputElement).value })"
+                />
+              </template>
+              <button type="button" class="kb-wa-btn-remove" @click="removeCardButton(Number(index), Number(bi))">Remove</button>
+            </div>
+            <button
+              type="button"
+              class="kb-wa-btn-add"
+              :disabled="((card as any).buttons ?? []).length >= 2"
+              @click="addCardButton(Number(index))"
+            >
+              Add button
+            </button>
+          </div>
         </div>
         <button
           type="button"
@@ -628,7 +784,7 @@ function addCard() {
     >
       <label class="kb-label">
         Authentication template
-        <span class="kb-helper">Configure how OTP / login codes should appear in this template.</span>
+        <span class="kb-helper">Category must be AUTHENTICATION. Only OTP buttons allowed; no media, URLs, or custom body text.</span>
       </label>
       <select
         class="kb-select"
@@ -646,6 +802,7 @@ function addCard() {
       <input
         type="text"
         class="kb-input"
+        style="margin-top: 0.5rem"
         placeholder="Code label (e.g. Your code is {{ .otp_code }})"
         :value="messageAny.auth_label ?? ''"
         @input="
@@ -655,6 +812,33 @@ function addCard() {
             })
         "
       />
+      <div class="kb-auth-options">
+        <label class="kb-toggle-row">
+          <input
+            type="checkbox"
+            class="kb-toggle"
+            :checked="!!messageAny.add_security_recommendation"
+            @change="(e) => emitUpdate({ add_security_recommendation: (e.target as HTMLInputElement).checked || undefined })"
+          />
+          <span class="kb-toggle-label">Add security recommendation (warns user not to share code)</span>
+        </label>
+        <div class="kb-auth-expiry">
+          <label class="kb-label kb-label--sm">Code expiration (minutes)</label>
+          <input
+            type="number"
+            class="kb-input kb-input--sm"
+            placeholder="e.g. 10"
+            min="1"
+            :value="messageAny.code_expiration_minutes ?? ''"
+            @input="
+              (e) => {
+                const v = parseInt((e.target as HTMLInputElement).value, 10);
+                emitUpdate({ code_expiration_minutes: isNaN(v) ? undefined : v });
+              }
+            "
+          />
+        </div>
+      </div>
     </div>
 
     <div class="kb-field">
@@ -690,6 +874,25 @@ function addCard() {
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="kb-field">
+      <label class="kb-label">
+        Body example (for Meta approval)
+        <span class="kb-helper">Paste the body text with placeholders replaced by real sample values. Required by Meta for template approval.</span>
+      </label>
+      <textarea
+        class="kb-textarea"
+        rows="3"
+        placeholder="Hi John, your order ORD-5531 has been shipped..."
+        :value="messageAny.template_example ?? ''"
+        @input="
+          (e) =>
+            emitUpdate({
+              template_example: (e.target as HTMLTextAreaElement).value || undefined,
+            })
+        "
+      />
     </div>
 
     <div v-if="templateFields.length > 0" class="kb-field kb-wa-template-fields">
@@ -772,16 +975,28 @@ function addCard() {
             <option value="quick_reply">Quick reply</option>
             <option value="url">Visit URL</option>
             <option value="call">Call phone</option>
+            <option value="copy_code">Copy coupon code</option>
+            <option value="otp" :disabled="messageAny.template_category !== 'authentication'">OTP (authentication only)</option>
             <option value="opt_out">Marketing opt-out</option>
           </select>
-          <input
-            v-if="btn.type === 'url'"
-            type="url"
-            class="kb-input kb-input--btn-target"
-            placeholder="https://..."
-            :value="btn.url"
-            @input="updateButton(Number(index), { url: ($event.target as HTMLInputElement).value || undefined })"
-          />
+          <!-- URL button fields -->
+          <template v-if="btn.type === 'url'">
+            <input
+              type="url"
+              class="kb-input kb-input--btn-target"
+              placeholder="https://example.com/path/{{1}}"
+              :value="btn.url"
+              @input="updateButton(Number(index), { url: ($event.target as HTMLInputElement).value || undefined })"
+            />
+            <input
+              type="url"
+              class="kb-input kb-input--btn-target"
+              placeholder="Example URL with real value (e.g. https://example.com/path/ORD-5531)"
+              :value="btn.url_example"
+              @input="updateButton(Number(index), { url_example: ($event.target as HTMLInputElement).value || undefined })"
+            />
+          </template>
+          <!-- Phone button -->
           <input
             v-else-if="btn.type === 'call'"
             type="tel"
@@ -790,6 +1005,50 @@ function addCard() {
             :value="btn.phone"
             @input="updateButton(Number(index), { phone: ($event.target as HTMLInputElement).value || undefined })"
           />
+          <!-- Copy coupon code button -->
+          <input
+            v-else-if="btn.type === 'copy_code'"
+            type="text"
+            class="kb-input kb-input--btn-target"
+            placeholder="Example coupon code (e.g. SAVE30DEC)"
+            :value="btn.example"
+            @input="updateButton(Number(index), { example: ($event.target as HTMLInputElement).value || undefined })"
+          />
+          <!-- OTP button (authentication only) -->
+          <template v-else-if="btn.type === 'otp'">
+            <select
+              class="kb-select kb-select--btn-type"
+              :value="btn.otp_type ?? 'COPY_CODE'"
+              @change="updateButton(Number(index), { otp_type: ($event.target as HTMLSelectElement).value })"
+            >
+              <option value="COPY_CODE">Copy code</option>
+              <option value="ONE_TAP">One-tap autofill</option>
+            </select>
+            <template v-if="btn.otp_type === 'ONE_TAP'">
+              <input
+                type="text"
+                class="kb-input kb-input--btn-target"
+                placeholder="Autofill button text (e.g. Tap to autofill)"
+                :value="btn.autofill_text"
+                @input="updateButton(Number(index), { autofill_text: ($event.target as HTMLInputElement).value || undefined })"
+              />
+              <input
+                type="text"
+                class="kb-input kb-input--btn-target"
+                placeholder="Android package name (e.g. com.example.app)"
+                :value="btn.package_name"
+                @input="updateButton(Number(index), { package_name: ($event.target as HTMLInputElement).value || undefined })"
+              />
+              <input
+                type="text"
+                class="kb-input kb-input--btn-target"
+                placeholder="App signature hash"
+                :value="btn.signature_hash"
+                @input="updateButton(Number(index), { signature_hash: ($event.target as HTMLInputElement).value || undefined })"
+              />
+            </template>
+          </template>
+          <!-- Opt-out -->
           <span v-else-if="btn.type === 'opt_out'" class="kb-opt-out-note">
             Sends a built-in opt-out action.
           </span>
@@ -1087,6 +1346,86 @@ function addCard() {
   border-radius: 11px;
   padding: 0.56rem;
   align-items: center;
+}
+.kb-carousel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.56rem;
+  border: 1px solid var(--wa-border);
+  background: var(--wa-surface-muted);
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+.kb-carousel-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kb-carousel-card__num {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--wa-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.kb-carousel-card__btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.44rem;
+  border-top: 1px solid var(--wa-border);
+  padding-top: 0.56rem;
+  margin-top: 0.2rem;
+}
+.kb-field-inline-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 0.56rem;
+  align-items: start;
+}
+.kb-wa-button-row--sm {
+  padding: 0.44rem;
+}
+.kb-label--sm {
+  font-size: 0.74rem;
+  margin-bottom: 0.3rem;
+}
+.kb-field--toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.kb-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.kb-toggle {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--wa-focus);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.kb-toggle-label {
+  font-size: 0.82rem;
+  color: var(--wa-text);
+}
+.kb-auth-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--wa-border);
+}
+.kb-auth-expiry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.kb-input--sm {
+  max-width: 140px;
 }
 .kb-wa-button-row {
   display: flex;

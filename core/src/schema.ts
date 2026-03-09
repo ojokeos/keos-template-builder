@@ -22,9 +22,6 @@ export function createEmptyMessage(): CampaignMessage {
     title: '',
     body: '',
     variables: [],
-    // No actions by default; UI can add up to provider-supported count.
-    // When omitted, mappers simply won't include actions.
-    // @ts-expect-error actions is optional on CampaignMessage but we initialize as empty.
     actions: [],
   };
 }
