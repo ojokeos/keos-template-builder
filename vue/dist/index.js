@@ -3902,7 +3902,7 @@ const Ze = [
           value: U.value,
           onChange: m[7] || (m[7] = (k) => _({ header_type: k.target.value }))
         }, [...m[37] || (m[37] = [
-          Ge('<option value="none" data-v-6e01dfe2>No header</option><option value="text" data-v-6e01dfe2>Text header</option><option value="image" data-v-6e01dfe2>Image header</option><option value="video" data-v-6e01dfe2>Video header</option><option value="document" data-v-6e01dfe2>Document header</option>', 5)
+          Ge('<option value="none" data-v-b8a96006>No header</option><option value="text" data-v-b8a96006>Text header</option><option value="image" data-v-b8a96006>Image header</option><option value="video" data-v-b8a96006>Video header</option><option value="document" data-v-b8a96006>Document header</option>', 5)
         ])], 40, fi)
       ]),
       U.value === "text" ? (a(), n("div", ki, [
@@ -4470,7 +4470,7 @@ const Ze = [
       ])) : h("", !0)
     ]));
   }
-}), su = /* @__PURE__ */ Ne(nu, [["__scopeId", "data-v-6e01dfe2"]]), lu = { class: "wa-preview-root" }, ou = { class: "wa-device" }, iu = { class: "wa-screen" }, ru = { class: "wa-header" }, uu = { class: "wa-titleblock" }, du = { class: "wa-title-row" }, cu = { class: "wa-title" }, pu = { class: "wa-subtitle" }, mu = {
+}), su = /* @__PURE__ */ Ne(nu, [["__scopeId", "data-v-b8a96006"]]), lu = { class: "wa-preview-root" }, ou = { class: "wa-device" }, iu = { class: "wa-screen" }, ru = { class: "wa-header" }, uu = { class: "wa-titleblock" }, du = { class: "wa-title-row" }, cu = { class: "wa-title" }, pu = { class: "wa-subtitle" }, mu = {
   key: 0,
   class: "wa-flow-shell"
 }, vu = { class: "wa-flow-header" }, bu = { class: "wa-flow-title" }, hu = { class: "wa-flow-content" }, yu = { class: "wa-flow-eyebrow" }, gu = {

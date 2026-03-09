@@ -1243,7 +1243,9 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
 .kb-input,
 .kb-textarea,
 .kb-select {
-  width: 100%;
+  width: -webkit-fill-available;
+  width: stretch;
+  box-sizing: border-box;
   min-height: 44px;
   padding: 0.72rem 0.8rem;
   border: 1px solid #c6d3e2;
@@ -1289,13 +1291,11 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
 .kb-input-with-var {
   position: relative;
   min-width: 0;
+  width: -webkit-fill-available;
   width: stretch;
-  width: 100%;
 }
 .kb-input-with-var .kb-input,
 .kb-input-with-var .kb-textarea {
-  width: 100%;
-  box-sizing: border-box;
   padding-right: 104px;
 }
 .kb-input-with-var--btn .kb-input {
