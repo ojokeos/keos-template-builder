@@ -22,22 +22,45 @@ const emit = defineEmits<{
 }>();
 
 const FORMAT_OPTIONS = [
-  { value: 'text', label: 'Text', hint: 'Standard text template.' },
-  { value: 'image', label: 'Rich media (image header)', hint: 'Body with image in header.' },
-  { value: 'video', label: 'Rich media (video header)', hint: 'Body with video in header.' },
+  { value: 'text',     label: 'Text',                        hint: 'Standard text template.' },
+  { value: 'image',    label: 'Rich media (image header)',    hint: 'Body with image in header.' },
+  { value: 'video',    label: 'Rich media (video header)',    hint: 'Body with video in header.' },
   { value: 'document', label: 'Rich media (document header)', hint: 'Body with PDF/document in header.' },
-  { value: 'carousel', label: 'Carousel', hint: 'Up to 10 cards with media + buttons.' },
-  { value: 'flow', label: 'WhatsApp Flow', hint: 'Launch a multi-step in-chat flow.' },
-  { value: 'lto', label: 'Limited-time offer', hint: 'Adds expiry urgency to the offer.' },
-  { value: 'catalog', label: 'Catalog', hint: 'Open WhatsApp catalog or product list.' },
-  { value: 'mpm', label: 'Multi-product', hint: 'Show multiple products in one template.' },
-  { value: 'auth', label: 'Authentication', hint: 'OTP/login verification template.' },
+  { value: 'carousel', label: 'Carousel',                     hint: 'Up to 10 cards with media + buttons. Marketing only.' },
+  { value: 'flow',     label: 'WhatsApp Flow',                hint: 'Launch a multi-step in-chat flow.' },
+  { value: 'lto',      label: 'Limited-time offer',           hint: 'Adds expiry urgency to the offer. Marketing only.' },
+  { value: 'catalog',  label: 'Catalog',                      hint: 'Open WhatsApp catalog or product list. Marketing only.' },
+  { value: 'mpm',      label: 'Multi-product',                hint: 'Show multiple products in one template. Marketing only.' },
+  { value: 'auth',     label: 'Authentication',               hint: 'OTP/login verification template. Authentication only.' },
 ] as const;
 
 const CATEGORY_OPTIONS = [
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'utility', label: 'Utility' },
+  { value: 'marketing',      label: 'Marketing' },
+  { value: 'utility',        label: 'Utility' },
   { value: 'authentication', label: 'Authentication' },
+] as const;
+
+/** Formats allowed per category. */
+const FORMATS_BY_CATEGORY: Record<string, readonly string[]> = {
+  marketing:      ['text', 'image', 'video', 'document', 'carousel', 'flow', 'lto', 'catalog', 'mpm'],
+  utility:        ['text', 'image', 'video', 'document', 'flow'],
+  authentication: ['auth'],
+};
+
+/** Button types allowed per category (Gupshup / Meta constraints). */
+const BUTTON_TYPES_BY_CATEGORY: Record<string, readonly string[]> = {
+  marketing:      ['quick_reply', 'url', 'call', 'copy_code', 'opt_out'],
+  utility:        ['quick_reply', 'url', 'call'],
+  authentication: ['otp'],
+};
+
+const ALL_BUTTON_TYPE_OPTIONS = [
+  { value: 'quick_reply', label: 'Quick reply' },
+  { value: 'url',         label: 'Visit URL' },
+  { value: 'call',        label: 'Call phone' },
+  { value: 'copy_code',   label: 'Copy coupon code' },
+  { value: 'otp',         label: 'OTP (authentication only)' },
+  { value: 'opt_out',     label: 'Marketing opt-out' },
 ] as const;
 
 const HEADER_LIMIT = 60;
@@ -48,6 +71,7 @@ const MAX_CAROUSEL_CARDS = 10;
 
 const messageAny = computed(() => props.message as any);
 const currentFormat = computed(() => messageAny.value.template_type ?? 'text');
+const currentCategory = computed(() => String(messageAny.value.template_category ?? 'marketing').trim());
 const headerType = computed(() => messageAny.value.header_type ?? 'none');
 const headerText = computed(() => String(messageAny.value.header ?? ''));
 const bodyText = computed(() => String(messageAny.value.body ?? ''));
@@ -76,6 +100,24 @@ const setupProgressLabel = computed(() => {
 });
 const disabledCategorySet = computed(() => new Set((props.disabledCategories ?? []).map((v) => String(v).trim())));
 const disabledFormatSet = computed(() => new Set((props.disabledFormats ?? []).map((v) => String(v).trim())));
+
+/** Formats available for the currently selected category, minus any host-disabled ones. */
+const availableFormats = computed(() => {
+  const allowed = new Set(FORMATS_BY_CATEGORY[currentCategory.value] ?? FORMATS_BY_CATEGORY.marketing);
+  return FORMAT_OPTIONS.filter((f) => allowed.has(f.value) && !disabledFormatSet.value.has(f.value));
+});
+
+/** Button types available for the currently selected category. */
+const availableButtonTypes = computed(() => {
+  const allowed = new Set(BUTTON_TYPES_BY_CATEGORY[currentCategory.value] ?? BUTTON_TYPES_BY_CATEGORY.marketing);
+  return ALL_BUTTON_TYPE_OPTIONS.filter((t) => allowed.has(t.value));
+});
+
+/** Max buttons for the current category (auth = 1 OTP). */
+const maxButtons = computed(() => currentCategory.value === 'authentication' ? 1 : MAX_BUTTONS);
+
+/** Authentication templates do not allow header, footer, or allow_category_change. */
+const isAuth = computed(() => currentCategory.value === 'authentication');
 
 function extractPlaceholders(text: string): string[] {
   if (!text || typeof text !== 'string') return [];
@@ -148,9 +190,34 @@ function onCategoryChange(value: string) {
   const partial: Record<string, unknown> = {
     template_category: value || undefined,
   };
-  if (value === 'authentication' && currentFormat.value !== 'auth') {
+
+  // Enforce format: switch to the first allowed format if current is not allowed.
+  const allowedFormats = new Set(FORMATS_BY_CATEGORY[value] ?? FORMATS_BY_CATEGORY.marketing);
+  if (!allowedFormats.has(currentFormat.value)) {
+    partial.template_type = value === 'authentication' ? 'auth' : 'text';
+  } else if (value === 'authentication' && currentFormat.value !== 'auth') {
     partial.template_type = 'auth';
   }
+
+  // Strip components that are not allowed in the new category.
+  if (value === 'authentication') {
+    partial.header_type = undefined;
+    partial.header = undefined;
+    partial.footer = undefined;
+    partial.allow_category_change = undefined;
+    partial.media_url = undefined;
+    partial.media_handle = undefined;
+    partial.media_caption = undefined;
+    partial.document_filename = undefined;
+  }
+
+  // Sanitize buttons: remove any that are not allowed in the new category.
+  const allowedBtnTypes = new Set(BUTTON_TYPES_BY_CATEGORY[value] ?? BUTTON_TYPES_BY_CATEGORY.marketing);
+  const sanitizedButtons = buttons.value.filter((b: any) => allowedBtnTypes.has(b.type ?? 'quick_reply'));
+  if (sanitizedButtons.length !== buttons.value.length) {
+    partial.buttons = sanitizedButtons;
+  }
+
   emitUpdate(partial);
 }
 
@@ -186,8 +253,10 @@ function removeButton(index: number) {
 }
 
 function addButton() {
+  if (buttons.value.length >= maxButtons.value) return;
+  const defaultType = availableButtonTypes.value[0]?.value ?? 'quick_reply';
   const next = [...buttons.value];
-  next.push({ id: `btn_${next.length + 1}`, label: '', type: 'quick_reply' });
+  next.push({ id: `btn_${next.length + 1}`, label: '', type: defaultType });
   emitUpdate({ buttons: next });
 }
 
@@ -324,12 +393,11 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
         @change="onFormatChange(($event.target as HTMLSelectElement).value)"
       >
         <option
-          v-for="opt in FORMAT_OPTIONS"
+          v-for="opt in availableFormats"
           :key="opt.value"
           :value="opt.value"
-          :disabled="disabledFormatSet.has(opt.value)"
         >
-          {{ opt.label }}{{ disabledFormatSet.has(opt.value) ? ' (Disabled)' : '' }}
+          {{ opt.label }}
         </option>
       </select>
     </div>
@@ -410,7 +478,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
         />
         <span class="kb-toggle-label">Include sample data in Meta review</span>
       </label>
-      <label class="kb-toggle-row">
+      <label v-if="!isAuth" class="kb-toggle-row">
         <input
           type="checkbox"
           class="kb-toggle"
@@ -421,7 +489,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
       </label>
     </div>
 
-    <div class="kb-field">
+    <div v-if="!isAuth" class="kb-field">
       <label class="kb-label">
         Header component (optional)
         <span class="kb-helper">Header can be text or rich media.</span>
@@ -906,7 +974,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
       </ul>
     </div>
 
-    <div class="kb-field">
+    <div v-if="!isAuth" class="kb-field">
       <label class="kb-label">
         Footer (optional)
         <span class="kb-helper">Small, muted line shown at the bottom of the message.</span>
@@ -943,7 +1011,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
       <label class="kb-label">
         Buttons (optional)
         <span class="kb-helper">
-          Use quick replies, CTA (URL/phone), or marketing opt-out. Max {{ MAX_BUTTONS }} buttons.
+          Available types depend on the selected category. Max {{ maxButtons }} button{{ maxButtons === 1 ? '' : 's' }}.
         </span>
       </label>
       <div class="kb-wa-buttons">
@@ -972,12 +1040,13 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
             :value="btn.type ?? 'quick_reply'"
             @change="updateButton(Number(index), { type: ($event.target as HTMLSelectElement).value })"
           >
-            <option value="quick_reply">Quick reply</option>
-            <option value="url">Visit URL</option>
-            <option value="call">Call phone</option>
-            <option value="copy_code">Copy coupon code</option>
-            <option value="otp" :disabled="messageAny.template_category !== 'authentication'">OTP (authentication only)</option>
-            <option value="opt_out">Marketing opt-out</option>
+            <option
+              v-for="typeOpt in availableButtonTypes"
+              :key="typeOpt.value"
+              :value="typeOpt.value"
+            >
+              {{ typeOpt.label }}
+            </option>
           </select>
           <!-- URL button fields -->
           <template v-if="btn.type === 'url'">
@@ -1063,7 +1132,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
         <button
           type="button"
           class="kb-wa-btn-add"
-          :disabled="buttons.length >= MAX_BUTTONS"
+          :disabled="buttons.length >= maxButtons"
           @click="addButton"
         >
           Add button

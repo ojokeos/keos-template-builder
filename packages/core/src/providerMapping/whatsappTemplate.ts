@@ -28,17 +28,21 @@ type MetaTemplateComponent =
       type: 'FOOTER';
       text: string;
     }
-  | {
-      type: 'BUTTONS';
-      buttons: Array<{
-        type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER';
-        text: string;
-        url?: string;
-        phone_number?: string;
-      }>;
-    };
+  | { type: 'BUTTONS'; buttons: MetaButton[] };
 
-type MetaButton = Extract<MetaTemplateComponent, { type: 'BUTTONS' }>['buttons'][number];
+type MetaButton =
+  | { type: 'QUICK_REPLY'; text: string }
+  | { type: 'URL'; text: string; url?: string; example?: string[] }
+  | { type: 'PHONE_NUMBER'; text: string; phone_number?: string }
+  | { type: 'COPY_CODE'; text: string; example?: string }
+  | {
+      type: 'OTP';
+      text: string;
+      otp_type?: 'COPY_CODE' | 'ONE_TAP';
+      autofill_text?: string;
+      package_name?: string;
+      signature_hash?: string;
+    };
 
 type GupshupButton =
   | { type: 'QUICK_REPLY'; title: string }
@@ -204,14 +208,20 @@ function mapButtonsToMeta(
 
   const mapped = buttonsRaw
     .slice(0, 10)
-    .map((b) => {
+    .map((b): MetaButton | null => {
       const btn = b as Record<string, unknown>;
       const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
       const text = String(btn.label ?? '').trim() || 'Button';
       if (type === 'url') {
         const transformed = transformGoPlaceholdersToPositional(String(btn.url ?? ''), varOrder);
         varOrder = transformed.varOrder;
-        return { type: 'URL' as const, text, url: transformed.text || undefined };
+        const urlExample = String(btn.url_example ?? '').trim() || undefined;
+        return {
+          type: 'URL' as const,
+          text,
+          url: transformed.text || undefined,
+          ...(urlExample ? { example: [urlExample] } : {}),
+        };
       }
       if (type === 'call') {
         return {
@@ -220,13 +230,28 @@ function mapButtonsToMeta(
           phone_number: String(btn.phone ?? '').trim() || undefined,
         };
       }
+      if (type === 'copy_code') {
+        const example = String(btn.example ?? '').trim() || undefined;
+        return { type: 'COPY_CODE' as const, text, ...(example ? { example } : {}) };
+      }
+      if (type === 'otp') {
+        const otpType = String(btn.otp_type ?? 'COPY_CODE').toUpperCase() as 'COPY_CODE' | 'ONE_TAP';
+        return {
+          type: 'OTP' as const,
+          text,
+          otp_type: otpType,
+          ...(String(btn.autofill_text ?? '').trim() ? { autofill_text: String(btn.autofill_text).trim() } : {}),
+          ...(String(btn.package_name ?? '').trim() ? { package_name: String(btn.package_name).trim() } : {}),
+          ...(String(btn.signature_hash ?? '').trim() ? { signature_hash: String(btn.signature_hash).trim() } : {}),
+        };
+      }
       if (type === 'opt_out') {
-        warnings.push('Opt-out button is provider-specific; mapped as QUICK_REPLY.');
+        // Meta has no OPT_OUT type; use QUICK_REPLY as the closest equivalent in the meta payload.
         return { type: 'QUICK_REPLY' as const, text };
       }
       return { type: 'QUICK_REPLY' as const, text };
     })
-    .filter((b) => Boolean(b.text));
+    .filter((b): b is MetaButton => Boolean(b?.text));
 
   return { buttons: mapped, varOrder, warnings };
 }
@@ -401,27 +426,79 @@ export function toMetaWhatsAppTemplate(
   };
 }
 
+/** Button types permitted per category — enforced at payload-build time. */
+const ALLOWED_BUTTON_TYPES_BY_CATEGORY: Record<string, Set<string>> = {
+  MARKETING:      new Set(['quick_reply', 'url', 'call', 'copy_code', 'opt_out']),
+  UTILITY:        new Set(['quick_reply', 'url', 'call']),
+  AUTHENTICATION: new Set(['otp']),
+};
+
 export function toGupshupWhatsAppTemplate(
   campaign: Campaign,
   options: SerializeOptions = {},
 ): ProviderMappingResult<GupshupWhatsAppTemplateCreatePayload> {
   const meta = toMetaWhatsAppTemplate(campaign, options);
   const msg = campaign.message as unknown as Record<string, unknown>;
+  const warnings = [...meta.warnings];
 
-  const header = meta.payload.components.find((c) => c.type === 'HEADER') as
+  // ── Category enforcement ───────────────────────────────────────────────────
+  // Enforce at payload-build time regardless of what the UI allowed through.
+  const resolvedCategory = meta.payload.category; // 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
+  const isAuth = resolvedCategory === 'AUTHENTICATION';
+  const allowedBtnTypes = ALLOWED_BUTTON_TYPES_BY_CATEGORY[resolvedCategory] ?? ALLOWED_BUTTON_TYPES_BY_CATEGORY.MARKETING;
+
+  const allButtonsRaw = Array.isArray(msg.buttons) ? (msg.buttons as unknown[]) : [];
+  const buttonsRaw = allButtonsRaw.filter((b) => {
+    const t = String((b as Record<string, unknown>).type ?? 'quick_reply').trim().toLowerCase();
+    if (!allowedBtnTypes.has(t)) {
+      warnings.push(`Button type "${t}" is not allowed for ${resolvedCategory}; removed from payload.`);
+      return false;
+    }
+    return true;
+  });
+  // Authentication allows at most 1 button.
+  const maxBtns = isAuth ? 1 : 10;
+  if (buttonsRaw.length > maxBtns) {
+    warnings.push(`${resolvedCategory} allows at most ${maxBtns} button(s); extra buttons removed.`);
+  }
+  const filteredButtonsRaw = buttonsRaw.slice(0, maxBtns);
+  const gupshupButtons = mapButtonsToGupshupCanonical(filteredButtonsRaw);
+
+  // Rebuild meta template with the filtered buttons so the embedded payload is consistent.
+  const metaComponents = meta.payload.components.filter((c) => {
+    if (isAuth && c.type === 'HEADER') return false;
+    if (isAuth && c.type === 'FOOTER') return false;
+    return true;
+  });
+  if (filteredButtonsRaw.length) {
+    // Replace the BUTTONS component with one built from the filtered set.
+    const btnIdx = metaComponents.findIndex((c) => c.type === 'BUTTONS');
+    const { buttons: metaBtns, varOrder } = mapButtonsToMeta(filteredButtonsRaw, []);
+    void varOrder; // used internally
+    const buttonsComponent: MetaTemplateComponent = { type: 'BUTTONS', buttons: metaBtns };
+    if (btnIdx >= 0) metaComponents[btnIdx] = buttonsComponent;
+    else if (metaBtns.length) metaComponents.push(buttonsComponent);
+  } else {
+    // Remove buttons component if no buttons remain.
+    const btnIdx = metaComponents.findIndex((c) => c.type === 'BUTTONS');
+    if (btnIdx >= 0) metaComponents.splice(btnIdx, 1);
+  }
+  const cleanMetaPayload: MetaWhatsAppTemplateCreatePayload = { ...meta.payload, components: metaComponents };
+  // ── End enforcement ────────────────────────────────────────────────────────
+
+  const header = metaComponents.find((c) => c.type === 'HEADER') as
     | Extract<MetaTemplateComponent, { type: 'HEADER' }>
     | undefined;
-  const body = meta.payload.components.find((c) => c.type === 'BODY') as
+  const body = metaComponents.find((c) => c.type === 'BODY') as
     | Extract<MetaTemplateComponent, { type: 'BODY' }>
     | undefined;
-  const footer = meta.payload.components.find((c) => c.type === 'FOOTER') as
+  const footer = metaComponents.find((c) => c.type === 'FOOTER') as
     | Extract<MetaTemplateComponent, { type: 'FOOTER' }>
     | undefined;
+
   const bodyRaw = String(msg.body ?? '').trim();
   const headerRaw = String(msg.header ?? '').trim();
   const footerRaw = String(msg.footer ?? '').trim();
-  const buttonsRaw = Array.isArray(msg.buttons) ? (msg.buttons as unknown[]) : [];
-  const gupshupButtons = mapButtonsToGupshupCanonical(buttonsRaw);
 
   const templateType = (() => {
     const v = String(msg.template_type ?? '').trim().toLowerCase();
@@ -436,30 +513,34 @@ export function toGupshupWhatsAppTemplate(
   const templateExample = String(msg.template_example ?? '').trim() || undefined;
   const mediaHandle = String(msg.media_handle ?? '').trim() || undefined;
   const enableSample = typeof msg.enable_sample === 'boolean' ? msg.enable_sample : undefined;
-  const allowCategoryChange = typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
+  const allowCategoryChange = !isAuth && typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
   const addSecurityRec = typeof msg.add_security_recommendation === 'boolean' ? msg.add_security_recommendation : undefined;
   const codeExpiry = typeof msg.code_expiration_minutes === 'number' ? msg.code_expiration_minutes : undefined;
 
   const payload: GupshupWhatsAppTemplateCreatePayload = {
-    elementName: meta.payload.name,
-    languageCode: meta.payload.language,
-    category: meta.payload.category,
+    elementName: cleanMetaPayload.name,
+    languageCode: cleanMetaPayload.language,
+    category: cleanMetaPayload.category,
     templateType,
     content: bodyRaw || body?.text || '',
     ...(vertical ? { vertical } : {}),
     ...(templateExample ? { example: templateExample } : {}),
     ...(mediaHandle ? { exampleMedia: mediaHandle } : {}),
-    ...(header?.format === 'TEXT' && (headerRaw || header.text) ? { header: headerRaw || header.text } : {}),
-    ...(footerRaw || footer?.text ? { footer: footerRaw || footer?.text } : {}),
+    // Header and footer are forbidden for AUTHENTICATION templates.
+    ...(!isAuth && header?.format === 'TEXT' && (headerRaw || header.text)
+      ? { header: headerRaw || header.text }
+      : {}),
+    ...(!isAuth && (footerRaw || footer?.text) ? { footer: footerRaw || footer?.text } : {}),
     ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
     ...(enableSample !== undefined ? { enableSample } : {}),
+    // allowTemplateCategoryChange is forbidden for AUTHENTICATION templates.
     ...(allowCategoryChange !== undefined ? { allowTemplateCategoryChange: allowCategoryChange } : {}),
     ...(addSecurityRec !== undefined ? { addSecurityRecommendation: addSecurityRec } : {}),
     ...(codeExpiry !== undefined ? { codeExpirationMinutes: codeExpiry } : {}),
-    metaTemplate: meta.payload,
-    metaWhatsApp: meta.payload,
+    metaTemplate: cleanMetaPayload,
+    metaWhatsApp: cleanMetaPayload,
     ...(collectAdvancedFields(msg) ? { advanced: collectAdvancedFields(msg) } : {}),
   };
 
-  return { payload, warnings: meta.warnings };
+  return { payload, warnings };
 }
