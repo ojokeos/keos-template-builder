@@ -5273,6 +5273,12 @@ const et = [
         footer: s.footer,
         buttons: s.buttons,
         example: s.example,
+        exampleMedia: s.exampleMedia,
+        vertical: s.vertical,
+        enableSample: s.enableSample,
+        allowTemplateCategoryChange: s.allowTemplateCategoryChange,
+        addSecurityRecommendation: s.addSecurityRecommendation,
+        codeExpirationMinutes: s.codeExpirationMinutes,
         advanced: s.advanced
       };
       return Object.fromEntries(
@@ -5760,7 +5766,7 @@ const et = [
       ]);
     };
   }
-}), Xt = /* @__PURE__ */ Pe(yc, [["__scopeId", "data-v-4dc3333c"]]), gc = { class: "kb-section" }, fc = { class: "kb-section__head" }, kc = { class: "kb-field" }, _c = ["value"], wc = { class: "kb-field" }, $c = { class: "kb-label" }, xc = { key: 0 }, Cc = { key: 1 }, Sc = { key: 2 }, Ic = { class: "kb-field-with-var" }, Tc = ["value"], Ac = { class: "kb-var-picker-wrap" }, Uc = {
+}), Xt = /* @__PURE__ */ Pe(yc, [["__scopeId", "data-v-83944bad"]]), gc = { class: "kb-section" }, fc = { class: "kb-section__head" }, kc = { class: "kb-field" }, _c = ["value"], wc = { class: "kb-field" }, $c = { class: "kb-label" }, xc = { key: 0 }, Cc = { key: 1 }, Sc = { key: 2 }, Ic = { class: "kb-field-with-var" }, Tc = ["value"], Ac = { class: "kb-var-picker-wrap" }, Uc = {
   key: 0,
   class: "kb-var-menu",
   role: "menu"
