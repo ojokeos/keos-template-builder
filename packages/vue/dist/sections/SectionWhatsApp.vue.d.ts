@@ -7,16 +7,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     disabledFormats?: string[];
     /**
      * Your backend endpoint that accepts a multipart/form-data POST with a
-     * `file` field and returns `{ mediaId: string }` (or `media_id`/`handle`).
+     * `file` field and returns `{ mediaId: string }` (or `media_id` / `handle`).
      * When provided, an upload widget appears next to the Media Handle field.
-     * Keep your Gupshup credentials server-side — never expose them here.
      */
     mediaUploadUrl?: string;
-    /**
-     * Optional request headers sent with the media upload POST.
-     * Use for auth tokens, API keys, or any custom headers your backend requires.
-     * Example: { Authorization: 'Bearer <token>' }
-     */
+    /** Optional headers sent with the media upload POST. */
     mediaUploadHeaders?: Record<string, string>;
 }>, {
     showReset: boolean;
@@ -34,16 +29,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     disabledFormats?: string[];
     /**
      * Your backend endpoint that accepts a multipart/form-data POST with a
-     * `file` field and returns `{ mediaId: string }` (or `media_id`/`handle`).
+     * `file` field and returns `{ mediaId: string }` (or `media_id` / `handle`).
      * When provided, an upload widget appears next to the Media Handle field.
-     * Keep your Gupshup credentials server-side — never expose them here.
      */
     mediaUploadUrl?: string;
-    /**
-     * Optional request headers sent with the media upload POST.
-     * Use for auth tokens, API keys, or any custom headers your backend requires.
-     * Example: { Authorization: 'Bearer <token>' }
-     */
+    /** Optional headers sent with the media upload POST. */
     mediaUploadHeaders?: Record<string, string>;
 }>, {
     showReset: boolean;
