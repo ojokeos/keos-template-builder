@@ -6,27 +6,11 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     disabledCategories?: string[];
     disabledFormats?: string[];
     /**
-     * Your backend endpoint that accepts a multipart/form-data POST with a
-     * `file` field and returns `{ mediaId: string }` (or `media_id` / `handle`).
-     * When provided, an upload widget appears next to the Media Handle field.
+     * Controls how variable placeholders are inserted into template fields.
+     * - 'named'    (default) — inserts `{{ .variable_name }}` tokens; your backend converts them to positional `{{1}}` at send time.
+     * - 'numbered' — inserts `{{1}}`, `{{2}}`… directly; standard Gupshup / WhatsApp format.
      */
-    mediaUploadUrl?: string;
-    /** Optional headers sent with the media upload POST. */
-    mediaUploadHeaders?: Record<string, string>;
-}>, {
-    showReset: boolean;
-    disabledCategories: () => never[];
-    disabledFormats: () => never[];
-    mediaUploadUrl: undefined;
-    mediaUploadHeaders: undefined;
-}>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
-    reset: () => void;
-    update: (partial: any) => void;
-}, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
-    message: CampaignMessage;
-    showReset?: boolean;
-    disabledCategories?: string[];
-    disabledFormats?: string[];
+    placeholderMode?: "named" | "numbered";
     /**
      * Your backend endpoint that accepts a multipart/form-data POST with a
      * `file` field and returns `{ mediaId: string }` (or `media_id` / `handle`).
@@ -39,6 +23,36 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showReset: boolean;
     disabledCategories: () => never[];
     disabledFormats: () => never[];
+    placeholderMode: string;
+    mediaUploadUrl: undefined;
+    mediaUploadHeaders: undefined;
+}>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
+    reset: () => void;
+    update: (partial: any) => void;
+}, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
+    message: CampaignMessage;
+    showReset?: boolean;
+    disabledCategories?: string[];
+    disabledFormats?: string[];
+    /**
+     * Controls how variable placeholders are inserted into template fields.
+     * - 'named'    (default) — inserts `{{ .variable_name }}` tokens; your backend converts them to positional `{{1}}` at send time.
+     * - 'numbered' — inserts `{{1}}`, `{{2}}`… directly; standard Gupshup / WhatsApp format.
+     */
+    placeholderMode?: "named" | "numbered";
+    /**
+     * Your backend endpoint that accepts a multipart/form-data POST with a
+     * `file` field and returns `{ mediaId: string }` (or `media_id` / `handle`).
+     * When provided, an upload widget appears next to the Media Handle field.
+     */
+    mediaUploadUrl?: string;
+    /** Optional headers sent with the media upload POST. */
+    mediaUploadHeaders?: Record<string, string>;
+}>, {
+    showReset: boolean;
+    disabledCategories: () => never[];
+    disabledFormats: () => never[];
+    placeholderMode: string;
     mediaUploadUrl: undefined;
     mediaUploadHeaders: undefined;
 }>>> & Readonly<{
@@ -48,6 +62,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showReset: boolean;
     disabledCategories: string[];
     disabledFormats: string[];
+    placeholderMode: "named" | "numbered";
     mediaUploadUrl: string;
     mediaUploadHeaders: Record<string, string>;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;

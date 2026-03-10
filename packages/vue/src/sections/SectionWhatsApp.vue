@@ -9,6 +9,12 @@ const props = withDefaults(
     disabledCategories?: string[];
     disabledFormats?: string[];
     /**
+     * Controls how variable placeholders are inserted into template fields.
+     * - 'named'    (default) — inserts `{{ .variable_name }}` tokens; your backend converts them to positional `{{1}}` at send time.
+     * - 'numbered' — inserts `{{1}}`, `{{2}}`… directly; standard Gupshup / WhatsApp format.
+     */
+    placeholderMode?: 'named' | 'numbered';
+    /**
      * Your backend endpoint that accepts a multipart/form-data POST with a
      * `file` field and returns `{ mediaId: string }` (or `media_id` / `handle`).
      * When provided, an upload widget appears next to the Media Handle field.
@@ -21,6 +27,7 @@ const props = withDefaults(
     showReset: false,
     disabledCategories: () => [],
     disabledFormats: () => [],
+    placeholderMode: 'named',
     mediaUploadUrl: undefined,
     mediaUploadHeaders: undefined,
   }
@@ -155,6 +162,19 @@ const authBodyPreview = computed(() => {
   return parts.join(' ');
 });
 
+// ── Placeholder mode ─────────────────────────────────────────────────────────
+const varPickerBtnLabel = computed(() =>
+  props.placeholderMode === 'named' ? '{{ .var }}' : '{{N}}'
+);
+
+function getNextVarIndex(text: string): number {
+  const re = /\{\{(\d+)\}\}/g;
+  let max = 0;
+  let m;
+  while ((m = re.exec(text)) !== null) max = Math.max(max, Number(m[1]));
+  return max + 1;
+}
+
 // ── Variable handling ─────────────────────────────────────────────────────────
 function extractPlaceholders(text: string): string[] {
   if (!text || typeof text !== 'string') return [];
@@ -245,21 +265,50 @@ function emitUpdate(partial: Record<string, unknown>) {
 
 // ── Variable picker ───────────────────────────────────────────────────────────
 function toggleVarPicker(target: string) {
+  if (props.placeholderMode === 'numbered') {
+    applyVar(target, '');
+    return;
+  }
   activeVarTarget.value = activeVarTarget.value === target ? null : target;
 }
 
 function applyVar(target: string, variable: string) {
-  const token    = ` {{ .${variable} }}`;
+  const isNamed  = props.placeholderMode !== 'numbered';
   const existing = ((props.message.variables ?? []) as string[]).filter(Boolean);
-  const nextVars = Array.from(new Set([...existing, variable]));
+  const nextVars = isNamed && variable ? Array.from(new Set([...existing, variable])) : existing;
+
+  function makeToken(currentText: string): string {
+    if (isNamed) return ` {{ .${variable} }}`;
+    return ` {{${getNextVarIndex(currentText)}}}`;
+  }
+
   if (target === 'header') {
-    emitUpdate({ header: `${headerText.value || ''}${token}`, variables: nextVars });
+    const cur = headerText.value || '';
+    emitUpdate({ header: `${cur}${makeToken(cur)}`, variables: nextVars });
   } else if (target === 'body') {
-    emitUpdate({ body: `${bodyText.value || ''}${token}`, variables: nextVars });
+    const cur = bodyText.value || '';
+    emitUpdate({ body: `${cur}${makeToken(cur)}`, variables: nextVars });
   } else if (target.startsWith('btn-label:')) {
     const idx = Number(target.split(':')[1]);
-    if (Number.isFinite(idx)) updateButton(idx, { label: `${String(buttons.value[idx]?.label ?? '')}${token}` });
-    emitUpdate({ variables: nextVars });
+    if (Number.isFinite(idx)) {
+      const cur = String(buttons.value[idx]?.label ?? '');
+      updateButton(idx, { label: `${cur}${makeToken(cur)}` });
+    }
+    if (isNamed && variable) emitUpdate({ variables: nextVars });
+  } else if (target.startsWith('btn-url:')) {
+    const idx = Number(target.split(':')[1]);
+    if (Number.isFinite(idx)) {
+      const cur = String(buttons.value[idx]?.url ?? '');
+      updateButton(idx, { url: `${cur}${makeToken(cur)}` });
+    }
+    if (isNamed && variable) emitUpdate({ variables: nextVars });
+  } else if (target.startsWith('card-body:')) {
+    const cardIdx = Number(target.split(':')[1]);
+    if (Number.isFinite(cardIdx)) {
+      const cur = String((cards.value[cardIdx] as any)?.body ?? '');
+      updateCard(cardIdx, { body: `${cur}${makeToken(cur)}` });
+    }
+    if (isNamed && variable) emitUpdate({ variables: nextVars });
   }
   activeVarTarget.value = null;
 }
@@ -600,13 +649,21 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
           </div>
           <div>
             <label class="kb-label kb-label--sm">Card body</label>
-            <textarea
-              class="kb-textarea"
-              rows="2"
-              placeholder="Card body text with {{1}} variables"
-              :value="(card as any).body ?? ''"
-              @input="updateCard(Number(index), { body: ($event.target as HTMLTextAreaElement).value })"
-            />
+            <div class="kb-input-with-var">
+              <textarea
+                class="kb-textarea"
+                rows="2"
+                :placeholder="placeholderMode === 'named' ? 'Card body with {{ .variable }} tokens' : 'Card body text with {{1}} variables'"
+                :value="(card as any).body ?? ''"
+                @input="updateCard(Number(index), { body: ($event.target as HTMLTextAreaElement).value })"
+              />
+              <div class="kb-var-picker-wrap">
+                <button type="button" class="kb-btn-insert" @click="toggleVarPicker(`card-body:${index}`)">{{ varPickerBtnLabel }}</button>
+                <div v-if="activeVarTarget === `card-body:${index}`" class="kb-var-menu" role="menu">
+                  <button v-for="v in localVariables" :key="`wa-card-body-var-${index}-${v}`" type="button" class="kb-var-menu-item" @click="applyVar(`card-body:${index}`, v)">{{ v }}</button>
+                </div>
+              </div>
+            </div>
           </div>
           <div>
             <label class="kb-label kb-label--sm">Sample body (body with real values for Meta approval)</label>
@@ -787,12 +844,12 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
                 <input
                   type="text"
                   class="kb-input"
-                  placeholder="e.g. Order update"
+                  :placeholder="placeholderMode === 'named' ? 'e.g. Order update for {{ .first_name }}' : 'e.g. Order update for {{1}}'"
                   :value="headerText"
                   @input="(e) => emitUpdate({ header: (e.target as HTMLInputElement).value || undefined })"
                 />
                 <div class="kb-var-picker-wrap">
-                  <button type="button" class="kb-btn-insert" @click="toggleVarPicker('header')">&#123;&#123; .var &#125;&#125;</button>
+                  <button type="button" class="kb-btn-insert" @click="toggleVarPicker('header')">{{ varPickerBtnLabel }}</button>
                   <div v-if="activeVarTarget === 'header'" class="kb-var-menu" role="menu">
                     <button v-for="v in localVariables" :key="`wa-header-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVar('header', v)">{{ v }}</button>
                   </div>
@@ -977,12 +1034,12 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
                 <textarea
                   class="kb-textarea"
                   rows="4"
-                  placeholder="Hi {{ .first_name }}, your order {{ .order_id }} has been shipped..."
+                  :placeholder="placeholderMode === 'named' ? 'Hi {{ .first_name }}, your order {{ .order_id }} has been shipped...' : 'Hi {{1}}, your order {{2}} has been shipped...'"
                   :value="bodyText"
                   @input="(e) => emitUpdate({ body: (e.target as HTMLTextAreaElement).value || undefined })"
                 />
                 <div class="kb-var-picker-wrap">
-                  <button type="button" class="kb-btn-insert" @click="toggleVarPicker('body')">&#123;&#123; .var &#125;&#125;</button>
+                  <button type="button" class="kb-btn-insert" @click="toggleVarPicker('body')">{{ varPickerBtnLabel }}</button>
                   <div v-if="activeVarTarget === 'body'" class="kb-var-menu" role="menu">
                     <button v-for="v in localVariables" :key="`wa-body-var-${v}`" type="button" class="kb-var-menu-item" @click="applyVar('body', v)">{{ v }}</button>
                   </div>
@@ -1092,7 +1149,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
                   @input="updateButton(Number(index), { label: ($event.target as HTMLInputElement).value })"
                 />
                 <div class="kb-var-picker-wrap">
-                  <button type="button" class="kb-btn-insert" @click="toggleVarPicker(`btn-label:${index}`)">&#123;&#123; .var &#125;&#125;</button>
+                  <button type="button" class="kb-btn-insert" @click="toggleVarPicker(`btn-label:${index}`)">{{ varPickerBtnLabel }}</button>
                   <div v-if="activeVarTarget === `btn-label:${index}`" class="kb-var-menu" role="menu">
                     <button v-for="v in localVariables" :key="`wa-btn-label-var-${index}-${v}`" type="button" class="kb-var-menu-item" @click="applyVar(`btn-label:${index}`, v)">{{ v }}</button>
                   </div>
@@ -1114,17 +1171,25 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
 
               <!-- URL -->
               <template v-if="btn.type === 'url'">
+                <div class="kb-input-with-var kb-input-with-var--btn">
+                  <input
+                    type="text"
+                    class="kb-input kb-input--btn-target"
+                    :placeholder="placeholderMode === 'named' ? 'https://example.com/track/{{ .order_id }}' : 'https://example.com/track/{{1}}'"
+                    :value="btn.url"
+                    @input="updateButton(Number(index), { url: ($event.target as HTMLInputElement).value || undefined })"
+                  />
+                  <div class="kb-var-picker-wrap">
+                    <button type="button" class="kb-btn-insert" @click="toggleVarPicker(`btn-url:${index}`)">{{ varPickerBtnLabel }}</button>
+                    <div v-if="activeVarTarget === `btn-url:${index}`" class="kb-var-menu" role="menu">
+                      <button v-for="v in localVariables" :key="`wa-btn-url-var-${index}-${v}`" type="button" class="kb-var-menu-item" @click="applyVar(`btn-url:${index}`, v)">{{ v }}</button>
+                    </div>
+                  </div>
+                </div>
                 <input
                   type="url"
                   class="kb-input kb-input--btn-target"
-                  placeholder="https://example.com/track/{{1}}"
-                  :value="btn.url"
-                  @input="updateButton(Number(index), { url: ($event.target as HTMLInputElement).value || undefined })"
-                />
-                <input
-                  type="url"
-                  class="kb-input kb-input--btn-target"
-                  placeholder="Example URL with real value (required if URL has {{1}})"
+                  placeholder="Example URL with real value (required if URL has a variable)"
                   :value="btn.url_example"
                   @input="updateButton(Number(index), { url_example: ($event.target as HTMLInputElement).value || undefined })"
                 />
@@ -1315,6 +1380,7 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
   gap: 0;
   margin-bottom: 1rem;
 }
+
 
 /* ── Generic field card ──────────────────────────────────────────────────── */
 .kb-field {
