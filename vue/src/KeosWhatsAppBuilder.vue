@@ -247,6 +247,12 @@ const props = withDefaults(
      * Example: { Authorization: 'Bearer <token>' }
      */
     mediaUploadHeaders?: Record<string, string>;
+    /**
+     * Controls how variable placeholders are inserted into template fields.
+     * - 'named'    (default) — inserts `{{ .variable_name }}` tokens; your backend converts them to positional `{{1}}` at send time.
+     * - 'numbered' — inserts `{{1}}`, `{{2}}`… directly; standard Gupshup / WhatsApp format.
+     */
+    placeholderMode?: 'named' | 'numbered';
   }>(),
   {
     disabledSections: () => [],
@@ -259,6 +265,7 @@ const props = withDefaults(
     actionsNote: "",
     designOnly: true,
     enforceSlugName: false,
+    placeholderMode: 'named',
   },
 );
 
@@ -838,6 +845,7 @@ function onSave() {
             :show-reset="true"
             :disabled-categories="disabledTemplateCategories"
             :disabled-formats="disabledTemplateFormats"
+            :placeholder-mode="placeholderMode"
             :media-upload-url="mediaUploadUrl"
             :media-upload-headers="mediaUploadHeaders"
             @update="onWhatsAppMessageUpdate"

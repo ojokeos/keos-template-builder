@@ -38,6 +38,12 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
      * Example: { Authorization: 'Bearer <token>' }
      */
     mediaUploadHeaders?: Record<string, string>;
+    /**
+     * Controls how variable placeholders are inserted into template fields.
+     * - 'named'    (default) — inserts `{{ .variable_name }}` tokens; your backend converts them to positional `{{1}}` at send time.
+     * - 'numbered' — inserts `{{1}}`, `{{2}}`… directly; standard Gupshup / WhatsApp format.
+     */
+    placeholderMode?: "named" | "numbered";
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
@@ -49,6 +55,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     actionsNote: string;
     designOnly: boolean;
     enforceSlugName: boolean;
+    placeholderMode: string;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     change: (campaign: Campaign) => void;
     "update:modelValue": (campaign: Campaign) => void;
@@ -97,6 +104,12 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
      * Example: { Authorization: 'Bearer <token>' }
      */
     mediaUploadHeaders?: Record<string, string>;
+    /**
+     * Controls how variable placeholders are inserted into template fields.
+     * - 'named'    (default) — inserts `{{ .variable_name }}` tokens; your backend converts them to positional `{{1}}` at send time.
+     * - 'numbered' — inserts `{{1}}`, `{{2}}`… directly; standard Gupshup / WhatsApp format.
+     */
+    placeholderMode?: "named" | "numbered";
 }>, {
     disabledSections: () => never[];
     variableOptions: () => never[];
@@ -108,6 +121,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     actionsNote: string;
     designOnly: boolean;
     enforceSlugName: boolean;
+    placeholderMode: string;
 }>>> & Readonly<{
     onChange?: ((campaign: Campaign) => any) | undefined;
     "onUpdate:modelValue"?: ((campaign: Campaign) => any) | undefined;
@@ -127,6 +141,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     actionsNote: string;
     designOnly: boolean;
     enforceSlugName: boolean;
+    placeholderMode: "named" | "numbered";
     disabledTemplateCategories: string[];
     disabledTemplateFormats: string[];
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;

@@ -197,6 +197,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        placeholderMode: {
+            type: import('vue').PropType<"numbered" | "named">;
+            default: string;
+        };
         mediaUploadUrl: {
             type: import('vue').PropType<string>;
         };
@@ -260,6 +264,10 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        placeholderMode: {
+            type: import('vue').PropType<"numbered" | "named">;
+            default: string;
+        };
         mediaUploadUrl: {
             type: import('vue').PropType<string>;
         };
@@ -293,6 +301,7 @@ declare const _default: {
         actionsNote: string;
         designOnly: boolean;
         enforceSlugName: boolean;
+        placeholderMode: "named" | "numbered";
         disabledTemplateCategories: string[];
         disabledTemplateFormats: string[];
     }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
