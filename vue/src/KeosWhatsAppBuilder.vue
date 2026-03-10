@@ -59,6 +59,12 @@ function buildCompactGupshupMessage(
     footer: payload.footer,
     buttons: payload.buttons,
     example: payload.example,
+    exampleMedia: payload.exampleMedia,
+    vertical: payload.vertical,
+    enableSample: payload.enableSample,
+    allowTemplateCategoryChange: payload.allowTemplateCategoryChange,
+    addSecurityRecommendation: payload.addSecurityRecommendation,
+    codeExpirationMinutes: payload.codeExpirationMinutes,
     advanced: payload.advanced,
   };
   return Object.fromEntries(
