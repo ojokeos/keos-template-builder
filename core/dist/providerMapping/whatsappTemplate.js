@@ -287,6 +287,33 @@ export function toMetaWhatsAppTemplate(campaign, options = {}) {
         warnings,
     };
 }
+/**
+ * Builds the `containerMeta` JSON string for TEXT headers.
+ * Gupshup requires text headers to be passed this way rather than as a flat `header` field.
+ */
+function buildContainerMeta(text, headerComponent) {
+    const exampleTexts = headerComponent?.example?.header_text;
+    const obj = {
+        header: {
+            type: 'TEXT',
+            text,
+            ...(exampleTexts?.length ? { example: { header_text: exampleTexts } } : {}),
+        },
+    };
+    return JSON.stringify(obj);
+}
+/**
+ * Sorts buttons so that non-QUICK_REPLY buttons (URL, PHONE_NUMBER, COPY_CODE, OTP)
+ * always appear before QUICK_REPLY buttons.
+ * Gupshup/Meta return an API error if this ordering is violated.
+ */
+function sortButtonsByGroupOrder(buttons) {
+    const ctaTypes = new Set(['URL', 'PHONE_NUMBER', 'COPY_CODE', 'OPT_OUT', 'OTP']);
+    return [
+        ...buttons.filter((b) => ctaTypes.has(b.type)),
+        ...buttons.filter((b) => !ctaTypes.has(b.type)),
+    ];
+}
 /** Button types permitted per category — enforced at payload-build time. */
 const ALLOWED_BUTTON_TYPES_BY_CATEGORY = {
     MARKETING: new Set(['quick_reply', 'url', 'call', 'copy_code', 'opt_out']),
@@ -317,7 +344,7 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
         warnings.push(`${resolvedCategory} allows at most ${maxBtns} button(s); extra buttons removed.`);
     }
     const filteredButtonsRaw = buttonsRaw.slice(0, maxBtns);
-    const gupshupButtons = mapButtonsToGupshupCanonical(filteredButtonsRaw);
+    const gupshupButtons = sortButtonsByGroupOrder(mapButtonsToGupshupCanonical(filteredButtonsRaw));
     // Rebuild meta template with the filtered buttons so the embedded payload is consistent.
     const metaComponents = meta.payload.components.filter((c) => {
         if (isAuth && c.type === 'HEADER')
@@ -329,8 +356,9 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
     if (filteredButtonsRaw.length) {
         // Replace the BUTTONS component with one built from the filtered set.
         const btnIdx = metaComponents.findIndex((c) => c.type === 'BUTTONS');
-        const { buttons: metaBtns, varOrder } = mapButtonsToMeta(filteredButtonsRaw, []);
+        const { buttons: metaBtnsRaw, varOrder } = mapButtonsToMeta(filteredButtonsRaw, []);
         void varOrder; // used internally
+        const metaBtns = sortButtonsByGroupOrder(metaBtnsRaw);
         const buttonsComponent = { type: 'BUTTONS', buttons: metaBtns };
         if (btnIdx >= 0)
             metaComponents[btnIdx] = buttonsComponent;
@@ -370,19 +398,26 @@ export function toGupshupWhatsAppTemplate(campaign, options = {}) {
     const allowCategoryChange = !isAuth && typeof msg.allow_category_change === 'boolean' ? msg.allow_category_change : undefined;
     const addSecurityRec = typeof msg.add_security_recommendation === 'boolean' ? msg.add_security_recommendation : undefined;
     const codeExpiry = typeof msg.code_expiration_minutes === 'number' ? msg.code_expiration_minutes : undefined;
+    // ── Build containerMeta for TEXT headers ────────────────────────────────
+    // Gupshup requires text headers inside containerMeta JSON, not as a flat `header` field.
+    // Media headers (IMAGE/VIDEO/DOCUMENT) are conveyed via `templateType` instead.
+    const textHeaderValue = !isAuth && header?.format === 'TEXT' ? (headerRaw || header.text || '') : '';
+    const containerMetaStr = textHeaderValue
+        ? buildContainerMeta(textHeaderValue, header)
+        : undefined;
     const payload = {
         elementName: cleanMetaPayload.name,
         languageCode: cleanMetaPayload.language,
         category: cleanMetaPayload.category,
         templateType,
-        content: bodyRaw || body?.text || '',
+        // AUTHENTICATION templates must NOT include content/example — Meta presets the body.
+        ...(!isAuth ? { content: bodyRaw || body?.text || '' } : {}),
         ...(vertical ? { vertical } : {}),
-        ...(templateExample ? { example: templateExample } : {}),
+        ...(!isAuth && templateExample ? { example: templateExample } : {}),
         ...(mediaHandle ? { exampleMedia: mediaHandle } : {}),
-        // Header and footer are forbidden for AUTHENTICATION templates.
-        ...(!isAuth && header?.format === 'TEXT' && (headerRaw || header.text)
-            ? { header: headerRaw || header.text }
-            : {}),
+        // TEXT headers go into containerMeta; media headers are expressed via templateType.
+        ...(containerMetaStr ? { containerMeta: containerMetaStr } : {}),
+        // Footer is forbidden for AUTHENTICATION templates.
         ...(!isAuth && (footerRaw || footer?.text) ? { footer: footerRaw || footer?.text } : {}),
         ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
         ...(enableSample !== undefined ? { enableSample } : {}),

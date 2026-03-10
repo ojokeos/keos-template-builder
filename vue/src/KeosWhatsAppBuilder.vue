@@ -55,7 +55,7 @@ function buildCompactGupshupMessage(
     content: payload.content,
     metaTemplate: payload.metaTemplate,
     metaWhatsApp: payload.metaWhatsApp ?? payload.metaTemplate,
-    header: payload.header,
+    containerMeta: payload.containerMeta,
     footer: payload.footer,
     buttons: payload.buttons,
     example: payload.example,

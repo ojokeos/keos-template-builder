@@ -71,14 +71,22 @@ export interface GupshupWhatsAppTemplateCreatePayload {
   languageCode: string;
   category: MetaTemplateCategory;
   templateType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'CAROUSEL';
-  content: string;
+  /**
+   * Body text. Not submitted for AUTHENTICATION templates — Meta presets the body automatically.
+   */
+  content?: string;
   /** Use-case label shown during Meta review (e.g. "Order Updates", "Promotions"). Required by Gupshup. */
   vertical?: string;
   /** Body text with placeholders filled with real sample values. Required for Meta approval. */
   example?: string;
   /** Media handle ID from Gupshup media upload. Required for IMAGE/VIDEO/DOCUMENT templates. */
   exampleMedia?: string;
-  header?: string;
+  /**
+   * JSON-encoded header metadata. Required for TEXT headers.
+   * Format: `{"header":{"type":"TEXT","text":"...","example":{"header_text":["sample"]}}}`
+   * Not used for media headers (IMAGE/VIDEO/DOCUMENT) — those are conveyed via `templateType`.
+   */
+  containerMeta?: string;
   footer?: string;
   buttons?: GupshupButton[];
   /** Include sample data in Meta review submission. */
@@ -426,6 +434,38 @@ export function toMetaWhatsAppTemplate(
   };
 }
 
+/**
+ * Builds the `containerMeta` JSON string for TEXT headers.
+ * Gupshup requires text headers to be passed this way rather than as a flat `header` field.
+ */
+function buildContainerMeta(
+  text: string,
+  headerComponent?: Extract<MetaTemplateComponent, { type: 'HEADER' }>,
+): string {
+  const exampleTexts = headerComponent?.example?.header_text;
+  const obj: Record<string, unknown> = {
+    header: {
+      type: 'TEXT',
+      text,
+      ...(exampleTexts?.length ? { example: { header_text: exampleTexts } } : {}),
+    },
+  };
+  return JSON.stringify(obj);
+}
+
+/**
+ * Sorts buttons so that non-QUICK_REPLY buttons (URL, PHONE_NUMBER, COPY_CODE, OTP)
+ * always appear before QUICK_REPLY buttons.
+ * Gupshup/Meta return an API error if this ordering is violated.
+ */
+function sortButtonsByGroupOrder<T extends { type: string }>(buttons: T[]): T[] {
+  const ctaTypes = new Set(['URL', 'PHONE_NUMBER', 'COPY_CODE', 'OPT_OUT', 'OTP']);
+  return [
+    ...buttons.filter((b) => ctaTypes.has(b.type)),
+    ...buttons.filter((b) => !ctaTypes.has(b.type)),
+  ];
+}
+
 /** Button types permitted per category — enforced at payload-build time. */
 const ALLOWED_BUTTON_TYPES_BY_CATEGORY: Record<string, Set<string>> = {
   MARKETING:      new Set(['quick_reply', 'url', 'call', 'copy_code', 'opt_out']),
@@ -462,7 +502,7 @@ export function toGupshupWhatsAppTemplate(
     warnings.push(`${resolvedCategory} allows at most ${maxBtns} button(s); extra buttons removed.`);
   }
   const filteredButtonsRaw = buttonsRaw.slice(0, maxBtns);
-  const gupshupButtons = mapButtonsToGupshupCanonical(filteredButtonsRaw);
+  const gupshupButtons = sortButtonsByGroupOrder(mapButtonsToGupshupCanonical(filteredButtonsRaw));
 
   // Rebuild meta template with the filtered buttons so the embedded payload is consistent.
   const metaComponents = meta.payload.components.filter((c) => {
@@ -473,8 +513,9 @@ export function toGupshupWhatsAppTemplate(
   if (filteredButtonsRaw.length) {
     // Replace the BUTTONS component with one built from the filtered set.
     const btnIdx = metaComponents.findIndex((c) => c.type === 'BUTTONS');
-    const { buttons: metaBtns, varOrder } = mapButtonsToMeta(filteredButtonsRaw, []);
+    const { buttons: metaBtnsRaw, varOrder } = mapButtonsToMeta(filteredButtonsRaw, []);
     void varOrder; // used internally
+    const metaBtns = sortButtonsByGroupOrder(metaBtnsRaw);
     const buttonsComponent: MetaTemplateComponent = { type: 'BUTTONS', buttons: metaBtns };
     if (btnIdx >= 0) metaComponents[btnIdx] = buttonsComponent;
     else if (metaBtns.length) metaComponents.push(buttonsComponent);
@@ -517,19 +558,27 @@ export function toGupshupWhatsAppTemplate(
   const addSecurityRec = typeof msg.add_security_recommendation === 'boolean' ? msg.add_security_recommendation : undefined;
   const codeExpiry = typeof msg.code_expiration_minutes === 'number' ? msg.code_expiration_minutes : undefined;
 
+  // ── Build containerMeta for TEXT headers ────────────────────────────────
+  // Gupshup requires text headers inside containerMeta JSON, not as a flat `header` field.
+  // Media headers (IMAGE/VIDEO/DOCUMENT) are conveyed via `templateType` instead.
+  const textHeaderValue = !isAuth && header?.format === 'TEXT' ? (headerRaw || header.text || '') : '';
+  const containerMetaStr = textHeaderValue
+    ? buildContainerMeta(textHeaderValue, header)
+    : undefined;
+
   const payload: GupshupWhatsAppTemplateCreatePayload = {
     elementName: cleanMetaPayload.name,
     languageCode: cleanMetaPayload.language,
     category: cleanMetaPayload.category,
     templateType,
-    content: bodyRaw || body?.text || '',
+    // AUTHENTICATION templates must NOT include content/example — Meta presets the body.
+    ...(!isAuth ? { content: bodyRaw || body?.text || '' } : {}),
     ...(vertical ? { vertical } : {}),
-    ...(templateExample ? { example: templateExample } : {}),
+    ...(!isAuth && templateExample ? { example: templateExample } : {}),
     ...(mediaHandle ? { exampleMedia: mediaHandle } : {}),
-    // Header and footer are forbidden for AUTHENTICATION templates.
-    ...(!isAuth && header?.format === 'TEXT' && (headerRaw || header.text)
-      ? { header: headerRaw || header.text }
-      : {}),
+    // TEXT headers go into containerMeta; media headers are expressed via templateType.
+    ...(containerMetaStr ? { containerMeta: containerMetaStr } : {}),
+    // Footer is forbidden for AUTHENTICATION templates.
     ...(!isAuth && (footerRaw || footer?.text) ? { footer: footerRaw || footer?.text } : {}),
     ...(gupshupButtons.length ? { buttons: gupshupButtons } : {}),
     ...(enableSample !== undefined ? { enableSample } : {}),
