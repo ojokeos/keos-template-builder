@@ -5,10 +5,25 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showReset?: boolean;
     disabledCategories?: string[];
     disabledFormats?: string[];
+    /**
+     * Your backend endpoint that accepts a multipart/form-data POST with a
+     * `file` field and returns `{ mediaId: string }` (or `media_id`/`handle`).
+     * When provided, an upload widget appears next to the Media Handle field.
+     * Keep your Gupshup credentials server-side — never expose them here.
+     */
+    mediaUploadUrl?: string;
+    /**
+     * Optional request headers sent with the media upload POST.
+     * Use for auth tokens, API keys, or any custom headers your backend requires.
+     * Example: { Authorization: 'Bearer <token>' }
+     */
+    mediaUploadHeaders?: Record<string, string>;
 }>, {
     showReset: boolean;
     disabledCategories: () => never[];
     disabledFormats: () => never[];
+    mediaUploadUrl: undefined;
+    mediaUploadHeaders: undefined;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     reset: () => void;
     update: (partial: any) => void;
@@ -17,10 +32,25 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showReset?: boolean;
     disabledCategories?: string[];
     disabledFormats?: string[];
+    /**
+     * Your backend endpoint that accepts a multipart/form-data POST with a
+     * `file` field and returns `{ mediaId: string }` (or `media_id`/`handle`).
+     * When provided, an upload widget appears next to the Media Handle field.
+     * Keep your Gupshup credentials server-side — never expose them here.
+     */
+    mediaUploadUrl?: string;
+    /**
+     * Optional request headers sent with the media upload POST.
+     * Use for auth tokens, API keys, or any custom headers your backend requires.
+     * Example: { Authorization: 'Bearer <token>' }
+     */
+    mediaUploadHeaders?: Record<string, string>;
 }>, {
     showReset: boolean;
     disabledCategories: () => never[];
     disabledFormats: () => never[];
+    mediaUploadUrl: undefined;
+    mediaUploadHeaders: undefined;
 }>>> & Readonly<{
     onReset?: (() => any) | undefined;
     onUpdate?: ((partial: any) => any) | undefined;
@@ -28,6 +58,8 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     showReset: boolean;
     disabledCategories: string[];
     disabledFormats: string[];
+    mediaUploadUrl: string;
+    mediaUploadHeaders: Record<string, string>;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

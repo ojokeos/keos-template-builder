@@ -8,11 +8,26 @@ const props = withDefaults(
     showReset?: boolean;
     disabledCategories?: string[];
     disabledFormats?: string[];
+    /**
+     * Your backend endpoint that accepts a multipart/form-data POST with a
+     * `file` field and returns `{ mediaId: string }` (or `media_id`/`handle`).
+     * When provided, an upload widget appears next to the Media Handle field.
+     * Keep your Gupshup credentials server-side — never expose them here.
+     */
+    mediaUploadUrl?: string;
+    /**
+     * Optional request headers sent with the media upload POST.
+     * Use for auth tokens, API keys, or any custom headers your backend requires.
+     * Example: { Authorization: 'Bearer <token>' }
+     */
+    mediaUploadHeaders?: Record<string, string>;
   }>(),
   {
     showReset: false,
     disabledCategories: () => [],
     disabledFormats: () => [],
+    mediaUploadUrl: undefined,
+    mediaUploadHeaders: undefined,
   }
 );
 
@@ -159,6 +174,64 @@ const localVariables = computed(() => {
   return vars.length ? Array.from(new Set(vars)) : defaultVariables;
 });
 const activeVarTarget = ref<string | null>(null);
+
+// ── Media upload ─────────────────────────────────────────────────────────────
+const mediaUploadFileRef = ref<HTMLInputElement | null>(null);
+const mediaUploadFile = ref<File | null>(null);
+const mediaUploadStatus = ref<'idle' | 'uploading' | 'done' | 'error'>('idle');
+const mediaUploadError = ref<string>('');
+const isDragging = ref(false);
+
+function onMediaFileSelected(e: Event) {
+  const input = e.target as HTMLInputElement;
+  mediaUploadFile.value = input.files?.[0] ?? null;
+  mediaUploadStatus.value = 'idle';
+  mediaUploadError.value = '';
+}
+
+function onFileDrop(e: DragEvent) {
+  isDragging.value = false;
+  const file = e.dataTransfer?.files?.[0] ?? null;
+  if (file) {
+    mediaUploadFile.value = file;
+    mediaUploadStatus.value = 'idle';
+    mediaUploadError.value = '';
+  }
+}
+
+async function doUploadMedia() {
+  if (!mediaUploadFile.value || !props.mediaUploadUrl) return;
+  mediaUploadStatus.value = 'uploading';
+  mediaUploadError.value = '';
+  try {
+    const form = new FormData();
+    form.append('file', mediaUploadFile.value);
+    const response = await fetch(props.mediaUploadUrl, {
+      method: 'POST',
+      headers: props.mediaUploadHeaders ?? {},
+      body: form,
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => response.statusText);
+      throw new Error(`${response.status}: ${text}`);
+    }
+    const data = await response.json() as Record<string, unknown>;
+    const mediaId =
+      (data.mediaId as string | undefined) ??
+      (data.media_id as string | undefined) ??
+      (data.handle as string | undefined) ??
+      (data.id as string | undefined);
+    if (!mediaId) throw new Error(`No mediaId in response: ${JSON.stringify(data)}`);
+    emitUpdate({ media_handle: mediaId });
+    mediaUploadStatus.value = 'done';
+    mediaUploadFile.value = null;
+    if (mediaUploadFileRef.value) mediaUploadFileRef.value.value = '';
+  } catch (err) {
+    mediaUploadStatus.value = 'error';
+    mediaUploadError.value = err instanceof Error ? err.message : String(err);
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function emitUpdate(partial: Record<string, unknown>) {
   emit('update', partial);
@@ -566,7 +639,11 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
     >
       <label class="kb-label">
         Media handle (exampleMedia)
-        <span class="kb-helper">Gupshup media handle ID obtained after uploading via the media upload API. Required for template approval with rich media.</span>
+        <span class="kb-helper">
+          Upload Handle ID from Gupshup — required for template approval with rich media.
+          <strong>Do not use a URL here.</strong> Use the uploader below to get the handle,
+          or paste an existing one.
+        </span>
       </label>
       <input
         type="text"
@@ -580,6 +657,78 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
             })
         "
       />
+
+      <!-- Upload for approval -->
+      <div class="kb-mu">
+        <input
+          ref="mediaUploadFileRef"
+          type="file"
+          class="kb-mu__file-input"
+          accept="image/jpeg,image/png,video/mp4,application/pdf"
+          @change="onMediaFileSelected"
+        />
+
+        <!-- Row: drop target + actions -->
+        <div
+          class="kb-mu__row"
+          :class="{
+            'kb-mu__row--drag': isDragging,
+            'kb-mu__row--done': mediaUploadStatus === 'done',
+            'kb-mu__row--error': mediaUploadStatus === 'error',
+          }"
+          @dragover.prevent="isDragging = true"
+          @dragleave.prevent="isDragging = false"
+          @drop.prevent="onFileDrop"
+        >
+          <!-- Left: icon + text -->
+          <div class="kb-mu__left" @click="mediaUploadUrl ? mediaUploadFileRef?.click() : undefined">
+            <template v-if="mediaUploadStatus === 'done'">
+              <svg class="kb-mu__icon kb-mu__icon--ok" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.2"/><path d="M5 8l2.5 2.5L11 5.5" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="kb-mu__text kb-mu__text--ok">Handle applied</span>
+            </template>
+            <template v-else-if="mediaUploadFile">
+              <svg class="kb-mu__icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 2v4h4" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              <span class="kb-mu__text kb-mu__text--file">{{ mediaUploadFile.name }}</span>
+              <span class="kb-mu__size">{{ (mediaUploadFile.size / 1024).toFixed(0) }} KB</span>
+            </template>
+            <template v-else>
+              <svg class="kb-mu__icon kb-mu__icon--muted" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 10V4m0 0L5.5 6.5M8 4l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span class="kb-mu__text kb-mu__text--hint">
+                {{ !mediaUploadUrl ? 'Set mediaUploadUrl to enable uploads' : (isDragging ? 'Drop file' : 'Click or drop · JPEG PNG MP4 PDF') }}
+              </span>
+            </template>
+          </div>
+
+          <!-- Right: actions -->
+          <div class="kb-mu__right">
+            <template v-if="mediaUploadStatus === 'done'">
+              <button type="button" class="kb-mu__btn kb-mu__btn--ghost" @click="mediaUploadStatus = 'idle'; mediaUploadFile = null; if (mediaUploadFileRef) mediaUploadFileRef.value = '';">
+                Upload another
+              </button>
+            </template>
+            <template v-else-if="mediaUploadFile">
+              <button type="button" class="kb-mu__btn kb-mu__btn--ghost" @click.stop="mediaUploadFile = null; mediaUploadStatus = 'idle'; mediaUploadError = ''; if (mediaUploadFileRef) mediaUploadFileRef.value = '';">
+                Clear
+              </button>
+              <button type="button" class="kb-mu__btn kb-mu__btn--primary" :disabled="mediaUploadStatus === 'uploading'" @click="doUploadMedia">
+                <span v-if="mediaUploadStatus === 'uploading'" class="kb-mu__spinner" aria-hidden="true" />
+                {{ mediaUploadStatus === 'uploading' ? 'Uploading…' : 'Get handle' }}
+              </button>
+            </template>
+            <template v-else-if="mediaUploadUrl">
+              <button type="button" class="kb-mu__btn kb-mu__btn--ghost" @click="mediaUploadFileRef?.click()">
+                Browse
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <p v-if="mediaUploadStatus === 'error'" class="kb-mu__error">
+          <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 4v2.5M6 8v.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          {{ mediaUploadError }}
+        </p>
+      </div>
     </div>
     <div
       v-if="headerType === 'document' || currentFormat === 'document'"
@@ -1695,5 +1844,129 @@ function updateCardButton(cardIndex: number, btnIndex: number, patch: Record<str
 }
 .kb-location-row .kb-input {
   flex: 1 1 180px;
+}
+
+/* ── Media upload widget (compact) ───────────────────────────────────────── */
+.kb-mu {
+  margin-top: 0.5rem;
+}
+.kb-mu__file-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.kb-mu__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem 0.4rem 0.5rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 36px;
+}
+.kb-mu__row--drag {
+  border-color: var(--wa-focus, #2563eb);
+  background: #eff6ff;
+}
+.kb-mu__row--done {
+  border-style: solid;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+.kb-mu__row--error {
+  border-color: #fca5a5;
+}
+.kb-mu__left {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+.kb-mu__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+.kb-mu__icon--ok { color: #16a34a; }
+.kb-mu__icon--muted { color: #cbd5e1; }
+.kb-mu__text {
+  font-size: 0.77rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kb-mu__text--hint { color: #94a3b8; }
+.kb-mu__text--file { color: var(--wa-text, #0f172a); font-weight: 500; }
+.kb-mu__text--ok  { color: #166534; font-weight: 600; }
+.kb-mu__size {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.kb-mu__right {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+.kb-mu__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.26rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+  line-height: 1.4;
+}
+.kb-mu__btn--primary {
+  background: var(--wa-focus, #2563eb);
+  color: #fff;
+  border: none;
+}
+.kb-mu__btn--primary:hover:not(:disabled) { background: #1d4ed8; }
+.kb-mu__btn--primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.kb-mu__btn--ghost {
+  background: none;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+.kb-mu__btn--ghost:hover { border-color: #94a3b8; color: #334155; }
+.kb-mu__spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: kb-mu-spin 0.65s linear infinite;
+}
+@keyframes kb-mu-spin { to { transform: rotate(360deg); } }
+.kb-mu__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+  font-size: 0.74rem;
+  color: #991b1b;
+  word-break: break-word;
+}
+.kb-mu__error svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #dc2626;
 }
 </style>
