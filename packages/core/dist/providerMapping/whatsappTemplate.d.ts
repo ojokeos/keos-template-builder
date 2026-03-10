@@ -86,14 +86,22 @@ export interface GupshupWhatsAppTemplateCreatePayload {
     languageCode: string;
     category: MetaTemplateCategory;
     templateType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'CAROUSEL';
-    content: string;
+    /**
+     * Body text. Not submitted for AUTHENTICATION templates — Meta presets the body automatically.
+     */
+    content?: string;
     /** Use-case label shown during Meta review (e.g. "Order Updates", "Promotions"). Required by Gupshup. */
     vertical?: string;
     /** Body text with placeholders filled with real sample values. Required for Meta approval. */
     example?: string;
     /** Media handle ID from Gupshup media upload. Required for IMAGE/VIDEO/DOCUMENT templates. */
     exampleMedia?: string;
-    header?: string;
+    /**
+     * JSON-encoded header metadata. Required for TEXT headers.
+     * Format: `{"header":{"type":"TEXT","text":"...","example":{"header_text":["sample"]}}}`
+     * Not used for media headers (IMAGE/VIDEO/DOCUMENT) — those are conveyed via `templateType`.
+     */
+    containerMeta?: string;
     footer?: string;
     buttons?: GupshupButton[];
     /** Include sample data in Meta review submission. */
