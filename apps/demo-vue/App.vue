@@ -144,6 +144,7 @@ function onChange(c: Campaign) {
         @send="onSend"
         :actions-note="'Changes auto-saved'"
         :enforce-slug-name="true"
+        :media-upload-url="`http://localhost:9000/api/templates/whatsapp-media-upload`"
       />
 
       <KeosSmsBuilder

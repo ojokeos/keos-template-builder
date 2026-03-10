@@ -226,6 +226,21 @@ const props = withDefaults(
      * as the user types (e.g. "Spring Sale" → "Spring-Sale").
      */
     enforceSlugName?: boolean;
+    /**
+     * Your backend endpoint for uploading sample media files.
+     * Must accept a multipart/form-data POST with a `file` field and return
+     * `{ mediaId: string }`. Your backend is responsible for forwarding the
+     * file to Gupshup and returning the handle — never expose Gupshup
+     * credentials in the frontend.
+     * Example: 'https://yourapi.example.com/whatsapp/upload-media'
+     */
+    mediaUploadUrl?: string;
+    /**
+     * Optional headers sent with the media upload request.
+     * Use for bearer tokens or any other auth your backend requires.
+     * Example: { Authorization: 'Bearer <token>' }
+     */
+    mediaUploadHeaders?: Record<string, string>;
   }>(),
   {
     disabledSections: () => [],
@@ -817,6 +832,8 @@ function onSave() {
             :show-reset="true"
             :disabled-categories="disabledTemplateCategories"
             :disabled-formats="disabledTemplateFormats"
+            :media-upload-url="mediaUploadUrl"
+            :media-upload-headers="mediaUploadHeaders"
             @update="onWhatsAppMessageUpdate"
             @reset="resetMessage()"
           />

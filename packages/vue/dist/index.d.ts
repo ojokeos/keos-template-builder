@@ -197,6 +197,12 @@ declare const _default: {
             type: import('vue').PropType<boolean>;
             default: boolean;
         };
+        mediaUploadUrl: {
+            type: import('vue').PropType<string>;
+        };
+        mediaUploadHeaders: {
+            type: import('vue').PropType<Record<string, string>>;
+        };
         disabledTemplateCategories: {
             type: import('vue').PropType<string[]>;
             default: () => never[];
@@ -253,6 +259,12 @@ declare const _default: {
         enforceSlugName: {
             type: import('vue').PropType<boolean>;
             default: boolean;
+        };
+        mediaUploadUrl: {
+            type: import('vue').PropType<string>;
+        };
+        mediaUploadHeaders: {
+            type: import('vue').PropType<Record<string, string>>;
         };
         disabledTemplateCategories: {
             type: import('vue').PropType<string[]>;
