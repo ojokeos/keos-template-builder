@@ -210,7 +210,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
         enable_sample: true,
         allow_category_change: false,
         buttons: [
-          { id: 'btn_1', label: 'Track order', type: 'url', url: 'https://example.com/orders/{{1}}', url_example: 'https://example.com/orders/ORD-12345' },
+          { id: 'btn_1', label: 'Track order', type: 'url', url: 'https://example.com/orders/{{ .order_id }}', url_example: 'https://example.com/orders/ORD-12345' },
           { id: 'btn_2', label: 'Contact support', type: 'quick_reply' },
         ],
       } as any,
@@ -353,7 +353,7 @@ export const WHATSAPP_PRESETS: PresetOption[] = [
         footer: 'For questions, reply to this message',
         enable_sample: true,
         buttons: [
-          { id: 'btn_1', label: 'Download again', type: 'url', url: 'https://example.com/receipt/{{1}}', url_example: 'https://example.com/receipt/ORD-12345' },
+          { id: 'btn_1', label: 'Download again', type: 'url', url: 'https://example.com/receipt/{{ .order_id }}', url_example: 'https://example.com/receipt/ORD-12345' },
           { id: 'btn_2', label: 'Need help', type: 'quick_reply' },
         ],
       } as any,

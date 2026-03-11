@@ -50,26 +50,26 @@ type MetaButton = {
 };
 type GupshupButton = {
     type: 'QUICK_REPLY';
-    title: string;
+    text: string;
 } | {
     type: 'URL';
-    title: string;
+    text: string;
     url?: string;
     example?: string[];
 } | {
     type: 'PHONE_NUMBER';
-    title: string;
+    text: string;
     phoneNumber?: string;
 } | {
     type: 'OPT_OUT';
-    title: string;
+    text: string;
 } | {
     type: 'COPY_CODE';
-    title: string;
+    text: string;
     example?: string;
 } | {
     type: 'OTP';
-    title: string;
+    text: string;
     otp_type: 'COPY_CODE' | 'ONE_TAP';
     autofill_text?: string;
     package_name?: string;
