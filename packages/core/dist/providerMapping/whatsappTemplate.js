@@ -144,13 +144,13 @@ function mapButtonsToGupshupCanonical(buttonsRaw) {
         .map((b) => {
         const btn = b;
         const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
-        const title = String(btn.label ?? '').trim() || 'Button';
+        const text = String(btn.label ?? '').trim() || 'Button';
         if (type === 'url') {
             const url = String(btn.url ?? '').trim() || undefined;
             const urlExample = String(btn.url_example ?? '').trim() || undefined;
             return {
                 type: 'URL',
-                title,
+                text,
                 ...(url ? { url } : {}),
                 ...(urlExample ? { example: [urlExample] } : {}),
             };
@@ -158,17 +158,17 @@ function mapButtonsToGupshupCanonical(buttonsRaw) {
         if (type === 'call') {
             return {
                 type: 'PHONE_NUMBER',
-                title,
+                text,
                 ...(String(btn.phone ?? '').trim() ? { phoneNumber: String(btn.phone).trim() } : {}),
             };
         }
         if (type === 'opt_out') {
-            return { type: 'OPT_OUT', title };
+            return { type: 'OPT_OUT', text };
         }
         if (type === 'copy_code') {
             return {
                 type: 'COPY_CODE',
-                title,
+                text,
                 ...(String(btn.example ?? '').trim() ? { example: String(btn.example).trim() } : {}),
             };
         }
@@ -176,16 +176,16 @@ function mapButtonsToGupshupCanonical(buttonsRaw) {
             const otpType = String(btn.otp_type ?? 'COPY_CODE').toUpperCase();
             return {
                 type: 'OTP',
-                title,
+                text,
                 otp_type: otpType,
                 ...(String(btn.autofill_text ?? '').trim() ? { autofill_text: String(btn.autofill_text).trim() } : {}),
                 ...(String(btn.package_name ?? '').trim() ? { package_name: String(btn.package_name).trim() } : {}),
                 ...(String(btn.signature_hash ?? '').trim() ? { signature_hash: String(btn.signature_hash).trim() } : {}),
             };
         }
-        return { type: 'QUICK_REPLY', title };
+        return { type: 'QUICK_REPLY', text };
     })
-        .filter((b) => Boolean(b.title));
+        .filter((b) => Boolean(b.text));
 }
 function collectAdvancedFields(msg) {
     const advanced = {};

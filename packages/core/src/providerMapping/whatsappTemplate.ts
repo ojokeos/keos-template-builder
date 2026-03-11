@@ -45,14 +45,14 @@ type MetaButton =
     };
 
 type GupshupButton =
-  | { type: 'QUICK_REPLY'; title: string }
-  | { type: 'URL'; title: string; url?: string; example?: string[] }
-  | { type: 'PHONE_NUMBER'; title: string; phoneNumber?: string }
-  | { type: 'OPT_OUT'; title: string }
-  | { type: 'COPY_CODE'; title: string; example?: string }
+  | { type: 'QUICK_REPLY'; text: string }
+  | { type: 'URL'; text: string; url?: string; example?: string[] }
+  | { type: 'PHONE_NUMBER'; text: string; phoneNumber?: string }
+  | { type: 'OPT_OUT'; text: string }
+  | { type: 'COPY_CODE'; text: string; example?: string }
   | {
       type: 'OTP';
-      title: string;
+      text: string;
       otp_type: 'COPY_CODE' | 'ONE_TAP';
       autofill_text?: string;
       package_name?: string;
@@ -270,13 +270,13 @@ function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): GupshupButton[] {
     .map((b) => {
       const btn = b as Record<string, unknown>;
       const type = String(btn.type ?? 'quick_reply').trim().toLowerCase();
-      const title = String(btn.label ?? '').trim() || 'Button';
+      const text = String(btn.label ?? '').trim() || 'Button';
       if (type === 'url') {
         const url = String(btn.url ?? '').trim() || undefined;
         const urlExample = String(btn.url_example ?? '').trim() || undefined;
         return {
           type: 'URL' as const,
-          title,
+          text,
           ...(url ? { url } : {}),
           ...(urlExample ? { example: [urlExample] } : {}),
         };
@@ -284,17 +284,17 @@ function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): GupshupButton[] {
       if (type === 'call') {
         return {
           type: 'PHONE_NUMBER' as const,
-          title,
+          text,
           ...(String(btn.phone ?? '').trim() ? { phoneNumber: String(btn.phone).trim() } : {}),
         };
       }
       if (type === 'opt_out') {
-        return { type: 'OPT_OUT' as const, title };
+        return { type: 'OPT_OUT' as const, text };
       }
       if (type === 'copy_code') {
         return {
           type: 'COPY_CODE' as const,
-          title,
+          text,
           ...(String(btn.example ?? '').trim() ? { example: String(btn.example).trim() } : {}),
         };
       }
@@ -302,16 +302,16 @@ function mapButtonsToGupshupCanonical(buttonsRaw: unknown[]): GupshupButton[] {
         const otpType = String(btn.otp_type ?? 'COPY_CODE').toUpperCase() as 'COPY_CODE' | 'ONE_TAP';
         return {
           type: 'OTP' as const,
-          title,
+          text,
           otp_type: otpType,
           ...(String(btn.autofill_text ?? '').trim() ? { autofill_text: String(btn.autofill_text).trim() } : {}),
           ...(String(btn.package_name ?? '').trim() ? { package_name: String(btn.package_name).trim() } : {}),
           ...(String(btn.signature_hash ?? '').trim() ? { signature_hash: String(btn.signature_hash).trim() } : {}),
         };
       }
-      return { type: 'QUICK_REPLY' as const, title };
+      return { type: 'QUICK_REPLY' as const, text };
     })
-    .filter((b) => Boolean(b.title));
+    .filter((b) => Boolean(b.text));
 }
 
 function collectAdvancedFields(msg: Record<string, unknown>): Record<string, unknown> | undefined {

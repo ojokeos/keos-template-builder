@@ -224,7 +224,7 @@ function ha(i) {
       const S = String(m.url ?? "").trim() || void 0, A = String(m.url_example ?? "").trim() || void 0;
       return {
         type: "URL",
-        title: k,
+        text: k,
         ...S ? { url: S } : {},
         ...A ? { example: [A] } : {}
       };
@@ -232,30 +232,30 @@ function ha(i) {
     if (y === "call")
       return {
         type: "PHONE_NUMBER",
-        title: k,
+        text: k,
         ...String(m.phone ?? "").trim() ? { phoneNumber: String(m.phone).trim() } : {}
       };
     if (y === "opt_out")
-      return { type: "OPT_OUT", title: k };
+      return { type: "OPT_OUT", text: k };
     if (y === "copy_code")
       return {
         type: "COPY_CODE",
-        title: k,
+        text: k,
         ...String(m.example ?? "").trim() ? { example: String(m.example).trim() } : {}
       };
     if (y === "otp") {
       const S = String(m.otp_type ?? "COPY_CODE").toUpperCase();
       return {
         type: "OTP",
-        title: k,
+        text: k,
         otp_type: S,
         ...String(m.autofill_text ?? "").trim() ? { autofill_text: String(m.autofill_text).trim() } : {},
         ...String(m.package_name ?? "").trim() ? { package_name: String(m.package_name).trim() } : {},
         ...String(m.signature_hash ?? "").trim() ? { signature_hash: String(m.signature_hash).trim() } : {}
       };
     }
-    return { type: "QUICK_REPLY", title: k };
-  }).filter((p) => !!p.title);
+    return { type: "QUICK_REPLY", text: k };
+  }).filter((p) => !!p.text);
 }
 function wt(i) {
   const p = {}, m = [
@@ -2421,7 +2421,7 @@ const et = [
         enable_sample: !0,
         allow_category_change: !1,
         buttons: [
-          { id: "btn_1", label: "Track order", type: "url", url: "https://example.com/orders/{{1}}", url_example: "https://example.com/orders/ORD-12345" },
+          { id: "btn_1", label: "Track order", type: "url", url: "https://example.com/orders/{{ .order_id }}", url_example: "https://example.com/orders/ORD-12345" },
           { id: "btn_2", label: "Contact support", type: "quick_reply" }
         ]
       }
@@ -2564,7 +2564,7 @@ const et = [
         footer: "For questions, reply to this message",
         enable_sample: !0,
         buttons: [
-          { id: "btn_1", label: "Download again", type: "url", url: "https://example.com/receipt/{{1}}", url_example: "https://example.com/receipt/ORD-12345" },
+          { id: "btn_1", label: "Download again", type: "url", url: "https://example.com/receipt/{{ .order_id }}", url_example: "https://example.com/receipt/ORD-12345" },
           { id: "btn_2", label: "Need help", type: "quick_reply" }
         ]
       }
